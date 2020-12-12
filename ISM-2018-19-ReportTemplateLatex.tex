@@ -89,12 +89,55 @@ An example scheme for this is something like RAID, which have diffrent levels ba
 In terms of cloud based storage RAID arrays are used commonaly internally rather than externally to a diffrent NAS or storage server.
 This is uaully because we will have the gurantees of RAID for disk failures if they acquire and for example a server goes down we have the above replication schemes to be able to handle that.
 Therefore leading to having RAID arrays across multiple nodes to be sort of redundant.
-However with using a parity \cite{Raid parity} based higher level scheme you will get space savings on the duplication of data, this is harder to implement though and most likely not needed due to servers that are lost due to power outages usally come back on pretty soon also know as something like a concurrent-failure.
+However with using a parity \cite{Raid parity} based higher level scheme you will get space savings on the duplication of data, this is harder to implement though and most likely not needed due to servers that are lost due to power outages usally come back on pretty soon also known as something like a concurrent-failure.
 
 // TODO: Say what a correlated and non correlated failure is
 
 \section{Swarm robotics}
 \label{sec:Robotics}
+
+Within research about swarms there is a split between practical soloutions of the agents and ue of agents as an algorithm, this split can be seen as swarm robotics and swarm intelligence.
+Swarm intelligence is where we use swarm like behavoiur to a problem, for example traveling salesman problem \cite{Swarm intellegiegence}, this means that we use agent like code to compute a task.
+These tasks have usally been solved using a diffrent algorithm for example for the TSP using a genetic algorithm to solve, and the swarm algorithms like AS-TSP \cite{Swarm intellegiegence} are alternatives to that algorithm.
+These provide benefits and drawbacks to there counterparts, an area which these algorithms could excell and are researched into is the networking space due to the natrual parrellelism that can be expoited.
+
+However this is not the route of research that will be needed for this project, rather we will be looking at swarm robotics.
+Swarm robotics has the same idea as swarm intelligence however it focuses on tasks of which are usally desiged to have an agent/agents complete, this is mainly designed for the practical space like moving objects or mapping an area, whether simulated or not.
+This swarms come in three types: hetrogenus, homogenues and a subcatergoriy of homogenus being hybrid swarms \cite{Swarm robotics reviewed}.
+These three types can be mapped onto both the controls of the swarm and the agents body/abilitys.
+
+
+\begin{figure}[htb]
+\begin{center}
+\label{fig:htb}
+\includegraphics[height=3cm]{"./AntHetro.png"}
+\end{center}
+\caption{Example of a hetrogenus ant colony. https://www.pinterest.co.uk/pin/777363585651532845/}
+\end{figure}
+
+A hetrogenus swarm is where there are diffrences between the agents as in Figure \ref{fig:htb}, this is most commonly aquiring in nature and not usally studied into due to the diffrences in the agents, being a rarely needed property in research based problems.
+In real world soloutions hetrogenus soloutions can be of great use for example as desribed in \cite{Swarm robotics reviewed} with a mother ship being a navy boat and a swarm of quadracopters.
+The reason for less research into this area id due to some key drawbacks of havin a hetrogenus swarm.
+Usaully you will have a hivemind like system if you have a hetrogenus swarm where you have leaders giving commands to subordinates or even one leader commanding the entire swarm.
+This is less desirable due to if there is a loss of those leaders you lose the ability to control the swarm, in are example this doesn't matter so much due to if you have loss of the mothership something has gone significantly wrong already.
+Due to the diffrences in the swarm agents it allows for greater efficency of the swarm for example having a robot that can mine and one that can farm, however the major loss of one type can lead to the loss of the colony.
+With swarms like these designs need to be taken so that agents can interchange between the tasks or that if agents fail there is no impact on the colony.
+Ants usally fit into this type of swarm where you have a queen, worker and major ants, however some ants like Leaf-Cutter Ants also have subcatgorey of workers like a fungus farmer.
+If there is a significant lose of workers, majors start doing tasks that normally workers would do \cite{Swarm intellegiegence}, and with the farmer subcategory of the workers if a significant loss of them happens other workers can take over that job and learn how to do it, however that leads us more towards homgenus agents within a hetrogenus swarm.
+
+A homogenus swarm is where you have each agent being the same, this is less often in nature and is more towards man-made agents, this is due to nature taking to the more efficent approach and due to having learning in the agents can adapt between roles.
+In homogenus swarms we get sugnificant redundancy due to if an agent goes down we have a swarms worth of replacements for that agent.
+With this redundancy we gain possible losses of effiecney due to either agents being to simple therefore losing specialism or each agent has parts for speclim but may never need a part.
+An example of this is a robot that has hands can farm and dig, however if we want them to be more effiecent we would have to give them both a hoe and pickaxe if we were using a homogenus model and if they couldn't switch between hoe and pickaxe during runtime of the swarm usage.
+In a homogenus style of swarm usally we will have homogenus control, this is where all agents decide what they want to do based of what other agents are doing and internal parameters, this can be equivilent to something like an emergernt swarm.
+This follows a distributed problem solving/commmunication design compared to  leader based design like hivemind or structered/heirachical controlled swarms.
+
+With swarm robotics everything gets a bit messy, usally there is no clear cut name or design that can be assigned to swarm models and behavouirs.
+This is where hybrid approaches come into play.
+An hybrid approach is mixtures between both hetrogenus and homogenus natures in both communications and agent design. 
+
+//Todo: talk about humans be hybrid due to power changes and using tools to be able to speicalize
+
 
 %%%%%%%%%%%%%%%%
 
