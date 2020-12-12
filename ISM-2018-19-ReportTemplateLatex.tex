@@ -81,7 +81,7 @@ Another way to handle this which doesn't rely on a more priverliged node or dupl
 This is where all indurvidual key-values have a their own choose on what to do in a distributed system.
 This is descirbed as four sections which are Migration, Suicide, Replication and Nothing; where Migration is the moving of data to lower costing and more redundant servers, Suicide is the removal of itself usally based on amount of duplicates and uses soemthing like Paxos \cite{Paxos} to decide if it should suicide and Replication where it decides that it is being used enough to need to be replicated or their is possibly no other duplicates of this data.
 
-An algrithm like "SKUTE" \cite{Distributed Storage} will be suited best for swarm like agents due to the distributed nature of a swarm, and not wanting to have a static/tempory leader due to issues like communication bottleneck, power loss in the swarm near the leader due to flow of infomation to the leader, loss of leader (mainly only if static) \cite{Swarm robotics reviewed, Swarm intellegiegence}.
+An algrithm like "SKUTE" \cite{Distributed Storage, Quorum} will be suited best for swarm like agents due to the distributed nature of a swarm, and not wanting to have a static/tempory leader due to issues like communication bottleneck, power loss in the swarm near the leader due to flow of infomation to the leader, loss of leader (mainly only if static) \cite{Swarm robotics reviewed, Swarm intellegiegence}.
 Also some of the main resons for using swarm robotics is the inherint parrell nature that they bring to the table, therefore creating leader based algorithms are not in the spirit of the design of a homogenus swarm, unlike a hetrogenius swarm.
 
 Another area of study which is highly statc is storage of data on local disks and how to keep either backups for disk failure or/and improve write performance onto disks, rather than just duplicating data like as described above.
@@ -125,7 +125,7 @@ With swarms like these designs need to be taken so that agents can interchange b
 Ants usally fit into this type of swarm where you have a queen, worker and major ants, however some ants like Leaf-Cutter Ants also have subcatgorey of workers like a fungus farmer.
 If there is a significant lose of workers, majors start doing tasks that normally workers would do \cite{Swarm intellegiegence}, and with the farmer subcategory of the workers if a significant loss of them happens other workers can take over that job and learn how to do it, however that leads us more towards homgenus agents within a hetrogenus swarm.
 
-A homogenus swarm is where you have each agent being the same, this is less often in nature and is more towards man-made agents, this is due to nature taking to the more efficent approach and due to having learning in the agents can adapt between roles.
+A homogenus swarm is where you have each agent being the same, this is less often in nature and is more towards man-made agents, this is due to nature taking to the more efficent approach and due to having learning in the agents can adapt between roles \cite{Swarm robotics reviewed, Swarm intellegiegence}.
 In homogenus swarms we get sugnificant redundancy due to if an agent goes down we have a swarms worth of replacements for that agent.
 With this redundancy we gain possible losses of effiecney due to either agents being to simple therefore losing specialism or each agent has parts for speclim but may never need a part.
 An example of this is a robot that has hands can farm and dig, however if we want them to be more effiecent we would have to give them both a hoe and pickaxe if we were using a homogenus model and if they couldn't switch between hoe and pickaxe during runtime of the swarm usage.
@@ -135,10 +135,12 @@ This follows a distributed problem solving/commmunication design compared to  le
 With swarm robotics everything gets a bit messy, usally there is no clear cut name or design that can be assigned to swarm models and behavouirs.
 This is where hybrid approaches come into play.
 An hybrid approach is mixtures between both hetrogenus and homogenus natures in both communications and agent design. 
-
-//Todo: talk about humans be hybrid due to power changes and using tools to be able to speicalize
-
-
+In terms of communication usally when taking a hybrid approcach to a swarm usally you will have a swarm leader of leaders designated by a swarm of robots, this is handled with a concensus algorithm like paxos \cite{paxos}.
+Also in hybrid models if we want to gain the efficency of hetrogenus models and the adaptabilty/reliabilty of homogenus swarms we can use something like tools.
+Humans themseleves are a great example of a hybrid based swarm.
+Though humans have variations in charateristics they can be seen as pretty homogenus in terms of the tasks that they perform, obvusily removing edge case actions that humans do.
+Tools and knowledge can be spread between humans to make the swarm more effiecient and an agent can specialize in a certain area however if some agents are lost other agents/humans can replace them by using the same tools and learning from the remaining agents of that task.
+Also the power based structure of humans fits a hybrid model in terms consensus electorship, however the leaders aren't needed for every single action so fits into a usally heirachal power structure.
 %%%%%%%%%%%%%%%%
 
 
@@ -218,6 +220,12 @@ D. Agrawal and A. E. Abbadi. The tree quorum protocol: An efficient approach for
 
 \bibitem{RAID levels}
 S. Lynn, ‘RAID Levels Explained’, PC Mag, 2014. [Online]. Available: https://uk.pcmag.com/storage/7917/raid-levels-explained. [Accessed: 06-Dec-2020].
+
+\bibitem{HiveMind}
+J. Hu et al., Eds., HiveMind: A Scalable and Serverless Coordination Control Platform for UAV Swarms. ArXiv, 2020.
+
+\bibitem{blockchainandSwarm}
+D. Calvaresi, A. Dubovitskaya, J. P. Calbimonte, K. Taveter, and M. Schumacher, Multi-Agent Systems and Blockchain: Results from a Systematic Literature Review. Cham, Switzerland: Springer International Publishing, 2018.
 
 \end{thebibliography}
 
