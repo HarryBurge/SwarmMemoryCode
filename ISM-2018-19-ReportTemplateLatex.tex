@@ -36,21 +36,21 @@
 \chapter{Introduction}
 \label{cha:Introduction}
 
-Swarm robotics/intelligence/mechanics is becoming an increasingly important area of research for society as the world moves towards a distributed technollogy future.
-Swarm intelligence can be viewed as distributed problem solving\cite{Cognitive maps mine detection, Swarm intellegiegence}, this is ever becoming more and more relevent as computer systems start to level out in terms of indurvidual performance  \cite{CPU speed} and parrelism is inbraced to be able to satisfy the demand of the age of big data \cite{Avalability storage}. 
-Swarm mechanics and robotics are on the rise in industry, as soceitys pace increases and manual labour is automated out, whether its drone delivery to inpatient customers or mapping areas in dangerous zones \cite{Swarm robotics reviewed}.
+Swarm intelligence/mechanics is an increasingly more important area of research for society, as the world moves towards a distributed technology future.
+Swarm intelligence can be viewed as distributed problem solving\cite{Cognitive maps mine detection, Swarm intellegiegence}, this is ever becoming more relevant as computer systems start to level out in terms of individual performance \cite{CPU speed} and parallelism is embraced, satisfying the demand of the age of big data \cite{Avalability storage}.
+Swarm mechanics/robotics are on the rise in the industry, as society's pace increases and manual labor is automated out, whether its drone delivery to inpatient customers or mapping areas in dangerous environments \cite{Swarm robotics reviewed}.
 
-Another area of swarm robotics research is distributed and local memory of swarm like agents. 
-This area of research has gone down a route more to do with the optimisation of distributed problem solving algorithms rather than practical applications of storage of abstract ideas as a collective. 
-Examples of this is from my understanding there is no research into collective memory on swarm like agents. 
-This research is invaluable due to applications like mapping of dangerous area \cite{Cognitive maps mine detection}, being able to handle loss of agents and collect data on agents with limited memory. 
-An explanation for this to be a less developed area of study is due to subjects like cloud based and raid based storage systems.
+An area of swarm intelligence research is distributed and local memory of swarm-like agents.
+This has gone down a route more to do with the optimization of distributed problem-solving algorithms rather than practical applications of storage of abstract ideas as a collective.
+There is a relative lack of research into collective memory on swarm like agents, within the scope of a practical setting.
+This would be invaluable to applications like mapping of a dangerous area \cite{Cognitive maps mine detection}, being able to handle the loss of agents and the collection of data on agents with limited memory.
+An explanation for this to be a less developed area of study is the existence of subjects like cloud-based and raid based storage systems.
 
-Storage of data on an ever changing network of storage devices is a hard task to complete, handling loss of connection between diffrent servers, reliability to access of data and handling loss of services whether it be non-correlated or correlated failures \cite{Avalability storage}. 
-This is very applicable to swarm memory handling of data however must be adapted, this is due to current algorthims such as raid not really being designed for highly dynamic systems such as s swarm system. 
-However there are promising papers in this field that suggest approahes that can be adapted with few modifications to be applicable to a swarm based system \cite{Distributed Storage}. 
+Storing of data on an ever-changing network of storage devices is a hard task to complete, handling the loss of connection between different servers, reliability to access of the data and handling loss of services, whether it be non-correlated or correlated failures \cite{Avalability storage}.
+This is very applicable to swarm memory, with the handling of data across a swarm. However, must be adapted due to current algorithms such as RAID not being designed for highly dynamic systems such as swarm.
+There are promising papers in this field of cloud storage that suggest approaches that can be adapted with few modifications to apply to a swarm-based system \cite{Distributed Storage}, and optimized through RAID.
 
-The objectives of this report is to merge two diffrent areas of study into one by using diffrent knowledge of each area to create a suitable storage policy for swarm like agents to store collective memorys of abstarct ideas, then to perform analysis on a variety of simulations to explore the capabilitys of said storage policy. 
+The objectives of this report are to merge three different areas of study into one by using knowledge of each, to create a suitable storage policy for swarm like agents to store collective memories of abstract ideas, then to perform analysis on a variety of simulations to explore the capability of the said storage policy.
 
 // Talk about the sections of the report once completed.
 %%%%%%%%%%%%%%%%%%
@@ -59,37 +59,42 @@ The objectives of this report is to merge two diffrent areas of study into one b
 \chapter{Literature Review}
 \label{cha:Literature Review}
 
-This chapter will review two areas of relevancy to the project proposed, these are \hyperref[sec:Cloud]{Cloud/Backup storage policys/schemes} and \hyperref[sec:Robotics]{Swarm robotics}. Ideas and concepts from both areas will have to be relied upon for the completion/design of the storage policy. 
+This chapter will review two areas of relevancy to the project proposed, these are \hyperref[sec:Cloud]{Cloud/Backup storage policies/schemes} and \hyperref[sec:Robotics]{Swarm robotics}. Ideas and concepts from both areas will have to be relied upon for the completion/design of the storage policy.
 
 \section{Cloud/Backup storage policys/schemes}
 \label{sec:Cloud}
 
-As most things in computer science, this area of study used to be very simple, with small datawarehouses and backups on to a medium like magentic tape following something like a grandfather, father, son method. 
-However as the years have progressed, technology has become much more complex requiring larger files of data to be stored and to be accessed frequently leading to the need of more complex backup systems to provide avaliabilty and longevity of data stored.
-A big component for the complexity of these algortihms other than providing a service better than compettitors is the Legal Services Act. 2007 \cite{LSA}, which makes companies cloud storage solotions to have to be reliable and fast into collection of data for users.
+Like most things in computer science, this area of study used to be simple, with small data-warehouses and backups on to a medium like magnetic tape, following a grandfather, father, son backup policy.
+As the years have progressed, technology has become greatly complex requiring larger files to be stored and accessed frequently. 
+Leading to the need for complex backup systems to provide availability and longevity of data stored, across a network or even locally.
+A component to the lead of complexity of these algorithms other than providing a service better than competitors is the Legal Services Act. 2007 \cite{LSA}. This enforces that a company's cloud storage solution has to be reliable and fast in data collection for users.
 
-Most algorithms used in production are called random replication policys \cite{Avalability storage} where data is partitioned and radomly distributed amoung other storage devices usually on diffrent racks of the datacenter.
-This is an effecicent design policy for handiling non-correlated errors however lacks the robstness against correlated errors.
-These algorithms are good for longer term data storage with average popularity in terms of need for collection of that data.
+Most algorithms used in production are called random replication policies \cite{Avalability storage}, this is where data is partitioned and randomly distributed among other storage devices usually on different racks of the datacenter.
+This is an efficient design policy for handling non-correlated errors, however, lacks the robustness against correlated errors.
+These algorithms are substantial for long-term data storage with average popularity of collection/use of that data.
 
-Some of the problems arisen from random replication policys has spawned a new design policys, of which can handle correlated, non-correlated errors.
-Usually these policys also account for the demand of such item \cite{Avalability storage, Distributed Storage}.
-To tackle these problems two approches have been taken, one is to go from a higher level approcach where you have a sort of manager which chooses which items to replicate and where based off demand, knowledge of other replications and outside factors \cite{Avalability storage, Patent}, not as suitable in terms of actual data changes but scheme changes of servers \cite{Scheme changes}.
-Working versions of these over a cloud service are tied together usually with a "Distributed key-value store"  \cite{Key-Value} where you have these key-value pairs on multiple devices on a network and duplication only leads to more fault tolerance of the data stored.
+A non-correlated error is when devices go down randomly for example in a swarm an agent's battery might explode, destroying that singular agent, therefore it can be modeled by a random chance of happening on each member. 
+A correlated error happens when multiple agents go down due to a reason unbenounced to us. Following on from our swarm example, let us say a tsunami hits a certain section of the swarm destroying those agents therefore meaning that those failures were connected by some sort of event. 
+In data-warehouses, this is usually a failure of power on a server or a bug, not as permanent damage as a tsunami.
 
-Another way to handle this which doesn't rely on a more priverliged node or duplicated data, and creates a distributed system is by having something like "SKUTE" as proposed in \cite{Distributed Storage}.
-This is where all indurvidual key-values have a their own choose on what to do in a distributed system.
-This is descirbed as four sections which are Migration, Suicide, Replication and Nothing; where Migration is the moving of data to lower costing and more redundant servers, Suicide is the removal of itself usally based on amount of duplicates and uses soemthing like Paxos \cite{Paxos} to decide if it should suicide and Replication where it decides that it is being used enough to need to be replicated or their is possibly no other duplicates of this data.
+Some of the problems arisen from random replication policy has spawned new replication policies, which can handle correlated and non-correlated errors, more effectively whilst also taking into account the demand of such items stored\cite{Avalability storage, Distributed Storage}.
+Tackling these problems, two approaches were undertaken.
+The first approach is to come from a higher level of control where you have a manager which can choose items to replicate and where based on demand, knowledge of other replications and outside factors \cite{Avalability storage, Patent}. This does not only apply to data but also schema changes of said servers or databases \cite{Scheme changes}.
+Working versions of these over a cloud service are tied in/together with a "Distributed key-value store" \cite{Key-Value} where you have these key-value pairs on multiple devices on a network where duplication only leads to more fault tolerance of the data stored.
 
-An algrithm like "SKUTE" \cite{Distributed Storage, Quorum} will be suited best for swarm like agents due to the distributed nature of a swarm, and not wanting to have a static/tempory leader due to issues like communication bottleneck, power loss in the swarm near the leader due to flow of infomation to the leader, loss of leader (mainly only if static) \cite{Swarm robotics reviewed, Swarm intellegiegence}.
-Also some of the main resons for using swarm robotics is the inherint parrell nature that they bring to the table, therefore creating leader based algorithms are not in the spirit of the design of a homogenus swarm, unlike a hetrogenius swarm.
+Another way to handle this which doesn't rely on a more privileged controller, and creates a distributed system is by having something like "SKUTE" as proposed in \cite{Distributed Storage}.
+Each individual key-value replication has its own manager and can choose what it as a singular entity can do on that distributed system.
+The policy as described in "SKUTE" are as follows; Migration, Suicide, Replication, and Nothing. Migration is the moving of its data to lower costing and more redundant servers. Suicide is the removal of itself usually based on the number of duplicates and uses something like Paxos \cite{Paxos} to decide if it should suicide. Replication decides that it is being used enough to warrant the need to be duplicated.
 
-Another area of study which is highly statc is storage of data on local disks and how to keep either backups for disk failure or/and improve write performance onto disks, rather than just duplicating data like as described above.
-An example scheme for this is something like RAID, which have diffrent levels based off the type of 	attributes that you may need \cite{RAID Levels}.
-In terms of cloud based storage RAID arrays are used commonaly internally rather than externally to a diffrent NAS or storage server.
-This is uaully because we will have the gurantees of RAID for disk failures if they acquire and for example a server goes down we have the above replication schemes to be able to handle that.
-Therefore leading to having RAID arrays across multiple nodes to be sort of redundant.
-However with using a parity \cite{Raid parity} based higher level scheme you will get space savings on the duplication of data, this is harder to implement though and most likely not needed due to servers that are lost due to power outages usally come back on pretty soon also known as something like a concurrent-failure.
+An algorithm like "SKUTE" e.g. scattered key-value store \cite{Distributed Storage, Quorum} will be best suited for swarm like agents due to the distributed nature of a swarm.  This is less relevant in heterogeneous swarms with something like hivemind or hierarchal control however still relevant. For homogeneous swarms this is ideal due to not wanting to have a static/temporary leader because of the issues like communication bottleneck, power loss near the leader due to flow of information to the leader, loss of a leader in a hybrid static swarm \cite{Swarm robotics reviewed, Swarm intellegiegence}.
+Also, one of the fundamental philosophies of swarm robotics is the inherently parallel nature that they bring to the table. When creating leader-based algorithms they do not fit within the spirit of the design of homogeneous swarms, unlike a heterogeneous swarm might.
+
+An area of study which is stagnated is the storage of data on local disks. How to keep either backup for disk failure and/or improve write performance onto disks, rather than just duplicating data like as described above.
+An example schema for this is RAID, which has different levels based on the type of attributes that you may need for your array of storage devices \cite{RAID Levels}.
+In terms of cloud-based storage RAID arrays are used commonly internally rather than externally to a different NAS or storage server.
+This is because we will have the guarantees of RAID for internal disk failures if they occur, for example, a server goes down we have the above replication schemes to be able to handle that loss of storage.
+Leading to RAID arrays across multiple nodes to be sort of redundant.
+However, by using a parity \cite{Raid parity} based higher-level schema you can get space savings on the duplication of data. This is harder to implement though and most likely not needed due to servers that are lost due to power outages usually coming back online pretty soon. An example of this is might be a power issue causing a server to restart.
 
 // TODO: Say what a correlated and non correlated failure is
 
