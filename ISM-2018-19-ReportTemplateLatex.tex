@@ -131,13 +131,13 @@ These three methodologies are mapped onto both the decision making and the agent
 
 \begin{figure}[htb]
 \begin{center}
-\label{fig:htb}
-\includegraphics[height=3cm]{"./AntHetro.png"}
+\label{fig:anthero}
+\includegraphics[height=4cm]{"./AntHetro.png"}
 \end{center}
 \caption{Example of a hetrogenus ant colony. https://www.pinterest.co.uk/pin/777363585651532845/}
 \end{figure}
 
-A heterogeneous swarm is where there are differences between the agents, as in Figure \ref{fig:htb}, whether physical or mental \cite{Swarm robotics reviewed, Swarm intellegiegence}. 
+A heterogeneous swarm is where there are differences between the agents, as in Figure \ref{fig:anthero}, whether physical or mental \cite{Swarm robotics reviewed, Swarm intellegiegence}. 
 These most commonly occur in nature and are not usually studied \cite{Swarm intellegiegence} due to the differences in agents being a rarely needed property in research-based problems.
 In real-world solutions, heterogeneous swarms can be of great use, allowing other agents to pick up the slack of the swarm, or complete tasks that other swarm members cannot complete. 
 For example, as described in \cite{Swarm robotics reviewed} with a mother ship being a navy boat and a swarm of quadrocopters, this examples shows how the boat picks up for the slack of the swarm by being able to transport them longer distances than the swarm could normally cope with.
@@ -207,6 +207,25 @@ It is for this reseon that I have decided to contribute my part to this extensiv
 
 \section{The Problem}
 \label{sec:Problem}
+
+The problem is to create an efficent storage system for directional based data.
+This can be broken down into two sections, how data is passed throughout the swarm as to not have to many duplicates of the data but not have to little to not allow for redundancy.
+The second is to have that data spread out based on a coord point, this will simulate the use of said data in that area.
+
+\begin{figure}[htb]
+\label{fig:popdensity}
+\begin{center}
+\centering
+\includegraphics[width=\linewidth]{"./Memory_Pop_Density.png"}
+\caption{Example of data density based of coordinale point}
+\end{center}
+\end{figure}
+
+As shown in Figure \ref{fig:popdensity} we can see how we want the data to spread out across the swarm based off the distance of the agent to the point.
+An example of why this is a requirement is for example in that arbitrary point might be the farm and possible hostilitys around, therefore you want more agents knowing that arbitry point infomation around that area but still have that infomation spread across the network due to possible losses of all the agents near said point.
+
+The goal is to create an effiecent storage and replication policy which can handle the fluctuations of the swarm, and provide reliabilty in the face of both corrilated failures and non-correlated failures of the swarm.
+This policy should take into account poisition of the agent relative to the point that the infomation is needed near.
 
 
 \section{Design}
