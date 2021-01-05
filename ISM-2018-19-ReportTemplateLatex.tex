@@ -6,6 +6,13 @@
 \MEng
 
 \usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+
+\makeatletter
+\def\BState{\State\hskip-\ALG@thistlm}
+\makeatother
 
 \dedication{}
 
@@ -228,8 +235,55 @@ The goal is to create an effiecent storage and replication policy which can hand
 This policy should take into account poisition of the agent relative to the point that the infomation is needed near.
 
 
-\section{Design}
-\label{sec:Design}
+\section{Simulation Infomation}
+\label{sec:Sim Info}
+
+
+\section{Simple Scattered Memory Policy}
+\label{sec:Simple1}
+
+Taking on from the design of algorithm presented in \cite{Distributed Storage}, I applied a simple distributed storage policy onto a swarm that takes into account positional data.
+This policy has two actions that it can perform, suicide and replication, suicide is when a piece of data decides using a heuristic that it is not worth being stored in an agents memory so deletes itself, replication is where based on a heuristic the data believes it is worth spreading the infomation so will replicate to one member of the swarm.
+
+
+\begin{algorithm}
+\caption{Agent's control loop}
+\label{Agent_Control_Loop}
+\begin{algorithmic}[1]
+\Procedure{Step}{}
+\State \text{move()}
+\State
+\If {item in private mem not in other agents public mem}
+\State \text{Replicate item}
+\State \Return true
+\EndIf
+\State
+\State $item \gets \text{random public mem item}$
+\State $allowed dupes \gets \textit{heuristic}(item)$
+\State $current dupes \gets \text{number of agents with item in public mem}$
+\State
+\If {allowed dupes > current dupes}
+\State \text{Replicate item once}
+\ElsIf { allowed dupes < current dupes}
+\State \text{Suicide item using paxos}
+\EndIf
+\State
+\State \Return true
+\EndProcedure
+\State
+\Procedure{Heuristic(Item)}{}
+\State $dist  \gets \text{agent distance to items target point}$
+\State $allowed dupes \gets \text{items max dupes} - (dist / \text{items step})$
+\State
+\If {allowed dupes <= 0}
+\State \Return 0
+\Else
+\State \Return allowed dupes
+\EndIf
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
 
 %%%%%%%%%%%%%%%%%%%%%
 
