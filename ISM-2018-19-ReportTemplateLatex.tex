@@ -249,11 +249,23 @@ Both public and private memory cannot have duplicate data inside including acros
 This split was made arbitraraly and isn't needed for a practical soloution however was created due to agents being more likely to pick up learned data by not having to delete infomation in memory to make space for said leanred infomation.
 In general public memory should be larger in size than private memory due to there being magnitudes more public infomation compared to private infomation for an agent.
 
-Agents are homogenus, and have the same connection distance
+Agents are homogenus, and have the same connection radius of which they can talk to other agents within.
+Agents are assumed to be able to recieve and send packets whilst also doing actions like sending and recieveing itself, in real world soloutions this would likely be that each agent would need two recivers and senders or a control algortihm to handle this type of behavouir.
 
 Each agent moves randomly in circles varying in shapes and sizes to gain a swarm like movement of connections being broken and reconnected.
 Agents our running in diffrent threads so run at diffrent speeds and acts more like a real world swarm.
 Data is introduced at the start based of an amount wanted, and during the simulation data can be learned based an amount wanted.
+
+\begin{figure}[htb]
+\label{fig:Connarea}
+\begin{center}
+\centering
+\includegraphics[width=\linewidth]{"./Connarea.png"}
+\caption{Example of simulation looks when running}
+\end{center}
+\end{figure}
+
+
 
 \section{Simple Scattered Memory Policy}
 \label{sec:Simple1}
