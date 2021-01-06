@@ -238,6 +238,22 @@ This policy should take into account poisition of the agent relative to the poin
 \section{Simulation Infomation}
 \label{sec:Sim Info}
 
+The base simulation that the policys will be running on is a specified.
+There will be an area of which agents can move around, each point within that area can have a peice of data learned in that area.
+When a peice of data is learned in that area , the data stores where is was created and the policys will take that starting place into account.
+This is how we have defined our directional data aspect to the simulation, in real life this could be something like a learnt behavoiur that is needed for that specifc enviroment, however, for test purposes it is just a string.
+
+Each agent has two bounded partitions of memory, these are called private and public memory.
+Private memory is for knowledge that is learnt by that agent, and public memory is infomation that that agent has learned from other agents.
+Both public and private memory cannot have duplicate data inside including across partitions.
+This split was made arbitraraly and isn't needed for a practical soloution however was created due to agents being more likely to pick up learned data by not having to delete infomation in memory to make space for said leanred infomation.
+In general public memory should be larger in size than private memory due to there being magnitudes more public infomation compared to private infomation for an agent.
+
+Agents are homogenus, and have the same connection distance
+
+Each agent moves randomly in circles varying in shapes and sizes to gain a swarm like movement of connections being broken and reconnected.
+Agents our running in diffrent threads so run at diffrent speeds and acts more like a real world swarm.
+Data is introduced at the start based of an amount wanted, and during the simulation data can be learned based an amount wanted.
 
 \section{Simple Scattered Memory Policy}
 \label{sec:Simple1}
