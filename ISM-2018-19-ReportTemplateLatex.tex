@@ -251,6 +251,7 @@ In general public memory should be larger in size than private memory due to the
 
 Agents are homogenus, and have the same connection radius of which they can talk to other agents within.
 Agents are assumed to be able to recieve and send packets whilst also doing actions like sending and recieveing itself, in real world soloutions this would likely be that each agent would need two recivers and senders or a control algortihm to handle this type of behavouir.
+In this simulation we assume that data transfer is perfect.
 
 Each agent moves randomly in circles varying in shapes and sizes to gain a swarm like movement of connections being broken and reconnected.
 Agents our running in diffrent threads so run at diffrent speeds and acts more like a real world swarm.
@@ -265,10 +266,23 @@ Data is introduced at the start based of an amount wanted, and during the simula
 \end{center}
 \end{figure}
 
-
+In Figure \ref{fig:Connarea} we can see an example of what the 2D simulation looks like.
+Dots are agents, and the red circle around them are their connection radius of which they can talk to other agents, these are usally omitted from being draw due to making the images messyer and harder to understand.
+The blue consentic circles are a positional datas stages of allowed duplications, this is explained more in \ref{sec:Simple1}.
+The connection lines between the agents are just showing that data can pass between these two agents, these lines change colour based of what frames are being passed across them, this will be touched upon more in specific examples due to colours meaning diffrent things.
+As a simple visuallisation of how data is being passed between the agents, in this example the agent is blue signifiying that it holds the duplicate of blue data, e.g. the consetric circle.
 
 \section{Simple Scattered Memory Policy}
 \label{sec:Simple1}
+
+\begin{figure}[htb]
+\label{fig:Heuristic}
+\begin{center}
+\centering
+\includegraphics[height=5cm]{"./Heuristic.png"}
+\caption{Poistional data heuristic for agents}
+\end{center}
+\end{figure}
 
 Taking on from the design of algorithm presented in \cite{Distributed Storage}, I applied a simple distributed storage policy onto a swarm that takes into account positional data.
 This policy has two actions that it can perform, suicide and replication, suicide is when a piece of data decides using a heuristic that it is not worth being stored in an agents memory so deletes itself, replication is where based on a heuristic the data believes it is worth spreading the infomation so will replicate to one member of the swarm.
@@ -294,6 +308,8 @@ This policy has two actions that it can perform, suicide and replication, suicid
 \State \text{Replicate item once}
 \ElsIf { allowed dupes < current dupes}
 \State \text{Suicide item using paxos}
+\Else
+\State \text{Randomly Replicate}
 \EndIf
 \State
 \State \Return true
