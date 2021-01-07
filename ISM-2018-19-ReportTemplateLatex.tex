@@ -268,12 +268,15 @@ Data is introduced at the start based of an amount wanted, and during the simula
 
 In Figure \ref{fig:Connarea} we can see an example of what the 2D simulation looks like.
 Dots are agents, and the red circle around them are their connection radius of which they can talk to other agents, these are usally omitted from being draw due to making the images messyer and harder to understand.
-The blue consentic circles are a positional datas stages of allowed duplications, this is explained more in \ref{sec:Simple1}.
+The blue consentic circles are a positional datas stages of allowed duplications, this is explained more in Section \ref{sec:Simple1}.
 The connection lines between the agents are just showing that data can pass between these two agents, these lines change colour based of what frames are being passed across them, this will be touched upon more in specific examples due to colours meaning diffrent things.
 As a simple visuallisation of how data is being passed between the agents, in this example the agent is blue signifiying that it holds the duplicate of blue data, e.g. the consetric circle.
 
 \section{Simple Scattered Memory Policy}
 \label{sec:Simple1}
+
+Taking on from the design of algorithm presented in \cite{Distributed Storage}, I applied a simple distributed storage policy onto a swarm that takes into account positional data.
+This policy has two actions that it can perform, suicide and replication, suicide is when a piece of data decides using a heuristic that it is not worth being stored in an agents memory so deletes itself, replication is where based on a heuristic the data believes it is worth spreading the infomation so will replicate to one member of the swarm.
 
 \begin{figure}[htb]
 \label{fig:Heuristic}
@@ -284,10 +287,44 @@ As a simple visuallisation of how data is being passed between the agents, in th
 \end{center}
 \end{figure}
 
-Taking on from the design of algorithm presented in \cite{Distributed Storage}, I applied a simple distributed storage policy onto a swarm that takes into account positional data.
-This policy has two actions that it can perform, suicide and replication, suicide is when a piece of data decides using a heuristic that it is not worth being stored in an agents memory so deletes itself, replication is where based on a heuristic the data believes it is worth spreading the infomation so will replicate to one member of the swarm.
+The heuristic mentioned above follows these rules, and Figure \ref{fig:Heuristic} helps visuallise the conecept. 
+At the grey agent in the middle is an example of when the data is learned, when learned this data will have a poistion that it was learned a radius at which you want the allowed duplications (including own duplicate) of that data to be one.
+The red line signifys that distance and the value in this example four is the maximum duplications of that data.
+The green line is just an easy way to compute which band an agent might be in.
+
+As an agent moves closer through the gradient of allowed duplicates it will want to have more duplicates in its area, therefore allowing for a higher concentration of said duplicated data in that area.
+We can then use this simple heuristic per item of data to be able to get the distribution that we want, one implementation of this is described below in Algorithm \ref{Agent_Control_Loop}.
+The reason for having a random replication when the allowed duplications equal the actual duplications is to try and breakthrough the boudarys at the edge where allowed dupes equals 1.
+Without this replication we would have data sit inside the data area to much, this can be seen on some prilimany test results Figure \ref{fig:Data1}.
+Blue line is amount of agents with that duplicated data.
+Purple line is the mean distance of agents with duplicated data from the data point, Green area is the standard deviation and yellow/orange is the data range.
+A guassian filter has been passed over the results due to the mild fluctions every iteration creating a harder to see results.
 
 
+\begin{figure}[htb]
+\label{fig:Data1}
+\begin{center}
+\centering
+\includegraphics[height=6cm]{"./SimpleSuicRep_m4_r0.5_c1_n50.png"}
+\caption{Distance and number of duplicates on a run without a random replication factor, \(max\_dupes=4, data\_radius=0.5, start\_data=1, number\_of\_agents=50\)}
+\end{center}
+\end{figure}
+
+
+From the results shown in Figure \ref{fig:Data1} we can see that the distance from the area point likes to stay within side the data\_radius bounds, this was tested on diffrent sizes and still found to hold true.
+
+
+%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%% Analysis and Conclusion %%%%
+\chapter{Conclusion}
+\label{cha:conclusion}
+%%%%%%%%%%%%%%%%%%%
+
+
+\appendix
+\chapter{Code apendix}
 \begin{algorithm}
 \caption{Agent's control loop}
 \label{Agent_Control_Loop}
@@ -327,19 +364,6 @@ This policy has two actions that it can perform, suicide and replication, suicid
 \EndProcedure
 \end{algorithmic}
 \end{algorithm}
-
-
-%%%%%%%%%%%%%%%%%%%%%
-
-
-%%%% Analysis and Conclusion %%%%
-\chapter{Conclusion}
-\label{cha:conclusion}
-%%%%%%%%%%%%%%%%%%%
-
-
-\appendix
-\chapter{Some apendix}
 
 
 \chapter{Another apendix}
