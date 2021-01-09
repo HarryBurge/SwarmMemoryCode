@@ -295,23 +295,26 @@ The green line is just an easy way to compute which band an agent might be in.
 As an agent moves closer through the gradient of allowed duplicates it will want to have more duplicates in its area, therefore allowing for a higher concentration of said duplicated data in that area.
 We can then use this simple heuristic per item of data to be able to get the distribution that we want, one implementation of this is described below in Algorithm \ref{Agent_Control_Loop}.
 The reason for having a random replication when the allowed duplications equal the actual duplications is to try and breakthrough the boudarys at the edge where allowed dupes equals 1.
-Without this replication we would have data sit inside the data area to much, this can be seen on some prilimany test results Figure \ref{fig:Data1}.
+
+Without this replication we would have data sit inside the data area to much, this can be seen on some prilimany test results Figure \ref{fig:Data1} and Figure \ref{fig:Data2}.
 Blue line is amount of agents with that duplicated data.
 Purple line is the mean distance of agents with duplicated data from the data point, Green area is the standard deviation and yellow/orange is the data range.
 A guassian filter has been passed over the results due to the mild fluctions every iteration creating a harder to see results.
 
+From the results shown in Figure \ref{fig:Data1} we can see that the distance from the area point likes to stay within side the data\_radius bounds, this was tested on diffrent sizes of data radius and max duplications allowed and still found to hold true.
+We then tested the algorithm which has a random replication value to be able to try push through the borders of the data radius.
+We ran these on two diffrent values of replication value for five times on each, Figure \ref{fig:Data3} is with a random replication value of 10\% when allowed duplicates = actual duplicates.
+Figure \ref{fig:Data4} is the same values as before however with a replication value of 50\% to see how roughly this will effect the results.
 
-\begin{figure}[htb]
-\label{fig:Data1}
-\begin{center}
-\centering
-\includegraphics[height=6cm]{"./SimpleSuicRep_m4_r0.5_c1_n50.png"}
-\caption{Distance and number of duplicates on a run without a random replication factor, \(max\_dupes=4, data\_radius=0.5, start\_data=1, number\_of\_agents=50\)}
-\end{center}
-\end{figure}
+We can see that having the replication value higher keeps data at a more consistent distance away from the data point rather than dealing with the fluctuations of the circluar movement of the agents.
+From personal observations of the algorithm running it was observed that the data transfers became more volatile with the higher replication number.
+Volatility meaning that data was replicated therefore making actual duplications to high then suiciding to get back down to the correct value, this would repeat often.
+In a real world soloution this would not be ideal due to data transfers costing energy and possible data loss, this means that we need to design an algorthim that can take this into account more.
 
-
-From the results shown in Figure \ref{fig:Data1} we can see that the distance from the area point likes to stay within side the data\_radius bounds, this was tested on diffrent sizes and still found to hold true.
+When comapring Figure \ref{fig:Data1}, Figure \ref{fig:Data2}, Figure \ref{fig:Data3} and Figure \ref{fig:Data4} we can impliy that the algorithm change doesn't affect the max distances like our desired outcomes want.
+With this algorithm we do get the desired affect when dealing with non-correlated errors as shown in \ref{fig:Data5}.
+In this graph we can see as the number of agents is decreasing the number of replications trys to fight that change, however some improvements might want to be made when a more thourgh investigation is done.
+Correlated errors were not tested currently due to the failures in distance from the data point, we want a larger min max range of values before this is tested.
 
 
 %%%%%%%%%%%%%%%%%%%%%
@@ -325,6 +328,7 @@ From the results shown in Figure \ref{fig:Data1} we can see that the distance fr
 
 \appendix
 \chapter{Code apendix}
+
 \begin{algorithm}
 \caption{Agent's control loop}
 \label{Agent_Control_Loop}
@@ -366,7 +370,53 @@ From the results shown in Figure \ref{fig:Data1} we can see that the distance fr
 \end{algorithm}
 
 
-\chapter{Another apendix}
+\chapter{Results apendix}
+
+\begin{figure}[htb]
+\label{fig:Data1}
+\begin{center}
+\centering
+\includegraphics[height=6cm]{"./SimpleSuicRep_m4_r0.5_c1_n50.png"}
+\caption{Distance and number of duplicates on a run without a random replication factor, \(max\_dupes=4, data\_radius=0.5, start\_data=1, number\_of\_agents=50\)}
+\end{center}
+\end{figure}
+
+\begin{figure}[htb]
+\label{fig:Data2}
+\begin{center}
+\centering
+\includegraphics[height=6cm]{"./SimpleSuicideReplication_4d_4m_0.5r_50n.png"}
+\caption{Distance and number of duplicates on a run without a random replication factor, \(max\_dupes=4, data\_radius=0.5, start\_data=4, number\_of\_agents=50\)}
+\end{center}
+\end{figure}
+
+\begin{figure}[htb]
+\label{fig:Data3}
+\begin{center}
+\centering
+\includegraphics[height=6cm]{"./SimpleSuicideReplication_n50_r0.5_c1_m4_repchance0.1_avg5.png"}
+\caption{Distance and number of duplicates on average of 5 runs with a random replication factor=0.1, \(max\_dupes=4, data\_radius=0.5, start\_data=4, number\_of\_agents=50\)}
+\end{center}
+\end{figure}
+
+\begin{figure}[htb]
+\label{fig:Data4}
+\begin{center}
+\centering
+\includegraphics[height=6cm]{"./SimpleSuicideReplication_n50_r0.5_c1_m4_repchance0.5_avg5.png"}
+\caption{Distance and number of duplicates on average of 5 runs with a random replication factor=0.5, \(max\_dupes=4, data\_radius=0.5, start\_data=4, number\_of\_agents=50\)}
+\end{center}
+\end{figure}
+
+\begin{figure}[htb]
+\label{fig:Data5}
+\begin{center}
+\centering
+\includegraphics[height=10cm]{"./Non_correlated_errors_test1.png"}
+\caption{Example of non-correlated errors on agents with a failure rate=0.003 per iteration, \(max\_dupes=4, data\_radius=0.5, start\_data=4, number\_of\_agents=50,  replication\_factor=0.1\)}
+\end{center}
+\end{figure}
+
 
 
 \begin{thebibliography}{100}
