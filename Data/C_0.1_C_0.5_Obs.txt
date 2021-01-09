@@ -1,0 +1,2 @@
+the higher the vale of c the more unstability there was.
+e.g. bots were just passing the data back and fourth and this did not produce the required affect of pushing past the boundary
