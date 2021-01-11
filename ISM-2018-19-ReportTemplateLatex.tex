@@ -348,6 +348,11 @@ This goes against what this storage policy is meant to provide, we need a way to
 To this we add in the suicide option which only takes into account the first to features meantion in the bullet points above.
 This will change the actions of the swarm to create a better policy as described in Section \ref{sec:Problem}.
 
+//TODO: Talk about the new suicide ones that give a pattern which isn't full duplicated
+//TODO: Talk about the abilty to run in a gentic algorithm, to get best results
+//TODO: Threshold values is what controls a lot of the beahvouir, if suicide to low the swarm becomes unstable
+//TODO: Do prelimanry tests on this algorithm
+
 
 %%%%%%%%%%%%%%%%%%%%%
 
@@ -375,7 +380,7 @@ This will change the actions of the swarm to create a better policy as described
 \State
 \State $item \gets \text{random public mem item}$
 \State $allowed dupes \gets \textit{heuristic}(item)$
-\State $current dupes \gets \text{number of agents with item in public mem}$
+\State $current dupes \gets \text{(local) number of agents with item in public mem}$
 \State
 \If {allowed dupes > current dupes}
 \State \text{Replicate item once}
@@ -415,8 +420,8 @@ This will change the actions of the swarm to create a better policy as described
 \EndIf
 \State
 \State $dist \gets \text{euclidean distance to data}$
-\State $dupes \gets \text{duplicates on agents / number of agents}$
-\State $pub space \gets \text{average space available / max public memory}$
+\State $dupes \gets \text{(local) duplicates on agents / number of agents}$
+\State $pub space \gets \text{(local) average space available / max public memory}$
 \State
 \If{$dist * b1 + dupes * b2 + pub space * b3 > rep threshold$}
 \State \text{Replicate item to all agents in connection radius}
@@ -496,6 +501,24 @@ This will change the actions of the swarm to create a better policy as described
 \centering
 \includegraphics[height=6cm]{"./Replication_No_Suicide_threshold_0.8_c2_Non_uniform.png"}
 \caption{Example of two datas on a non-uniform density agent network}
+\end{center}
+\end{figure}
+
+\begin{figure}[htb]
+\label{fig:Data8}
+\begin{center}
+\centering
+\includegraphics[width=\linewidth]{"./Rep_Sui_0.8_0.4-0.45_uniform_no_mo.png"}
+\caption{Example of suicide threshold changes on data policy, on a uniform agent density}
+\end{center}
+\end{figure}
+
+\begin{figure}[htb]
+\label{fig:Data9}
+\begin{center}
+\centering
+\includegraphics[width=\linewidth]{"./Rep_Sui_no_uniform_no_mo.png"}
+\caption{Example of suicide threshold changes on data policy, on a non-uniform density}
 \end{center}
 \end{figure}
 
