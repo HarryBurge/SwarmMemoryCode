@@ -235,6 +235,7 @@ The goal is to create an effiecent storage and replication policy which can hand
 This policy should take into account poisition of the agent relative to the point that the infomation is needed near.
 
 
+
 \section{Simulation Infomation}
 \label{sec:Sim Info}
 
@@ -271,6 +272,8 @@ Dots are agents, and the red circle around them are their connection radius of w
 The blue consentic circles are a positional datas stages of allowed duplications, this is explained more in Section \ref{sec:Simple1}.
 The connection lines between the agents are just showing that data can pass between these two agents, these lines change colour based of what frames are being passed across them, this will be touched upon more in specific examples due to colours meaning diffrent things.
 As a simple visuallisation of how data is being passed between the agents, in this example the agent is blue signifiying that it holds the duplicate of blue data, e.g. the consetric circle.
+
+
 
 \section{Simple Scattered Memory Policy}
 \label{sec:Simple1}
@@ -315,6 +318,22 @@ When comapring Figure \ref{fig:Data1}, Figure \ref{fig:Data2}, Figure \ref{fig:D
 With this algorithm we do get the desired affect when dealing with non-correlated errors as shown in \ref{fig:Data5}.
 In this graph we can see as the number of agents is decreasing the number of replications trys to fight that change, however some improvements might want to be made when a more thourgh investigation is done.
 Correlated errors were not tested currently due to the failures in distance from the data point, we want a larger min max range of values before this is tested.
+
+
+
+\section{Improved Heuristic}
+\label{sec:Simple2}
+
+To improve from the last design was to create a new heuristic that can take more into account and have scalable values, that can be modifyied to get diffrent behavoiur from the swarm network.
+This was done by identifying diffrent factors that we want to play a role in the choose to replicate and the chose to commit suicide.
+These were:
+
+\begin{description}
+\item[$\bullet$] Amount of agents in connection range that have a duplicated data compared to not having duplicated data
+\item[$\bullet$] Distance to datas target area
+\item[$\bullet$] Agents around average available public memory
+\end{description}
+
 
 
 %%%%%%%%%%%%%%%%%%%%%
@@ -365,6 +384,38 @@ Correlated errors were not tested currently due to the failures in distance from
 \Else
 \State \Return allowed dupes
 \EndIf
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+
+\begin{algorithm}
+\caption{Agent's control loop}
+\label{Agent_Control_Loop2}
+\begin{algorithmic}[1]
+\Procedure{Steper}{}
+\State \text{move()}
+\State
+\If{Learned new private memory data}
+\State \text{Replicate item to all agents in connection radius}
+\State \Return True
+\EndIf
+\State
+\State $dist \gets \text{euclidean distance to data}$
+\State $dupes \gets \text{duplicates on agents / number of agents}$
+\State $pub space \gets \text{average space available / max public memory}$
+\State
+\If{$dist * b1 + dupes * b2 + pub space * b3 > rep threshold$}
+\State \text{Replicate item to all agents in connection radius}
+\EndIf
+\State
+\If{$to point * p1 + dupes ratio * p2 > sui threshold$}
+\State \text{Suicide data}
+\EndIf
+\State
+\State \text{Iterate to next public memory data}
+\State
+\State \Return True
 \EndProcedure
 \end{algorithmic}
 \end{algorithm}
