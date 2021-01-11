@@ -334,6 +334,19 @@ These were:
 \item[$\bullet$] Agents around average available public memory
 \end{description}
 
+The updated code can be seen in Algorithm \ref{Agent_Control_Loop2}, with this we can see that there are diffrent heurisitics for both suicide and replication.
+With the above factors we made sure that they were bounded [0, 1] by doing ratios of the max value.
+Then we had parameter values that sum to one as to show the percentage of what the parameter effects the heursitic, this can be seen in lines 12 and 15.
+After these have been summed together the value is bounded between [0, 1] which we then set a threshold value for at what point we want the code benith to activate, e.g. Replication or Suicide.
+Changing of these parameters creates diffrent charatersistics as an example can be shown with just replication and no suicide, Figure \ref{fig:Data6} and Figure \ref{fig:Data7}.
+
+With this we can see that making the replication threshold higher decreses the likelhood of replication and gives a semi bound in a uniform density swarm and within non-uniform density swarm.
+In figures shown you will see there is usally a black agent close to the red cricle (Data target area), this is because the agent that learned the data has it stored in private memory so isn't counted as changing colour to show it is a duplicated piece of data in public memory.
+With both Figures we can see that suicide is definetly needed due to movement of agents as in Figure \ref{fig:Data7} and within Figure \ref{fig:Data6} we can see its needed due to all agents in an area around the point have the data.
+This goes against what this storage policy is meant to provide, we need a way to vary duplicate density within that semi-bound around the data target area.
+
+To this we add in the suicide option which only takes into account the first to features meantion in the bullet points above.
+This will change the actions of the swarm to create a better policy as described in Section \ref{sec:Problem}.
 
 
 %%%%%%%%%%%%%%%%%%%%%
@@ -465,6 +478,24 @@ These were:
 \centering
 \includegraphics[height=10cm]{"./Non_correlated_errors_test1.png"}
 \caption{Example of non-correlated errors on agents with a failure rate=0.003 per iteration, \(max\_dupes=4, data\_radius=0.5, start\_data=4, number\_of\_agents=50,  replication\_factor=0.1\)}
+\end{center}
+\end{figure}
+
+\begin{figure}[htb]
+\label{fig:Data6}
+\begin{center}
+\centering
+\includegraphics[width=\linewidth]{"./Replication_No_Suicide_threshold_Together.png"}
+\caption{Example of diffrent values of replication threshold on homogenus density swarm}
+\end{center}
+\end{figure}
+
+\begin{figure}[htb]
+\label{fig:Data7}
+\begin{center}
+\centering
+\includegraphics[height=6cm]{"./Replication_No_Suicide_threshold_0.8_c2_Non_uniform.png"}
+\caption{Example of two datas on a non-uniform density agent network}
 \end{center}
 \end{figure}
 
