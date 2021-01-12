@@ -348,10 +348,21 @@ This goes against what this storage policy is meant to provide, we need a way to
 To this we add in the suicide option which only takes into account the first to features meantion in the bullet points above.
 This will change the actions of the swarm to create a better policy as described in Section \ref{sec:Problem}.
 
-//TODO: Talk about the new suicide ones that give a pattern which isn't full duplicated
-//TODO: Talk about the abilty to run in a gentic algorithm, to get best results
-//TODO: Threshold values is what controls a lot of the beahvouir, if suicide to low the swarm becomes unstable
-//TODO: Do prelimanry tests on this algorithm
+As we can see in Figure \ref{fig:Data8} adding in the suicide ability and changing the threshold value creates diffrent duplication densitys within the replication bounds.
+In simple terms it changes the desnity of duplications closer to the data target area if the density of agents is uniform in desnity.
+When talking about non-uniform densitys it wil also take into account the desnity of agent duplications, however basically applies the same affect of having less duplicates where that is wanted, an example of this can be seen in Figure \ref{fig:Data9}.
+
+With this current design it leads itself to diffrent observations based of parameter values.
+The right values need to be picked for the algorithm to work effectivaly, for example sometimes if suicide threshold goes to low it leads to massive instability with repeating duplicates and suicides which is wasted bandwidth and energy.
+This problem could be taken into account by also taking into account when the data was last replicated and allowing a sort of grace period within the heuristic to be able to allow natural movements to take those unstable agents apart.
+The heurisitc and threshold values lends itself towards a learning algorithm for example a gentic algorithm to pick the best value for the certain task or wanted behavoiur.
+
+As a prelimanry test run on an average of five runs, Figure \ref{fig:Data10}, we can see that we have managed to create an algorithm that is more stable to the periods of the swarms movement, in our case circles.
+This was designed into the simulation to be able to test an algortihms abilitys to be able to handle fluctions in a repeating manner that can be visible.
+We can also see that the range from maximum and minimum distances has now been increased which was something we wanted in for improvement from Algortim \ref{Agent_Control_Loop}.
+However we can see that the mean value is roughly within the middle of the maximum and minimum value which leads me to believe that the algorithm isn't performing as expected.
+We prefurably want the mean to tend towards being closer to the minimum rather than in the middle, this is to show the desnsity diffrence of duplicated data.
+This will have to be investigated further as to whether it is the nature of the heuristic or whether it was the values of the parameters which were picked manually.
 
 
 %%%%%%%%%%%%%%%%%%%%%
@@ -411,7 +422,7 @@ This will change the actions of the swarm to create a better policy as described
 \caption{Agent's control loop}
 \label{Agent_Control_Loop2}
 \begin{algorithmic}[1]
-\Procedure{Steper}{}
+\Procedure{Step}{}
 \State \text{move()}
 \State
 \If{Learned new private memory data}
@@ -519,6 +530,15 @@ This will change the actions of the swarm to create a better policy as described
 \centering
 \includegraphics[width=\linewidth]{"./Rep_Sui_no_uniform_no_mo.png"}
 \caption{Example of suicide threshold changes on data policy, on a non-uniform density}
+\end{center}
+\end{figure}
+
+\begin{figure}[htb]
+\label{fig:Data10}
+\begin{center}
+\centering
+\includegraphics[height=6cm]{"./New_Replication_Scheme_No_Death_0.8r_0.45s.png"}
+\caption{Example of Algorithm \ref{Agent_Control_Loop2}, with no failures (rep thres = 0.8, sui thres = 0.45}
 \end{center}
 \end{figure}
 
