@@ -4,16 +4,16 @@ from scipy.ndimage.filters import gaussian_filter1d
 
 datas = []
 
-for i in range(5):
-    datas.append(np.genfromtxt('SimpleSuicideReplication_{}.csv'.format(i+1), delimiter=','))
-    datas[-1] = datas[-1][1:]
+#for i in range(5):
+#    datas.append(np.genfromtxt('SimpleSuicideReplication_{}.csv'.format(i+1), delimiter=','))
+#    datas[-1] = datas[-1][1:]
 
-outer = np.mean(datas,axis=0)
-outer = np.nan_to_num(outer)
-
-#outer = np.genfromtxt('SimpleSuicideReplication.csv', delimiter=',')
-#outer = outer[1:]
+#outer = np.mean(datas,axis=0)
 #outer = np.nan_to_num(outer)
+
+outer = np.genfromtxt('SimpleSuicideReplication.csv', delimiter=',')
+outer = outer[1:]
+outer = np.nan_to_num(outer)
 
 # Indurvidual thing
 fig, axs = plt.subplots(3, sharex=True)
