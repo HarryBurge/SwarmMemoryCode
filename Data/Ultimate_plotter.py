@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.ndimage.filters import gaussian_filter1d
+from textwrap import wrap
 
 def read_line_into_array(line):
     line = line.replace('\n', '').split(',')
@@ -26,6 +27,8 @@ def single_read(filename):
     file = open(filename+'.csv','r')
     lines = file.readlines()
     del lines[0]
+    values = lines[-1]
+    del lines[-1]
     file.close()
 
     returner = []
@@ -33,15 +36,26 @@ def single_read(filename):
     for i in lines:
         returner.append(read_line_into_array(i))
 
-    return returner
+    values = values.split(",")
+    del values[-1]
+
+    temp = []
+
+    for i in range(len(values)//2):
+        temp.append([values[i*2], values[i*2+1]])
+
+    return returner, temp
 
 def multi_read(filename, num):
     temp = []
+    temp_vals = []
 
     for i in range(num):
-        temp.append(single_read(filename+'_'+str(i+1)))
+        tmp, val = single_read(filename+'_'+str(i+1))
+        temp.append(tmp)
+        temp_vals.append(val)
 
-    return temp
+    return temp, temp_vals
 
 
 def getdupesinfo(data):
@@ -124,6 +138,37 @@ def getnumberofagentsinfo(data):
 
     return runs_num
 
+def ratiobisinfo(data):
+
+    data_points = int(data[0][0][1])
+
+    total = [[]]*data_points
+    dupes = [[]]*data_points
+
+    for j in range(data_points):
+        for i in range(20):
+            total[j].append([0]*20)
+            dupes[j].append([0]*20)
+    
+    for run in data:
+        for iteration in run:
+            iternum = int(iteration[0])
+            datanum = int(iteration[1])
+
+            for agent in iteration[2]:
+                x = int(round(agent[0]+1, 1)*10)
+                y = int(round(agent[1]+1, 1)*10)
+
+                for dd in range(len(agent[2])):
+
+                    if agent[2][dd] != -1:
+                        dupes[dd][y][x] += 1
+                    
+                    total[dd][y][x] += 1
+
+    return dupes, total
+
+
 
 def main():
 
@@ -136,7 +181,7 @@ def main():
     #           y
     #           Data dists {
     #               dists to data  
-    datas = multi_read('SimpleSuicideReplication', 2)
+    datas, dps = multi_read('SimpleSuicideReplication', 2)
 
     ### Dupes
     dupes = getdupesinfo(datas)
@@ -198,42 +243,89 @@ def main():
     std_nums = np.std(nums, axis=0)
     ####
 
+
+    ### Other info
+    er, total = ratiobisinfo(datas)
+    ####
+
     
     ##### Plotting
-    fig, axs = plt.subplots(3, sharex=True)
+    fig3 = plt.figure(constrained_layout=True, figsize=(15, 8))
+    gs = fig3.add_gridspec(6, 3)
+    
+    f3_ax1 = fig3.add_subplot(gs[0:2, 0:2])
+    f3_ax2 = fig3.add_subplot(gs[2:4, 0:2])
+    f3_ax3 = fig3.add_subplot(gs[4:6, 0:2])
+
+    f3_ax4 = fig3.add_subplot(gs[0:3, 2])
+    f3_ax5 = fig3.add_subplot(gs[3:6, 2])
+
     iterations = np.arange(0, mean_dupes.shape[0], 1)
 
     # Dupes
-    line = axs[0].fill_between(iterations, gaussian_filter1d((mean_dupes-std_dupes).reshape(1,-1)[0], sigma=50), gaussian_filter1d((mean_dupes+std_dupes).reshape(1,-1)[0], sigma=50))
+    line = f3_ax1.fill_between(iterations, gaussian_filter1d((mean_dupes-std_dupes).reshape(1,-1)[0], sigma=50), gaussian_filter1d((mean_dupes+std_dupes).reshape(1,-1)[0], sigma=50))
     line.set_color('green')
 
-    line, = axs[0].plot(iterations, gaussian_filter1d(mean_dupes.reshape(1,-1)[0], sigma=50))
+    line, = f3_ax1.plot(iterations, gaussian_filter1d(mean_dupes.reshape(1,-1)[0], sigma=50))
     line.set_color('purple')
 
     # Number of agents
-    line = axs[1].fill_between(iterations, gaussian_filter1d(mean_nums-std_nums, sigma=50), gaussian_filter1d(mean_nums+std_nums, sigma=50))
+    line = f3_ax2.fill_between(iterations, gaussian_filter1d(mean_nums-std_nums, sigma=50), gaussian_filter1d(mean_nums+std_nums, sigma=50))
     line.set_color('green')
     
-    line, = axs[1].plot(iterations, gaussian_filter1d(mean_nums.reshape(1,-1)[0], sigma=50))
+    line, = f3_ax2.plot(iterations, gaussian_filter1d(mean_nums.reshape(1,-1)[0], sigma=50))
     line.set_color('purple')
 
     # Dists
-    line = axs[2].fill_between(iterations, gaussian_filter1d(min_dists.reshape(1,-1)[0], sigma=50), gaussian_filter1d(max_dists.reshape(1,-1)[0], sigma=50))
+    line = f3_ax3.fill_between(iterations, gaussian_filter1d(min_dists.reshape(1,-1)[0], sigma=50), gaussian_filter1d(max_dists.reshape(1,-1)[0], sigma=50))
     line.set_color('orange')
-    line = axs[2].fill_between(iterations, gaussian_filter1d((mean_dists+std_dists).reshape(1,-1)[0], sigma=50), gaussian_filter1d((mean_dists-std_dists).reshape(1,-1)[0], sigma=50))
+    line = f3_ax3.fill_between(iterations, gaussian_filter1d((mean_dists+std_dists).reshape(1,-1)[0], sigma=50), gaussian_filter1d((mean_dists-std_dists).reshape(1,-1)[0], sigma=50))
     line.set_color('green')
-    line, = axs[2].plot(gaussian_filter1d(mean_dists.reshape(1,-1)[0], sigma=50))
+    line, = f3_ax3.plot(gaussian_filter1d(mean_dists.reshape(1,-1)[0], sigma=50))
     line.set_color('purple')
 
+    # Ratio distribution
+    X,Y = np.meshgrid(np.arange(-1, 1, 0.1), np.arange(-1, 1, 0.1))
+    f3_ax4.contourf(X, Y, total[0])
+    f3_ax5.contourf(X, Y, er[0])
 
-    axs[0].set_ylabel('Number of Agents with duplicated data')
-    axs[0].set_ylim(bottom=0)
 
-    axs[1].set_ylabel('Number of Agents')
-    axs[1].set_ylim(top=52, bottom=0)
+    for i in dps:
+        f3_ax5.plot([float(i[0][0])], [float(i[0][1])], 'ro')
 
-    axs[2].set_ylabel('Distance from desired point')
-    axs[2].set_xlabel('Iterations')
+
+    #1 settings
+    f3_ax1.set_ylabel("\n".join(wrap('Number of Agents with duplicated data', 30)))
+    f3_ax1.set_ylim(bottom=0)
+    f3_ax1.set_xticklabels([])
+    f3_ax1.set_xticks([])
+
+    #2 settings
+    f3_ax2.set_ylabel('Number of Agents')
+    f3_ax2.set_ylim(top=52, bottom=0)
+    f3_ax2.set_xticklabels([])
+    f3_ax2.set_xticks([])
+
+    #3 settings
+    f3_ax3.set_ylabel("\n".join(wrap('Distance from desired point', 25)))
+    f3_ax3.set_xlabel('Iterations')
+
+    #4 settings
+    f3_ax4.set_ylim(top=0.9, bottom=-1)
+    f3_ax4.set_xlim(left=-1, right=0.9)
+    f3_ax4.set_yticklabels([])
+    f3_ax4.set_xticklabels([])
+    f3_ax4.set_xticks([])
+    f3_ax4.set_yticks([])
+    
+    #5 settings
+    f3_ax5.set_ylim(top=0.9, bottom=-1)
+    f3_ax5.set_xlim(left=-1, right=0.9)
+    f3_ax5.set_yticklabels([])
+    f3_ax5.set_xticklabels([])
+    f3_ax5.set_xticks([])
+    f3_ax5.set_yticks([])
+
 
     plt.show()
     #####
