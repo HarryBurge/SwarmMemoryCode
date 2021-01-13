@@ -364,6 +364,14 @@ However we can see that the mean value is roughly within the middle of the maxim
 We prefurably want the mean to tend towards being closer to the minimum rather than in the middle, this is to show the desnsity diffrence of duplicated data.
 This will have to be investigated further as to whether it is the nature of the heuristic or whether it was the values of the parameters which were picked manually.
 
+There is also an example of this algorithm running on a non-correlated errors in Figure \ref{fig:Data11}.
+With this we can see roughly that the duplicates stay at about 40\% of the total number of agents even with non-correlated errors happening at a very extreme rate.
+An observation within the simulations is some failures of agents can affect the total value suggnificantly until it gets into a stable state.
+Due to the nature of the heuristic it is deterministic and likes to hang in an optimum as much as possible, therefore some loss of agents doesn't change much.
+However sometimes an important agent is removed the duplicate layout changes quite quickly changing the layout across the swarm in a ripple like effect, until it gets back to an optimium (Stable state).
+
+
+
 
 %%%%%%%%%%%%%%%%%%%%%
 
@@ -434,11 +442,11 @@ This will have to be investigated further as to whether it is the nature of the 
 \State $dupes \gets \text{(local) duplicates on agents / number of agents}$
 \State $pub space \gets \text{(local) average space available / max public memory}$
 \State
-\If{$dist * b1 + dupes * b2 + pub space * b3 > rep threshold$}
+\If{$(1-dupes) * b1 + ((\sqrt{8} - dist)/\sqrt{8}) * b2 + pub space * b3 > rep threshold$}
 \State \text{Replicate item to all agents in connection radius}
 \EndIf
 \State
-\If{$to point * p1 + dupes ratio * p2 > sui threshold$}
+\If{$dupes * p1 + (dist/\sqrt{8})  * p2 > sui threshold$}
 \State \text{Suicide data}
 \EndIf
 \State
