@@ -138,15 +138,15 @@ def getnumberofagentsinfo(data):
 
     return runs_num
 
-def ratiobisinfo(data):
+def ratiobisinfo(data, dps):
 
-    data_points = int(data[0][0][1])
+    data_points = len(dps[0])
 
     total = [[]]*data_points
     dupes = [[]]*data_points
 
     for j in range(data_points):
-        for i in range(20):
+        for i in range(10):
             total[j].append([0]*20)
             dupes[j].append([0]*20)
     
@@ -166,6 +166,10 @@ def ratiobisinfo(data):
                     
                     total[dd][y][x] += 1
 
+    for i in range(len(dupes)):
+        dupes[i] = np.array(dupes[i])
+        total[i] = np.array(total[i])
+
     return dupes, total
 
 
@@ -181,7 +185,18 @@ def main():
     #           y
     #           Data dists {
     #               dists to data  
-    datas, dps = multi_read('SimpleSuicideReplication', 2)
+    datas, dps = multi_read('New_Alg_Multi_data_pushed_to_lim/SimpleSuicideReplication', 2)
+    
+    data_areas_avg_x = [0]*len(dps[0])
+    data_areas_avg_y = [0]*len(dps[0])
+
+    print(data_areas_avg_x)
+
+    for run in range(len(dps)):
+        for i, (x,y) in enumerate(dps[run]):
+            print(type(i),x,y,dps[run])
+            data_areas_avg_x[i] += float(x)/len(dps)
+            data_areas_avg_y[i] += float(y)/len(dps)
 
     ### Dupes
     dupes = getdupesinfo(datas)
@@ -245,20 +260,24 @@ def main():
 
 
     ### Other info
-    er, total = ratiobisinfo(datas)
+    er, total = ratiobisinfo(datas, dps)
     ####
 
     
     ##### Plotting
     fig3 = plt.figure(constrained_layout=True, figsize=(15, 8))
-    gs = fig3.add_gridspec(6, 3)
+    # gs = fig3.add_gridspec(6, 4) #One plot
+    gs = fig3.add_gridspec(6, 3+len(dps)//3)
     
     f3_ax1 = fig3.add_subplot(gs[0:2, 0:2])
     f3_ax2 = fig3.add_subplot(gs[2:4, 0:2])
     f3_ax3 = fig3.add_subplot(gs[4:6, 0:2])
 
-    f3_ax4 = fig3.add_subplot(gs[0:3, 2])
-    f3_ax5 = fig3.add_subplot(gs[3:6, 2])
+    # f3_ax5 = fig3.add_subplot(gs[0:6, 2:4]) #One plot
+    fig_dists = []
+    for i in range(1 + len(dps)//3):
+        for j in range(3):
+            fig_dists.append(fig3.add_subplot(gs[j*2:j*2+2, 2+i]))
 
     iterations = np.arange(0, mean_dupes.shape[0], 1)
 
@@ -286,12 +305,19 @@ def main():
 
     # Ratio distribution
     X,Y = np.meshgrid(np.arange(-1, 1, 0.1), np.arange(-1, 1, 0.1))
-    f3_ax4.contourf(X, Y, total[0])
-    f3_ax5.contourf(X, Y, er[0])
 
 
-    for i in dps:
-        f3_ax5.plot([float(i[0][0])], [float(i[0][1])], 'ro')
+    # f3_ax5.contourf(X, Y, er[0] / total[0]) #One plot
+    for i in range(len(dps[0])):
+        fig_dists[i].contourf(X, Y, er[i] / total[i])
+
+        np.array(dps)
+
+        fig_dists[i].plot([float(data_areas_avg_x[i])], [float(data_areas_avg_y[i])], 'ro')
+
+
+    # for i in dps:
+    # f3_ax5.plot([float(dps[0][0][0])], [float(dps[0][0][1])], 'ro') #One plot
 
 
     #1 settings
@@ -311,20 +337,28 @@ def main():
     f3_ax3.set_xlabel('Iterations')
 
     #4 settings
-    f3_ax4.set_ylim(top=0.9, bottom=-1)
-    f3_ax4.set_xlim(left=-1, right=0.9)
-    f3_ax4.set_yticklabels([])
-    f3_ax4.set_xticklabels([])
-    f3_ax4.set_xticks([])
-    f3_ax4.set_yticks([])
+    # f3_ax4.set_ylim(top=0.9, bottom=-1)
+    # f3_ax4.set_xlim(left=-1, right=0.9)
+    # f3_ax4.set_yticklabels([])
+    # f3_ax4.set_xticklabels([])
+    # f3_ax4.set_xticks([])
+    # f3_ax4.set_yticks([])
     
-    #5 settings
-    f3_ax5.set_ylim(top=0.9, bottom=-1)
-    f3_ax5.set_xlim(left=-1, right=0.9)
-    f3_ax5.set_yticklabels([])
-    f3_ax5.set_xticklabels([])
-    f3_ax5.set_xticks([])
-    f3_ax5.set_yticks([])
+    #5 settings #One step
+    # f3_ax5.set_ylim(top=0.9, bottom=-1)
+    # f3_ax5.set_xlim(left=-1, right=0.9)
+    # f3_ax5.set_yticklabels([])
+    # f3_ax5.set_xticklabels([])
+    # f3_ax5.set_xticks([])
+    # f3_ax5.set_yticks([])
+
+    for i in fig_dists:
+        i.set_ylim(top=0.9, bottom=-1)
+        i.set_xlim(left=-1, right=0.9)
+        i.set_yticklabels([])
+        i.set_xticklabels([])
+        i.set_xticks([])
+        i.set_yticks([])
 
 
     plt.show()
