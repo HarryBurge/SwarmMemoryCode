@@ -3,17 +3,104 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def dupesinfo(data, channels):
+    channels_dupes_mean = pd.DataFrame()
+    channels_dupes_std = pd.DataFrame()
+
     for chan in range(channels):
+
+        runs_dupes = pd.DataFrame()
 
         for run in data:
             agents = run.filter(regex='c*_{}'.format(chan))
-            print(np.sum(agents[agents.columns] != -1))
+            dupes_run = (agents[agents.columns] != -1).sum(1)
+            runs_dupes = pd.concat([runs_dupes, dupes_run], axis=1)
+
+        channels_dupes_mean = pd.concat([channels_dupes_mean, np.mean(runs_dupes, axis=1)], axis=1)
+        channels_dupes_std = pd.concat([channels_dupes_std, np.std(runs_dupes, axis=1)], axis=1)
+
+    return channels_dupes_mean, channels_dupes_std
+
+def agentsninfo(data, nagents):
+
+    runs_dupes = pd.DataFrame()
+
+    for run in data:
+        agents = run.filter(regex='x')
+        dupes_run = agents.count(axis=1)
+        runs_dupes = pd.concat([runs_dupes, dupes_run], axis=1)
+
+    nagents_mean = np.mean(runs_dupes, axis=1)
+    nagents_std = np.std(runs_dupes, axis=1)
+
+    return nagents_mean, nagents_std
+
+def getdistsinfo(data, channels):
+
+    channels_dists_mean = pd.DataFrame()
+    channels_dists_std = pd.DataFrame()
+    channels_dists_min = pd.DataFrame()
+    channels_dists_max = pd.DataFrame()
+
+    for chan in range(channels):
+
+        runs_mean = pd.DataFrame()
+        runs_std = pd.DataFrame()
+        runs_min = pd.DataFrame()
+        runs_max = pd.DataFrame()
+
+        for run in data:
+            agents = run.filter(regex='c*_{}'.format(chan))
+
+            channels_dists = agents != -1
+            cols_where_need = agents[channels_dists == True]
+
+            runs_mean = pd.concat([runs_mean, np.mean(cols_where_need, axis=1)], axis=1)
+            runs_std = pd.concat([runs_std, np.std(cols_where_need, axis=1)], axis=1)
+            runs_min = pd.concat([runs_min, np.min(cols_where_need, axis=1)], axis=1)
+            runs_max = pd.concat([runs_max, np.max(cols_where_need, axis=1)], axis=1)
+
+        channels_dists_mean = pd.concat([channels_dists_mean, np.mean(runs_mean, axis=1)], axis=1)
+        channels_dists_std = pd.concat([channels_dists_std, np.mean(runs_std, axis=1)], axis=1)
+        channels_dists_min = pd.concat([channels_dists_min, np.mean(runs_min, axis=1)], axis=1)
+        channels_dists_max = pd.concat([channels_dists_max, np.mean(runs_max, axis=1)], axis=1)
+
+    return channels_dists_mean, channels_dists_std, channels_dists_min, channels_dists_max
+
+def ratio2020(data, channels):
+
+    channels_dupes_mean = pd.DataFrame()
+
+    for chan in range(channels):
+
+        runs_dupes = pd.DataFrame()
+
+        for run in data:
+            agents = run.filter(regex='c*_{}'.format(chan))
+            dupes_run = (agents[agents.columns] != -1).sum(1)
+            runs_dupes = pd.concat([runs_dupes, dupes_run], axis=1)
+
+        channels_dupes_mean = pd.concat([channels_dupes_mean, np.mean(runs_dupes, axis=1)], axis=1)
 
 
+    runs_nagents = pd.DataFrame()
+
+    for run in data:
+        agents = run.filter(regex='x')
+        dupes_run = agents.count(axis=1)
+        runs_nagents = pd.concat([runs_nagents, dupes_run], axis=1)
+
+    print(channels_dupes_mean)
+    print(runs_nagents)
+
+    
+
+
+
+    
 
 
 def main():
-    filename = 'New_Alg_Multi_data_pushed_to_lim/SimpleSuicideReplication'
+    filename = 'New_Alg_Distributing/SimpleSuicideReplication'
     repeats = 2
 
     # Data collected upon the way
@@ -50,13 +137,16 @@ def main():
 
         runs_data.append(df)
 
-    print(runs_data)
-    print(total_datas)
-    print(amount_agents)
+    # print(runs_data)
+    # print(total_datas)
+    # print(amount_agents)
 
-    # dupes_mean_pc, dupes_std_pc = 
-    dupesinfo(runs_data, total_datas)
+    dupes_mean_pc, dupes_std_pc = dupesinfo(runs_data, total_datas)
+    nagents_mean, nagents_std = agentsninfo(runs_data, amount_agents)
 
+    dist_chan_mean, dist_chan_std, dist_chan_min, dist_chan_max = getdistsinfo(runs_data, total_datas)
+
+    ratio2020(runs_data, total_datas)
 
 
         
