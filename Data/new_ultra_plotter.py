@@ -66,31 +66,42 @@ def getdistsinfo(data, channels):
 
     return channels_dists_mean, channels_dists_std, channels_dists_min, channels_dists_max
 
-def ratio2020(data, channels):
-
-    channels_dupes_mean = pd.DataFrame()
-
-    for chan in range(channels):
-
-        runs_dupes = pd.DataFrame()
-
-        for run in data:
-            agents = run.filter(regex='c*_{}'.format(chan))
-            dupes_run = (agents[agents.columns] != -1).sum(1)
-            runs_dupes = pd.concat([runs_dupes, dupes_run], axis=1)
-
-        channels_dupes_mean = pd.concat([channels_dupes_mean, np.mean(runs_dupes, axis=1)], axis=1)
+def ratio2020(data, channels, nagents):
 
 
-    runs_nagents = pd.DataFrame()
+    runs_agents = pd.DataFrame()
 
     for run in data:
-        agents = run.filter(regex='x')
-        dupes_run = agents.count(axis=1)
-        runs_nagents = pd.concat([runs_nagents, dupes_run], axis=1)
 
-    print(channels_dupes_mean)
-    print(runs_nagents)
+        run = run.replace(-1, np.nan).round(1)
+
+        all_agents = pd.DataFrame()
+            
+        for i in range(nagents):
+
+            tezt = run.iloc[:, 2+i*(2+channels) : 2+i*(2+channels)+2+channels]
+
+            if tezt.columns.size-2 > 0:
+                tezt.columns = ['x', 'y'] + ['c{}'.format(i) for i in range(tezt.columns.size-2)]
+                all_agents = all_agents.append(tezt, ignore_index=True)
+
+        runs_agents = runs_agents.append(all_agents, ignore_index=True)
+    
+    runs_agents = runs_agents[runs_agents['x'].notna()]
+    
+    for x in np.arange(-1, 1.01, 0.1):
+        for y in np.arange(-1, 1.01, 0.1):
+
+            # Need to redo to get all rows with column equal
+            tim = runs_agents.loc[(runs_agents['x'] == x) & (runs_agents['y'] == y)]
+            print(tim)
+            input()
+
+            
+
+            
+
+
 
     
 
@@ -100,7 +111,8 @@ def ratio2020(data, channels):
 
 
 def main():
-    filename = 'New_Alg_Distributing/SimpleSuicideReplication'
+    filename = 'New_Alg_Multi_data_pushed_to_lim/SimpleSuicideReplication'
+    # filename = 'New_Alg_Distributing/SimpleSuicideReplication'
     repeats = 2
 
     # Data collected upon the way
@@ -146,7 +158,7 @@ def main():
 
     dist_chan_mean, dist_chan_std, dist_chan_min, dist_chan_max = getdistsinfo(runs_data, total_datas)
 
-    ratio2020(runs_data, total_datas)
+    ratio2020(runs_data, total_datas, amount_agents)
 
 
         
