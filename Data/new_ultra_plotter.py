@@ -68,12 +68,11 @@ def getdistsinfo(data, channels):
 
 def ratio2020(data, channels, nagents):
 
-
     runs_agents = pd.DataFrame()
 
     for run in data:
 
-        run = run.replace(-1, np.nan).round(1)
+        run = run.replace(-1, np.nan).round(1) # Change back to 1
 
         all_agents = pd.DataFrame()
             
@@ -88,15 +87,26 @@ def ratio2020(data, channels, nagents):
         runs_agents = runs_agents.append(all_agents, ignore_index=True)
     
     runs_agents = runs_agents[runs_agents['x'].notna()]
+
+    z_maps = np.array([[[np.nan]*21]*21]*channels) # Change back to 20
     
-    for x in np.arange(-1, 1.01, 0.1):
+    for x in np.arange(-1, 1.01, 0.1): # Change back to 0.1
         for y in np.arange(-1, 1.01, 0.1):
 
-            # Need to redo to get all rows with column equal
-            tim = runs_agents.loc[(runs_agents['x'] == x) & (runs_agents['y'] == y)]
-            print(tim)
-            input()
+            x = round(x,1) # Change back to 1
+            y = round(y,1)
 
+            temp = runs_agents.loc[(runs_agents['x'] == x) & (runs_agents['y'] == y)]
+
+            time_dupes_in_xy = temp.count()
+            total_in_xy = temp.shape[0]
+
+            for chan in range(channels):
+                # if total_in_xy != 0:
+                z_maps[chan, int(round((y+1)*10)), int(round((x+1)*10))] = time_dupes_in_xy['c{}'.format(chan)]/total_in_xy #Change back to 10
+            
+
+    return np.array(z_maps)
             
 
             
@@ -149,19 +159,27 @@ def main():
 
         runs_data.append(df)
 
-    # print(runs_data)
-    # print(total_datas)
-    # print(amount_agents)
-
-    dupes_mean_pc, dupes_std_pc = dupesinfo(runs_data, total_datas)
-    nagents_mean, nagents_std = agentsninfo(runs_data, amount_agents)
-
-    dist_chan_mean, dist_chan_std, dist_chan_min, dist_chan_max = getdistsinfo(runs_data, total_datas)
-
-    ratio2020(runs_data, total_datas, amount_agents)
+    # dupes_mean_pc, dupes_std_pc = dupesinfo(runs_data, total_datas)
+    # nagents_mean, nagents_std = agentsninfo(runs_data, amount_agents)
+    # dist_chan_mean, dist_chan_std, dist_chan_min, dist_chan_max = getdistsinfo(runs_data, total_datas)
+    ratio_mean = ratio2020(runs_data, total_datas, amount_agents)
 
 
-        
+    # Plotting
+    fig3 = plt.figure(constrained_layout=False, figsize=(15, 8))
+    gs = fig3.add_gridspec(6, 3+len(ratio_mean)//6) #Change to 6 with large data
+
+    f3_ax1 = fig3.add_subplot(gs[0:2, 0:2])
+    f3_ax2 = fig3.add_subplot(gs[2:4, 0:2])
+    f3_ax3 = fig3.add_subplot(gs[4:6, 0:2])
+
+    fig_dists = []
+    for i in range(1 + len(ratio_mean)//6):
+        for j in range(6):
+            fig_dists.append(fig3.add_subplot(gs[j*1:j*1+1, 2+i], aspect='equal')) # Change to 1 with large data
+
+
+    plt.show()
 
 
 if __name__ == '__main__':
