@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.ndimage.filters import gaussian_filter1d
+from textwrap import wrap
 
 def dupesinfo(data, channels):
     channels_dupes_mean = pd.DataFrame()
@@ -122,9 +123,9 @@ def ratio2020(data, channels, nagents):
 
 
 def main():
-    # filename = 'New_Alg_Multi_data_pushed_to_lim/SimpleSuicideReplication'
+    filename = 'New_Alg_Multi_data_pushed_to_lim/SimpleSuicideReplication'
     # filename = 'New_Alg_Distributing/SimpleSuicideReplication'
-    filename = 'New_Alg_multi_data_with_non_corrilated/SimpleSuicideReplication'
+    # filename = 'New_Alg_multi_data_with_non_corrilated/SimpleSuicideReplication'
     repeats = 2
 
     # Data collected upon the way
@@ -172,25 +173,31 @@ def main():
 
     # Plotting init
     fig3 = plt.figure(constrained_layout=False, figsize=(15, 8))
-    gs = fig3.add_gridspec(6, 3+len(ratio_mean)//3) #Change to 6 with large data
+    gs = fig3.add_gridspec(6, 5+len(ratio_mean)//6) #Change to 6 with large data
 
-    f3_ax1 = fig3.add_subplot(gs[0:2, 0:2])
-    f3_ax2 = fig3.add_subplot(gs[2:4, 0:2])
-    f3_ax3 = fig3.add_subplot(gs[4:6, 0:2])
+    f3_ax1 = fig3.add_subplot(gs[0:2, 0:4])
+    f3_ax2 = fig3.add_subplot(gs[2:4, 0:4])
+    f3_ax3 = fig3.add_subplot(gs[4:6, 0:4])
 
     fig_dists = []
-    for i in range(1 + len(ratio_mean)//3):
-        for j in range(3):
-            fig_dists.append(fig3.add_subplot(gs[j*2:j*2+2, 2+i], aspect='equal')) # Change to 1 with large data
+    for i in range(1 + len(ratio_mean)//6):
+        for j in range(6):
+            if i*6+j < len(ratio_mean):
+                fig_dists.append(fig3.add_subplot(gs[j*1:j*1+1, 4+i], aspect='equal')) # Change to 1 with large data
 
     # Plotting 3 graphs
     # Dupes
     t1 = dupes_std_pc.T
     t2 = dupes_mean_pc.T
 
-    for i in range(len(t1)) : 
-        line = f3_ax1.fill_between( iterations, gaussian_filter1d((np.array(t2.iloc[[i]]) + np.array(t1.iloc[[i]]))[0], sigma=50), gaussian_filter1d((np.array(t2.iloc[[i]]) - np.array(t1.iloc[[i]]))[0], sigma=50) )
-        line.set_color('green')
+    t_mean_1 = np.mean(t1, axis=0).T
+    t_mean_2 = np.mean(t2, axis=0).T
+
+    # for i in range(len(t1)) : 
+    #     line = f3_ax1.fill_between( iterations, gaussian_filter1d((np.array(t2.iloc[[i]]) + np.array(t1.iloc[[i]]))[0], sigma=50), gaussian_filter1d((np.array(t2.iloc[[i]]) - np.array(t1.iloc[[i]]))[0], sigma=50) )
+    #     line.set_color('green')
+    line = f3_ax1.fill_between( iterations, gaussian_filter1d((np.array(t_mean_2) + np.array(t_mean_1)), sigma=50), gaussian_filter1d((np.array(t_mean_2) - np.array(t_mean_1)), sigma=50) )
+    line.set_color('green')
 
     for i, r in t2.iterrows():
         line, = f3_ax1.plot( iterations, gaussian_filter1d(r, sigma=50) )
@@ -211,13 +218,22 @@ def main():
     t3 = dist_chan_min.T
     t4 = dist_chan_max.T
 
-    for i in range(len(t3)) : 
-        line = f3_ax3.fill_between( iterations, gaussian_filter1d((np.array(t3.iloc[[i]]))[0], sigma=50), gaussian_filter1d((np.array(t4.iloc[[i]]))[0], sigma=50) )
-        line.set_color('orange')
+    t_mean_1 = np.mean(t1, axis=0).T
+    t_mean_2 = np.mean(t2, axis=0).T
+    t_mean_3 = np.mean(t3, axis=0).T
+    t_mean_4 = np.mean(t4, axis=0).T
 
-    for i in range(len(t1)) : 
-        line = f3_ax3.fill_between( iterations, gaussian_filter1d((np.array(t2.iloc[[i]]) + np.array(t1.iloc[[i]]))[0], sigma=50), gaussian_filter1d((np.array(t2.iloc[[i]]) - np.array(t1.iloc[[i]]))[0], sigma=50) )
-        line.set_color('green')
+    # for i in range(len(t3)) : 
+    #     line = f3_ax3.fill_between( iterations, gaussian_filter1d((np.array(t3.iloc[[i]]))[0], sigma=50), gaussian_filter1d((np.array(t4.iloc[[i]]))[0], sigma=50) )
+    #     line.set_color('orange')
+    line = f3_ax3.fill_between( iterations, gaussian_filter1d(np.array(t_mean_3), sigma=50), gaussian_filter1d(np.array(t_mean_4), sigma=50) )
+    line.set_color('orange')
+
+    # for i in range(len(t1)) : 
+    #     line = f3_ax3.fill_between( iterations, gaussian_filter1d((np.array(t2.iloc[[i]]) + np.array(t1.iloc[[i]]))[0], sigma=50), gaussian_filter1d((np.array(t2.iloc[[i]]) - np.array(t1.iloc[[i]]))[0], sigma=50) )
+    #     line.set_color('green')
+    line = f3_ax3.fill_between( iterations, gaussian_filter1d((np.array(t_mean_2) + np.array(t_mean_1)), sigma=50), gaussian_filter1d((np.array(t_mean_2) - np.array(t_mean_1)), sigma=50) )
+    line.set_color('green')
 
     for i, r in t2.iterrows():
         line, = f3_ax3.plot( iterations, gaussian_filter1d(r, sigma=50) )
@@ -235,7 +251,6 @@ def main():
     for i, d in enumerate(temp):
         if d[0] != None and d[1] != None:
             fig_dists[i].plot(float(d[0]), float(d[1]), 'ro')
-            print(d[0], d[1])
 
 
     
@@ -244,10 +259,26 @@ def main():
     for i in fig_dists:
         i.set_ylim(top=1, bottom=-1)
         i.set_xlim(left=-1, right=1)
-        # i.set_yticklabels([])
-        # i.set_xticklabels([])
-        # i.set_xticks([])
-        # i.set_yticks([])
+        i.set_yticklabels([])
+        i.set_xticklabels([])
+        i.set_xticks([])
+        i.set_yticks([])
+
+        #1 settings
+    f3_ax1.set_ylabel("\n".join(wrap('Number of Agents with duplicated data', 30)))
+    f3_ax1.set_ylim(bottom=0)
+    f3_ax1.set_xticklabels([])
+    f3_ax1.set_xticks([])
+
+    #2 settings
+    f3_ax2.set_ylabel('Number of Agents')
+    f3_ax2.set_ylim(top=52, bottom=0)
+    f3_ax2.set_xticklabels([])
+    f3_ax2.set_xticks([])
+
+    #3 settings
+    f3_ax3.set_ylabel("\n".join(wrap('Distance from desired point', 25)))
+    f3_ax3.set_xlabel('Iterations')
 
     plt.show()
 
