@@ -43,24 +43,41 @@
 \chapter{Introduction}
 \label{cha:Introduction}
 
-Swarm intelligence/mechanics is an increasingly more important area of research for society, as the world moves towards a distributed technology future.
-Swarm intelligence can be viewed as distributed problem solving\cite{Cognitive maps mine detection, Swarm intellegiegence}, this is ever becoming more relevant as computer systems start to level out in terms of individual performance \cite{CPU speed} and parallelism is embraced, satisfying the demand of the age of big data \cite{Avalability storage}.
-Swarm mechanics/robotics are on the rise in the industry, as society's pace increases and manual labor is automated out, whether its drone delivery to inpatient customers or mapping areas in dangerous environments \cite{Swarm robotics reviewed}.
+Swarms are an increasingly important area of research for society, as the world moves towards a distributed technology future. 
+The research of swarms within a technology setting can be broadly divided into two partitions, these are intelligence and mechanics. 
 
-An area of swarm intelligence research is distributed and local memory of swarm-like agents.
-This has gone down a route more to do with the optimization of distributed problem-solving algorithms rather than practical applications of storage of abstract ideas as a collective.
-There is a relative lack of research into collective memory on swarm like agents, within the scope of a practical setting.
-This would be invaluable to applications like mapping of a dangerous area \cite{Cognitive maps mine detection}, being able to handle the loss of agents and the collection of data on agents with limited memory.
-An explanation for this to be a less developed area of study is the existence of subjects like cloud-based and raid based storage systems.
+Swarm intelligence can be viewed as the research into highly distributed problem solving\cite{Cognitive maps mine detection, Swarm intellegiegence}. 
+This is ever more becoming relevant as computer systems start to level out in sequential performance \cite{CPU speed} and parallelism is embraced, satisfying the demand of the age of big data \cite{Avalability storage}.
 
-Storing of data on an ever-changing network of storage devices is a hard task to complete, handling the loss of connection between different servers, reliability to access of the data and handling loss of services, whether it be non-correlated or correlated failures \cite{Avalability storage}.
-This is very applicable to swarm memory, with the handling of data across a swarm. 
-However, must be adapted due to current algorithms such as RAID not being designed for highly dynamic systems such as swarm.
-There are promising papers in this field of cloud storage that suggest approaches that can be adapted with few modifications to apply to a swarm-based system \cite{Distributed Storage}, and optimized through RAID.
+Swarm mechanics heads more down the robotics side and can be seen as the study of practical implementation of swarms, whether that be movement or communication within the swarm.
+This is on the rise in the industry, as society's pace increases and manual labor is automated out, whether its drone delivery to inpatient customers or mapping areas in dangerous environments \cite{Swarm robotics reviewed}.
 
-The objectives of this report are to merge three different areas of study into one by using knowledge of each, to create a suitable storage policy for swarm like agents to store collective memories of abstract ideas, then to perform analysis on a variety of simulations to explore the capability of the said storage policy.
+These two areas often are highly integrated rather than being disjoint from each other, and are rarely seen in their pure form. 
+An example of a pure form of swarm intelligence can be seen in \cite{Swarm intellegiegence} with network routing protocols. 
+This project will be focusing mainly within said grey area, but predominantly in intelligence dealing with a practical problem.
+
+Focusing down on distributed and local memory of swarm-like agents, that will be covered by this project. 
+Most research has gone down the route of optimization on distributed problem-solving algorithms, as compared to practical applications of storage of abstract ideas as a collective. 
+As one of the key reasons for using a swarm is redundancy, which is often assumed and boasted about, rather than proven specifically within the memory domain.
+
+This relative lack of research into collective memory, seems to this author to be a glaring hole in the foundations of a complex and interchangeable subject. 
+The need for more research into collective memory can be seen in how invaluable it would be to applications like mapping of a dangerous area \cite{Cognitive maps mine detection}. 
+By being able to handle the loss of agents and the collection of data on agents with limited memory, we could ensure efficient solutions that have high redundancy compared to other implementations.
+
+An explanation for swarm based memory management solutions to be a less developed area of study is the existence of subjects like cloud-based and raid based storage systems. 
+The argument for having these two subjects partially-separated is due to the nature of a swarm's locality and ever-changing network style, compared to a server farm. 
+Storage of data on an ever-changing network of devices is a hard task to complete, handling loss of connection between servers, reliability to access of the data and loss of services, whether it be non-correlated or correlated failures \cite{Avalability storage}.
+
+Most elements of cloud storage policies at a high level of abstraction could work effectively within a swarm based environment. 
+However as explained above, key adoptions would need to be changed to create said effective policy. 
+A prime example of the type of algorithm is “SKUTE” from \cite{Distributed Storage}.
+ “SKUTE” will be the main inspiration for this project's solution, too storage on a highly dynamic network.
+
+The objective of this dissertation is to merge three areas of study into an effective/suitable storage policy for swarm-like agents in a setting with high locality and dynamic connection behaviours. 
+Then to perform multiple analyses on the created policy using a variety of simulations to gauge its capability compared to the desired abstract behaviour.
 
 // Talk about the sections of the report once completed.
+
 %%%%%%%%%%%%%%%%%%
 
 %%%% Litreature Review %%%%
