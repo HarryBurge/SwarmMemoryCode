@@ -1,0 +1,662 @@
+\documentclass{UoYCSproject}
+\author{Harry Burge}
+\title{Swarm Memory}
+\date{Version 1.0, 2020-November}
+\supervisor{Simon O'Keefe}
+\MEng
+
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+
+\makeatletter
+\def\BState{\State\hskip-\ALG@thistlm}
+\makeatother
+
+\dedication{}
+
+\acknowledgements{
+ 
+}
+
+% More definitions & declarations in example.ldf
+
+\begin{document}
+\pagenumbering{roman}
+\maketitle
+\listoffigures
+\listoftables
+
+\bibliographystyle{ieeetr}
+%\renewcommand*{\lstlistlistingname}{List of Listings}
+%\lstlistoflistings
+
+%%%% Executive Summary %%%%
+\begin{summary}
+
+\end{summary}
+%%%%%%%%%%%%%%%%%
+
+
+%%%% Itntroduction Chapter %%%%
+\chapter{Introduction}
+\label{cha:Introduction}
+
+Swarm intelligence/mechanics is an increasingly more important area of research for society, as the world moves towards a distributed technology future.
+Swarm intelligence can be viewed as distributed problem solving\cite{Cognitive maps mine detection, Swarm intellegiegence}, this is ever becoming more relevant as computer systems start to level out in terms of individual performance \cite{CPU speed} and parallelism is embraced, satisfying the demand of the age of big data \cite{Avalability storage}.
+Swarm mechanics/robotics are on the rise in the industry, as society's pace increases and manual labor is automated out, whether its drone delivery to inpatient customers or mapping areas in dangerous environments \cite{Swarm robotics reviewed}.
+
+An area of swarm intelligence research is distributed and local memory of swarm-like agents.
+This has gone down a route more to do with the optimization of distributed problem-solving algorithms rather than practical applications of storage of abstract ideas as a collective.
+There is a relative lack of research into collective memory on swarm like agents, within the scope of a practical setting.
+This would be invaluable to applications like mapping of a dangerous area \cite{Cognitive maps mine detection}, being able to handle the loss of agents and the collection of data on agents with limited memory.
+An explanation for this to be a less developed area of study is the existence of subjects like cloud-based and raid based storage systems.
+
+Storing of data on an ever-changing network of storage devices is a hard task to complete, handling the loss of connection between different servers, reliability to access of the data and handling loss of services, whether it be non-correlated or correlated failures \cite{Avalability storage}.
+This is very applicable to swarm memory, with the handling of data across a swarm. 
+However, must be adapted due to current algorithms such as RAID not being designed for highly dynamic systems such as swarm.
+There are promising papers in this field of cloud storage that suggest approaches that can be adapted with few modifications to apply to a swarm-based system \cite{Distributed Storage}, and optimized through RAID.
+
+The objectives of this report are to merge three different areas of study into one by using knowledge of each, to create a suitable storage policy for swarm like agents to store collective memories of abstract ideas, then to perform analysis on a variety of simulations to explore the capability of the said storage policy.
+
+// Talk about the sections of the report once completed.
+%%%%%%%%%%%%%%%%%%
+
+%%%% Litreature Review %%%%
+\chapter{Literature Review}
+\label{cha:Literature Review}
+
+This chapter will review two areas of relevancy to the project proposed, these are \hyperref[sec:Cloud]{Cloud/Backup storage policies/schemes} and \hyperref[sec:Robotics]{Swarm robotics}. 
+Ideas and concepts from both areas will have to be relied upon for the completion/design of the storage policy.
+
+\section{Cloud/Backup storage policys/schemes}
+\label{sec:Cloud}
+
+Like most things in computer science, this area of study used to be simple, with small data-warehouses and backups on to a medium like magnetic tape, following a grandfather, father, son backup policy.
+As the years have progressed, technology has become greatly complex requiring larger files to be stored and accessed frequently. 
+Leading to the need for complex backup systems to provide availability and longevity of data stored, across a network or even locally.
+A component to the lead of complexity of these algorithms other than providing a service better than competitors is the Legal Services Act. 2007 \cite{LSA}. 
+This enforces that a company's cloud storage solution has to be reliable and fast in data collection for users.
+
+Most algorithms used in production are called random replication policies \cite{Avalability storage}, this is where data is partitioned and randomly distributed among other storage devices usually on different racks of the datacenter.
+This is an efficient design policy for handling non-correlated errors, however, lacks the robustness against correlated errors.
+These algorithms are substantial for long-term data storage with average popularity of collection/use of that data.
+
+A non-correlated error is when devices go down randomly for example in a swarm an agent's battery might explode, destroying that singular agent, therefore it can be modeled by a random chance of happening on each member. 
+A correlated error happens when multiple agents go down due to a reason unbenounced to us. 
+
+Following on from our swarm example, let us say a tsunami hits a certain section of the swarm destroying those agents therefore meaning that those failures were connected by some sort of event. 
+In data-warehouses, this is usually a failure of power on a server or a bug, not as permanent damage as a tsunami.
+
+Some of the problems arisen from random replication policy has spawned new replication policies, which can handle correlated and non-correlated errors, more effectively whilst also taking into account the demand of such items stored\cite{Avalability storage, Distributed Storage}.
+Tackling these problems, two approaches were undertaken.
+The first approach is to come from a higher level of control where you have a manager which can choose items to replicate and where based on demand, knowledge of other replications and outside factors \cite{Avalability storage, Patent}. 
+This does not only apply to data but also schema changes of said servers or databases \cite{Scheme changes}.
+Working versions of these over a cloud service are tied in/together with a "Distributed key-value store" \cite{Key-Value} where you have these key-value pairs on multiple devices on a network where duplication only leads to more fault tolerance of the data stored.
+
+Another way to handle this which doesn't rely on a more privileged controller, and creates a distributed system is by having something like "SKUTE" as proposed in \cite{Distributed Storage}.
+Each individual key-value replication has its own manager and can choose what it as a singular entity can do on that distributed system.
+The policy as described in "SKUTE" are as follows; Migration, Suicide, Replication, and Nothing. 
+Migration is the moving of its data to lower costing and more redundant servers. 
+Suicide is the removal of itself usually based on the number of duplicates and uses something like Paxos \cite{Paxos} to decide if it should suicide. 
+Replication decides that it is being used enough to warrant the need to be duplicated.
+
+An algorithm like "SKUTE" e.g. scattered key-value store \cite{Distributed Storage, Quorum} will be best suited for swarm like agents due to the distributed nature of a swarm.  
+This is less relevant in heterogeneous swarms with something like hivemind or hierarchal control however still relevant. 
+For homogeneous swarms this is ideal due to not wanting to have a static/temporary leader because of the issues like communication bottleneck, power loss near the leader due to flow of information to the leader, loss of a leader in a hybrid static swarm \cite{Swarm robotics reviewed, Swarm intellegiegence}.
+Also, one of the fundamental philosophies of swarm robotics is the inherently parallel nature that they bring to the table. 
+When creating leader-based algorithms they do not fit within the spirit of the design of homogeneous swarms, unlike a heterogeneous swarm might.
+
+An area of study which is stagnated is the storage of data on local disks. How to keep either backup for disk failure and/or improve write performance onto disks, rather than just duplicating data like as described above.
+An example schema for this is RAID, which has different levels based on the type of attributes that you may need for your array of storage devices \cite{RAID Levels}.
+In terms of cloud-based storage RAID arrays are used commonly internally rather than externally to a different NAS or storage server.
+This is because we will have the guarantees of RAID for internal disk failures if they occur, for example, a server goes down we have the above replication schemes to be able to handle that loss of storage.
+Leading to RAID arrays across multiple nodes to be sort of redundant.
+However, by using a parity \cite{Raid parity} based higher-level schema you can get space savings on the duplication of data. 
+This is harder to implement though and most likely not needed due to servers that are lost due to power outages usually coming back online pretty soon.
+ An example of this is might be a power issue causing a server to restart.
+
+// TODO: Say what a correlated and non correlated failure is
+
+\section{Swarm robotics}
+\label{sec:Robotics}
+
+Within the research of swarms, there is a split between practical solutions of agents or fictitious agents for an algorithm. 
+This split can be seen as swarm robotics and swarm intelligence.
+Swarm intelligence is where we use distributed swarm-like behavior to solve a problem, for example traveling salesman problem \cite{Swarm intellegiegence}, this means that we use an agent like code to compute the solution to a task.
+These tasks have usually been solved using a different algorithm beforehand, like TSP using a genetic algorithm to solve, and the swarm algorithms like AS-TSP \cite{Swarm intellegiegence} are alternatives to that algorithm.
+Said algorithms provide benefits and drawbacks compared to their counterparts. 
+An area in which these algorithms could excel, and researched, is the networking space \cite{Swarm intellegiegence} due to the natural parallelism that can be exploited from the design of a distributed solver.
+The main concept of swarm intelligence is creating a solver to a problem using a distributed algorithm that doesn't rely on global knowledge and can is adaptable on the fly.
+
+This is not the route of research that will be needed for this project, rather we will be looking at swarm robotics research.
+Swarm robotics has the same concept as swarm intelligence, it focuses on tasks that are designed to have agents complete, mainly for the practical space like moving objects or mapping an area \cite{Cognitive maps mine detection, Probabalitic automata foraging robots}, whether simulated or not.
+Swarm robotics focuses on the behavior of the swarm more than the solution that it gives us.
+These swarms come in three types: heterogeneous, homogenous, and a subcategory of homogeneous, hybrid swarms \cite{Swarm robotics reviewed}.
+These three methodologies are mapped onto both the decision making and the agent's body/abilities.
+
+\begin{figure}[htb]
+\begin{center}
+\label{fig:anthero}
+\includegraphics[height=4cm]{"./ExplanationImgs/AntHetro.png"}
+\end{center}
+\caption{Example of a hetrogenus ant colony. https://www.pinterest.co.uk/pin/777363585651532845/}
+\end{figure}
+
+A heterogeneous swarm is where there are differences between the agents, as in Figure \ref{fig:anthero}, whether physical or mental \cite{Swarm robotics reviewed, Swarm intellegiegence}. 
+These most commonly occur in nature and are not usually studied \cite{Swarm intellegiegence} due to the differences in agents being a rarely needed property in research-based problems.
+In real-world solutions, heterogeneous swarms can be of great use, allowing other agents to pick up the slack of the swarm, or complete tasks that other swarm members cannot complete. 
+For example, as described in \cite{Swarm robotics reviewed} with a mother ship being a navy boat and a swarm of quadrocopters, this examples shows how the boat picks up for the slack of the swarm by being able to transport them longer distances than the swarm could normally cope with.
+Less research is done into this area is due to some key drawbacks of having a heterogeneous swarm.
+Usually, you will have a hivemind like a system if you have a heterogeneous swarm where you have leaders giving commands to subordinates or even one leader commanding the entire swarm.
+This is less desirable if there is a loss of those leaders you lose the ability to control the swarm, in our example, this doesn't matter so much due to if you have a loss of the mothership something has gone significantly wrong already. .
+Due to the differences in the swarm agents, it allows for greater efficiency of the swarm, having robots that can mine and that can farm exclusively. 
+This leads to the vulnerability of major loss of one type of agent can lead to the loss of the colony.
+
+With swarms like these to get the efficiency from a heterogenous swarm without leading to vulnerabilities, you need to have some jobs be interchangeable, e.g. agents are adaptable like in an ant colony \cite{Ant communication}. 
+Also, the jobs that can't be done by all agents need not be vital to the survivability of the swarm.
+Ants usually fit into this type of swarm where you have a queen, worker, and major ants, some ants like Leaf-Cutter Ants also have a subcategory of workers like a fungus farmer.
+If there is a significant loss of workers, majors start doing tasks that normally workers would do \cite{Swarm intellegiegence}. 
+With the farmer subcategory, if a significant loss happens other workers/majors can take over that job and learn how to do it. 
+This leads us more towards homogeneous agents within a heterogeneous swarm.
+This is one of the main reasons for not wanting to use heterogeneous swarms because human-made machines are less adaptable in this job switching method, without redundant hardware or software.
+
+A homogeneous swarm is where each agent is the same, found less often in nature, and is more towards man-made agents. 
+This is due to nature taking to a more efficient approach, having variety in a semi-homogenous swarm allows for greater efficiency, and being of a natural organism has more adaptability than a man-made robot agent \cite{Swarm robotics reviewed, Swarm intellegiegence}.
+In homogeneous swarms we get significant redundancy, if an agent goes down we have swarms worth of replacements for that agent.
+With this redundancy, we gain possible losses of efficiency, either an agent is too simple therefore losing specialism or each agent has parts for specialism but may never need said part.
+An example of this homogenous flaw is we have a humanoid agent that has arms, and we want the swarm of agents to mine and farm. 
+If the humanoid has arms only then it will take them longer to do these tasks, compared to having specific equipment for the job.
+Flipping this the other way around, if each agent has equipment for mining and farming, some of these agents won't need both items and means the swarm would use more resources to create.
+In a homogeneous style of swarm, we have homogeneous control, also known a distributed intelligence, where all agents decide what they want to do based on what other agents are doing around them, an easy to understand example of this is \cite{Boids}. 
+This decision making involves internal parameters and can be equated to an emergent/structured swarm.
+Homogeneous control is different from heterogeneous control due to following a distributed problem solving/communication design compared to leader based design like hivemind or structured/hierarchical controlled swarms.
+
+Within swarm robotics everything gets a bit messy, usually, there is no clear-cut name or design that can be assigned to swarm models and behaviors. 
+This is down to wanting the agents to act in a specific emergent pattern rather than being stuck to a strict certain arbitrary rule, this is where hybrid approaches come into play.
+A hybrid approach is a mixture of both heterogeneous and homogeneous natures in both communications and agent design \cite{Swarm robotics reviewed, Swarm intellegiegence}.
+In terms of communication when taking a hybrid approach to a swarm, you will have a swarm leader/leaders designated by the swarm, and handled with a consensus algorithm, e.g. Paxos \cite{Paxos}.
+In a hybrid model for agent design, if we want to gain the efficiency of the heterogeneous model and the adaptability/reliability of a homogeneous swarm we can use something like part-time tools. 
+This allows our homogeneous bots to act in heterogeneous fashions.
+
+Humans, themselves are a great example of a hybrid based swarm both in design and communication.
+Though humans have variations in characteristics they can be seen as pretty homogeneous in terms of the tasks that they can perform, obviously removing edge case actions that humans do.
+Tools and knowledge can be spread between humans to make the swarm more efficient and an agent can specialize in a certain area however if some agents are lost other agents/humans can replace them by using the same tools and learning from the remaining agents of that task.
+Also, the natural power-based structure of humans fits a hybrid model in terms of electorship of some kind, and not of genetics (Except with royalty, however, this is more of a label rather than a genetic difference). 
+The leaders aren't needed for every single action so fit into a usually hierarchal power structure, compared to something of a hivemind model.
+%%%%%%%%%%%%%%%%
+
+
+%%%% Motivations %%%%
+\chapter{Motiviation}
+\label{cha:Motivation}
+
+As described above in Chapter \ref{cha:Literature Review} it is quite clear that swarm robotics is becoming and already is a soloution to many problems currently faced and going on into the future.
+With indurvidual speeds of computers stagnating \cite{CPU speed}, the world becoming more data oreintated and the drive for humans to explore, distributed technologys need to rise to the challenge.
+The next big step in computer science history being quatum computers, not solving the sequentail issues of our current problem solving algorithms.
+This is why swarm robotics/intellegince needs to brought to the for front of research.
+
+In our day and age there doesn't seem to be much use of these innovative works, possibly due to the complexity or to the newness of said subject.
+The main applications nowadays are surevailence \cite{UAV, HiveMind} and delievery, however looking into the future, which we need to do otherwise we delay technological breakthroughs further, we can see that their are so many other uses for this type of distributed thinking.
+Whether it be pyshically with robots, like in space exploration \cite{Space exploration}, nano-robot medicene or military based applications.
+Or even conceptually like algortihms that can rely more on parrellel computation compared to their global sequentail counterparts.
+A good example of this distributed thinking changing and revolotionising our subject is block chain \cite{blockchainandSwarm}.
+
+It is for this reseon that I have decided to contribute my part to this extensive and breakthrough field.
+%%%%%%%%%%%%%
+
+
+%%%% Methodology/Design Chapter %%%%
+\chapter{Main}
+\label{cha:Main}
+
+
+\section{The Problem}
+\label{sec:Problem}
+
+The problem is to create an efficent storage system for directional based data.
+This can be broken down into two sections, how data is passed throughout the swarm as to not have to many duplicates of the data but not have to little to not allow for redundancy.
+The second is to have that data spread out based on a coord point, this will simulate the use of said data in that area.
+
+\begin{figure}[htb]
+\label{fig:popdensity}
+\begin{center}
+\centering
+\includegraphics[width=\linewidth]{"./ExplanationImgs/Memory_Pop_Density.png"}
+\caption{Example of data density based of coordinale point}
+\end{center}
+\end{figure}
+
+As shown in Figure \ref{fig:popdensity} we can see how we want the data to spread out across the swarm based off the distance of the agent to the point.
+An example of why this is a requirement is for example in that arbitrary point might be the farm and possible hostilitys around, therefore you want more agents knowing that arbitry point infomation around that area but still have that infomation spread across the network due to possible losses of all the agents near said point.
+
+The goal is to create an effiecent storage and replication policy which can handle the fluctuations of the swarm, and provide reliabilty in the face of both corrilated failures and non-correlated failures of the swarm.
+This policy should take into account poisition of the agent relative to the point that the infomation is needed near.
+
+
+
+\section{Simulation Infomation}
+\label{sec:Sim Info}
+
+The base simulation that the policys will be running on is a specified.
+There will be an area of which agents can move around, each point within that area can have a peice of data learned in that area.
+When a peice of data is learned in that area , the data stores where is was created and the policys will take that starting place into account.
+This is how we have defined our directional data aspect to the simulation, in real life this could be something like a learnt behavoiur that is needed for that specifc enviroment, however, for test purposes it is just a string.
+
+Each agent has two bounded partitions of memory, these are called private and public memory.
+Private memory is for knowledge that is learnt by that agent, and public memory is infomation that that agent has learned from other agents.
+Both public and private memory cannot have duplicate data inside including across partitions.
+This split was made arbitraraly and isn't needed for a practical soloution however was created due to agents being more likely to pick up learned data by not having to delete infomation in memory to make space for said leanred infomation.
+In general public memory should be larger in size than private memory due to there being magnitudes more public infomation compared to private infomation for an agent.
+
+Agents are homogenus, and have the same connection radius of which they can talk to other agents within.
+Agents are assumed to be able to recieve and send packets whilst also doing actions like sending and recieveing itself, in real world soloutions this would likely be that each agent would need two recivers and senders or a control algortihm to handle this type of behavouir.
+In this simulation we assume that data transfer is perfect.
+
+Each agent moves randomly in circles varying in shapes and sizes to gain a swarm like movement of connections being broken and reconnected.
+Agents our running in diffrent threads so run at diffrent speeds and acts more like a real world swarm.
+Data is introduced at the start based of an amount wanted, and during the simulation data can be learned based an amount wanted.
+
+\begin{figure}[htb]
+\label{fig:Connarea}
+\begin{center}
+\centering
+\includegraphics[width=\linewidth]{"./ExplanationImgs/Connarea.png"}
+\caption{Example of simulation looks when running}
+\end{center}
+\end{figure}
+
+In Figure \ref{fig:Connarea} we can see an example of what the 2D simulation looks like.
+Dots are agents, and the red circle around them are their connection radius of which they can talk to other agents, these are usally omitted from being draw due to making the images messyer and harder to understand.
+The blue consentic circles are a positional datas stages of allowed duplications, this is explained more in Section \ref{sec:Simple1}.
+The connection lines between the agents are just showing that data can pass between these two agents, these lines change colour based of what frames are being passed across them, this will be touched upon more in specific examples due to colours meaning diffrent things.
+As a simple visuallisation of how data is being passed between the agents, in this example the agent is blue signifiying that it holds the duplicate of blue data, e.g. the consetric circle.
+
+
+
+\section{Simple Scattered Memory Policy}
+\label{sec:Simple1}
+
+Taking on from the design of algorithm presented in \cite{Distributed Storage}, I applied a simple distributed storage policy onto a swarm that takes into account positional data.
+This policy has two actions that it can perform, suicide and replication, suicide is when a piece of data decides using a heuristic that it is not worth being stored in an agents memory so deletes itself, replication is where based on a heuristic the data believes it is worth spreading the infomation so will replicate to one member of the swarm.
+
+\begin{figure}[htb]
+\label{fig:Heuristic}
+\begin{center}
+\centering
+\includegraphics[height=5cm]{"./ExplanationImgs/Heuristic.png"}
+\caption{Poistional data heuristic for agents}
+\end{center}
+\end{figure}
+
+The heuristic mentioned above follows these rules, and Figure \ref{fig:Heuristic} helps visuallise the conecept. 
+At the grey agent in the middle is an example of when the data is learned, when learned this data will have a poistion that it was learned a radius at which you want the allowed duplications (including own duplicate) of that data to be one.
+The red line signifys that distance and the value in this example four is the maximum duplications of that data.
+The green line is just an easy way to compute which band an agent might be in.
+
+As an agent moves closer through the gradient of allowed duplicates it will want to have more duplicates in its area, therefore allowing for a higher concentration of said duplicated data in that area.
+We can then use this simple heuristic per item of data to be able to get the distribution that we want, one implementation of this is described below in Algorithm \ref{Agent_Control_Loop}.
+The reason for having a random replication when the allowed duplications equal the actual duplications is to try and breakthrough the boudarys at the edge where allowed dupes equals 1.
+
+Without this replication we would have data sit inside the data area to much, this can be seen on some prilimany test results Figure \ref{fig:Data1} and Figure \ref{fig:Data2}.
+Blue line is amount of agents with that duplicated data.
+Purple line is the mean distance of agents with duplicated data from the data point, Green area is the standard deviation and yellow/orange is the data range.
+A guassian filter has been passed over the results due to the mild fluctions every iteration creating a harder to see results.
+
+From the results shown in Figure \ref{fig:Data1} we can see that the distance from the area point likes to stay within side the data\_radius bounds, this was tested on diffrent sizes of data radius and max duplications allowed and still found to hold true.
+We then tested the algorithm which has a random replication value to be able to try push through the borders of the data radius.
+We ran these on two diffrent values of replication value for five times on each, Figure \ref{fig:Data3} is with a random replication value of 10\% when allowed duplicates = actual duplicates.
+Figure \ref{fig:Data4} is the same values as before however with a replication value of 50\% to see how roughly this will effect the results.
+
+We can see that having the replication value higher keeps data at a more consistent distance away from the data point rather than dealing with the fluctuations of the circluar movement of the agents.
+From personal observations of the algorithm running it was observed that the data transfers became more volatile with the higher replication number.
+Volatility meaning that data was replicated therefore making actual duplications to high then suiciding to get back down to the correct value, this would repeat often.
+In a real world soloution this would not be ideal due to data transfers costing energy and possible data loss, this means that we need to design an algorthim that can take this into account more.
+
+When comapring Figure \ref{fig:Data1}, Figure \ref{fig:Data2}, Figure \ref{fig:Data3} and Figure \ref{fig:Data4} we can impliy that the algorithm change doesn't affect the max distances like our desired outcomes want.
+With this algorithm we do get the desired affect when dealing with non-correlated errors as shown in \ref{fig:Data5}.
+In this graph we can see as the number of agents is decreasing the number of replications trys to fight that change, however some improvements might want to be made when a more thourgh investigation is done.
+Correlated errors were not tested currently due to the failures in distance from the data point, we want a larger min max range of values before this is tested.
+
+
+
+\section{Improved Heuristic}
+\label{sec:Simple2}
+
+To improve from the last design was to create a new heuristic that can take more into account and have scalable values, that can be modifyied to get diffrent behavoiur from the swarm network.
+This was done by identifying diffrent factors that we want to play a role in the choose to replicate and the chose to commit suicide.
+These were:
+
+\begin{description}
+\item[$\bullet$] Amount of agents in connection range that have a duplicated data compared to not having duplicated data
+\item[$\bullet$] Distance to datas target area
+\item[$\bullet$] Agents around average available public memory
+\end{description}
+
+The updated code can be seen in Algorithm \ref{Agent_Control_Loop2}, with this we can see that there are diffrent heurisitics for both suicide and replication.
+With the above factors we made sure that they were bounded [0, 1] by doing ratios of the max value.
+Then we had parameter values that sum to one as to show the percentage of what the parameter effects the heursitic, this can be seen in lines 12 and 15.
+After these have been summed together the value is bounded between [0, 1] which we then set a threshold value for at what point we want the code benith to activate, e.g. Replication or Suicide.
+Changing of these parameters creates diffrent charatersistics as an example can be shown with just replication and no suicide, Figure \ref{fig:Data6} and Figure \ref{fig:Data7}.
+
+With this we can see that making the replication threshold higher decreses the likelhood of replication and gives a semi bound in a uniform density swarm and within non-uniform density swarm.
+In figures shown you will see there is usally a black agent close to the red cricle (Data target area), this is because the agent that learned the data has it stored in private memory so isn't counted as changing colour to show it is a duplicated piece of data in public memory.
+With both Figures we can see that suicide is definetly needed due to movement of agents as in Figure \ref{fig:Data7} and within Figure \ref{fig:Data6} we can see its needed due to all agents in an area around the point have the data.
+This goes against what this storage policy is meant to provide, we need a way to vary duplicate density within that semi-bound around the data target area.
+
+To this we add in the suicide option which only takes into account the first to features meantion in the bullet points above.
+This will change the actions of the swarm to create a better policy as described in Section \ref{sec:Problem}.
+
+As we can see in Figure \ref{fig:Data8} adding in the suicide ability and changing the threshold value creates diffrent duplication densitys within the replication bounds.
+In simple terms it changes the desnity of duplications closer to the data target area if the density of agents is uniform in desnity.
+When talking about non-uniform densitys it wil also take into account the desnity of agent duplications, however basically applies the same affect of having less duplicates where that is wanted, an example of this can be seen in Figure \ref{fig:Data9}.
+
+With this current design it leads itself to diffrent observations based of parameter values.
+The right values need to be picked for the algorithm to work effectivaly, for example sometimes if suicide threshold goes to low it leads to massive instability with repeating duplicates and suicides which is wasted bandwidth and energy.
+This problem could be taken into account by also taking into account when the data was last replicated and allowing a sort of grace period within the heuristic to be able to allow natural movements to take those unstable agents apart.
+The heurisitc and threshold values lends itself towards a learning algorithm for example a gentic algorithm to pick the best value for the certain task or wanted behavoiur.
+
+As a prelimanry test run on an average of five runs, Figure \ref{fig:Data10}, we can see that we have managed to create an algorithm that is more stable to the periods of the swarms movement, in our case circles.
+This was designed into the simulation to be able to test an algortihms abilitys to be able to handle fluctions in a repeating manner that can be visible.
+We can also see that the range from maximum and minimum distances has now been increased which was something we wanted in for improvement from Algortim \ref{Agent_Control_Loop}.
+However we can see that the mean value is roughly within the middle of the maximum and minimum value which leads me to believe that the algorithm isn't performing as expected.
+We prefurably want the mean to tend towards being closer to the minimum rather than in the middle, this is to show the desnsity diffrence of duplicated data.
+This will have to be investigated further as to whether it is the nature of the heuristic or whether it was the values of the parameters which were picked manually.
+
+There is also an example of this algorithm running on a non-correlated errors in Figure \ref{fig:Data11}.
+With this we can see roughly that the duplicates stay at about 40\% of the total number of agents even with non-correlated errors happening at a very extreme rate.
+An observation within the simulations is some failures of agents can affect the total value suggnificantly until it gets into a stable state.
+Due to the nature of the heuristic it is deterministic and likes to hang in an optimum as much as possible, therefore some loss of agents doesn't change much.
+However sometimes an important agent is removed the duplicate layout changes quite quickly changing the layout across the swarm in a ripple like effect, until it gets back to an optimium (Stable state).
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%% Analysis and Conclusion %%%%
+\chapter{Conclusion}
+\label{cha:conclusion}
+%%%%%%%%%%%%%%%%%%%
+
+
+\appendix
+\chapter{Code apendix}
+
+\begin{algorithm}
+\caption{Agent's control loop}
+\label{Agent_Control_Loop}
+\begin{algorithmic}[1]
+\Procedure{Step}{}
+\State \text{move()}
+\State
+\If {item in private mem not in other agents public mem}
+\State \text{Replicate item}
+\State \Return true
+\EndIf
+\State
+\State $item \gets \text{random public mem item}$
+\State $allowed dupes \gets \textit{heuristic}(item)$
+\State $current dupes \gets \text{(local) number of agents with item in public mem}$
+\State
+\If {allowed dupes > current dupes}
+\State \text{Replicate item once}
+\ElsIf { allowed dupes < current dupes}
+\State \text{Suicide item using paxos}
+\Else
+\State \text{Randomly Replicate}
+\EndIf
+\State
+\State \Return true
+\EndProcedure
+\State
+\Procedure{Heuristic(Item)}{}
+\State $dist  \gets \text{agent distance to items target point}$
+\State $allowed dupes \gets \text{items max dupes} - (dist / \text{items step})$
+\State
+\If {allowed dupes <= 0}
+\State \Return 0
+\Else
+\State \Return allowed dupes
+\EndIf
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+
+\begin{algorithm}
+\caption{Agent's control loop}
+\label{Agent_Control_Loop2}
+\begin{algorithmic}[1]
+\Procedure{Step}{}
+\State \text{move()}
+\State
+\If{Learned new private memory data}
+\State \text{Replicate item to all agents in connection radius}
+\State \Return True
+\EndIf
+\State
+\State $dist \gets \text{euclidean distance to data}$
+\State $dupes \gets \text{(local) duplicates on agents / number of agents}$
+\State $pub space \gets \text{(local) average space available / max public memory}$
+\State
+\If{$(1-dupes) * b1 + ((\sqrt{8} - dist)/\sqrt{8}) * b2 + pub space * b3 > rep threshold$}
+\State \text{Replicate item to all agents in connection radius}
+\EndIf
+\State
+\If{$dupes * p1 + (dist/\sqrt{8})  * p2 > sui threshold$}
+\State \text{Suicide data}
+\EndIf
+\State
+\State \text{Iterate to next public memory data}
+\State
+\State \Return True
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+
+\chapter{Results apendix}
+
+\begin{figure}[htb]
+\label{fig:Data1}
+\begin{center}
+\centering
+\includegraphics[width=\linewidth, height=8cm]{"./PrelimData/SimpleSuicRep_m4_r0.5_c1_n50.png"}
+\caption{Distance and number of duplicates on a run without a random replication factor}
+\end{center}
+\end{figure}
+
+\begin{figure}[htb]
+\label{fig:Data2}
+\begin{center}
+\centering
+\includegraphics[width=\linewidth, height=8cm]{"./PrelimData/SimpleSuicideReplication_4d_4m_0.5r_50n.png"}
+\caption{Distance and number of duplicates on a run without a random replication factor}
+\end{center}
+\end{figure}
+
+\begin{figure}[htb]
+\label{fig:Data3}
+\begin{center}
+\centering
+\includegraphics[width=\linewidth, height=8cm]{"./PrelimData/SimpleSuicideReplication_n50_r0.5_c1_m4_repchance0.1_avg5.png"}
+\caption{Distance and number of duplicates on average of 5 runs with a random replication factor=0.1}
+\end{center}
+\end{figure}
+
+\begin{figure}[htb]
+\label{fig:Data4}
+\begin{center}
+\centering
+\includegraphics[width=\linewidth, height=8cm]{"./PrelimData/SimpleSuicideReplication_n50_r0.5_c1_m4_repchance0.5_avg5.png"}
+\caption{Distance and number of duplicates on average of 5 runs with a random replication factor=0.5}
+\end{center}
+\end{figure}
+
+\begin{figure}[htb]
+\label{fig:Data5}
+\begin{center}
+\centering
+\includegraphics[width=\linewidth, height=10cm]{"./PrelimData/Non_correlated_errors_test1.png"}
+\caption{Example of non-correlated errors on agents with a failure rate=0.003 per iteration}
+\end{center}
+\end{figure}
+
+\begin{figure}[htb]
+\label{fig:Data6}
+\begin{center}
+\centering
+\includegraphics[width=\linewidth, height=8cm]{"./MiscImgs/Replication_No_Suicide_threshold_Together.png"}
+\caption{Example of diffrent values of replication threshold on homogenus density swarm}
+\end{center}
+\end{figure}
+
+\begin{figure}[htb]
+\label{fig:Data7}
+\begin{center}
+\centering
+\includegraphics[width=\linewidth, height=8cm]{"./MiscImgs/Replication_No_Suicide_threshold_0.8_c2_Non_uniform.png"}
+\caption{Example of two datas on a non-uniform density agent network}
+\end{center}
+\end{figure}
+
+\begin{figure}[htb]
+\label{fig:Data8}
+\begin{center}
+\centering
+\includegraphics[width=\linewidth, height=8cm]{"./MiscImgs/Rep_Sui_0.8_0.4-0.45_uniform_no_mo.png"}
+\caption{Example of suicide threshold changes on data policy, on a uniform agent density}
+\end{center}
+\end{figure}
+
+\begin{figure}[htb]
+\label{fig:Data9}
+\begin{center}
+\centering
+\includegraphics[width=\linewidth, height=8cm]{"./MiscImgs/Rep_Sui_no_uniform_no_mo.png"}
+\caption{Example of suicide threshold changes on data policy, on a non-uniform density}
+\end{center}
+\end{figure}
+
+\begin{figure}[htb]
+\label{fig:Data10}
+\begin{center}
+\centering
+\includegraphics[width=\linewidth, height=8cm]{"./PrelimData/New_Replication_Scheme_No_Death_0.8r_0.45s.png"}
+\caption{Example of Algorithm \ref{Agent_Control_Loop2}, with no failures}
+\end{center}
+\end{figure}
+
+\begin{figure}[htb]
+\label{fig:Data11}
+\begin{center}
+\centering
+\includegraphics[width=\linewidth, height=10cm]{"./PrelimData/Non_correlated_errors_test2_0.8_0.45.png"}
+\caption{Example of Algorithm \ref{Agent_Control_Loop2}, with failures at 0.003}
+\end{center}
+\end{figure}
+
+
+
+\begin{thebibliography}{100}
+\bibitem{Swarm robotics reviewed} 
+J. C. Barca and Y. A. Sekercioglu, “Swarm robotics reviewed,” Robotica, vol. 31, no. 3, pp. 345–359, 2013.
+
+\bibitem{Cognitive maps mine detection}
+V. Kumar and F. Sahin, "Cognitive maps in swarm robots for the mine detection application," SMC'03 Conference Proceedings. 2003 IEEE International Conference on Systems, Man and Cybernetics. Conference Theme - System Security and Assurance (Cat. No.03CH37483), Washington, DC, 2003, pp. 3364-3369 vol.4, doi: 10.1109/ICSMC.2003.1244409.
+
+\bibitem{Triggered Memory dynamic enviroments}
+H. Wang, D. Wang and S. Yang, “Triggered Memory-Based Swarm Optimization in Dynamic Environments,” in Applications of Evolutionary Computing, M. Giacobini, Ed. Berlin, Germany: Springer-Verlag Berlin and Heidelberg GmbH \& Co. K, 2007, pp. 637–646.
+
+\bibitem{Probabalitic automata foraging robots}
+D. A. Lima and G. M. B. Oliveira, "A probabilistic cellular automata ant memory model for a swarm of foraging robots," 2016 14th International Conference on Control, Automation, Robotics and Vision (ICARCV), Phuket, 2016, pp. 1-6, doi: 10.1109/ICARCV.2016.7838615.
+
+\bibitem{Swarm intellegiegence}
+E. Bonabeau, M. Dorigo, and G. Theraulaz, Swarm Intelligence: From Natural to Artificial Systems. Cary, NC, USA: Oxford University Press, 1999.
+
+\bibitem{Dynamic raid hybrid}
+L. Xiang, Y. Xu, J. Lui, Q. Chang, Y. Pan, and R. Li, ‘A Hybrid Approach to Failed Disk Recovery Using RAID-6 Codes: Algorithms and Performance Evaluation’, Association for Computing Machinery, vol. 7, p. 11, 2011
+
+\bibitem{CPU speed}
+C. Mims, ‘Why CPUs Aren’t Getting Any Faster’, MIT Technology Review, 2010. [Online]. Available: https://www.technologyreview.com/2010/10/12/199966/why-cpus-arent-getting-any-faster/. [Accessed: 01-Dec-2020].
+
+\bibitem{Raid parity}
+U. Troppens, W. Müller‐Friedt, R. Wolafka, R. Erkens, and N. Haustein, ‘Appendix A: Proof of Calculation of the Parity Block of RAID 4 and 5’, in Storage Networks Explained: Basics and Application of Fibre Channel SAN, NAS, ISCSI, InfiniBand and FCoE, U. Troppens, Ed. Chichester: Wiley United Kingdom, 2009, pp. 535–536.
+
+\bibitem{Avalability storage}
+J. Liu and H. Shen, "A Low-Cost Multi-failure Resilient Replication Scheme for High Data Availability in Cloud Storage," 2016 IEEE 23rd International Conference on High Performance Computing (HiPC), Hyderabad, 2016, pp. 242-251, doi: 10.1109/HiPC.2016.036.
+
+\bibitem{Distributed Storage}
+N. Bonvin, T. G. Papaioannou, and K. Aberer, A Self-Organized, Fault-Tolerant and Scalable Replication Scheme for Cloud Storage. New York, NY, USA: Association of Computing Machinery, 2010.
+
+\bibitem{LSA}
+Legal Services Act. 2007.
+
+\bibitem{Patent}
+A. Prahlad, M. S. Muller, R. Kottomtharayil, S. Kavuri, P. Gokhale, and M. Vijayan, ‘Cloud gateway system for managing data storage to cloud storage sites’, 20100333116A1, 2010.
+
+\bibitem{Scheme changes}
+B. Czejdo, K. Messa, T. Morzy, M. Morzy, and J. Czejdo, ‘Data Warehouses with Dynamically Changing Schemas and Data Sources’, in Proceedings of the 3rd International Economic Congress, Opportunieties of Change, Sopot, Poland, 2003, p. 10.
+
+\bibitem{Key-Value}
+‘Key-Value Scores Explained’, HazelCast. [Online]. Available: https://hazelcast.com/glossary/key-value-store/. [Accessed: 02-Dec-2020].
+
+\bibitem{Paxos}
+L. Lamport, ‘The Part-Time Parliament’, in Concurrency: The Works of Leslie Lamport, New York, NY, USA: Association of Computing Machinery, 2019, pp. 277–317.
+
+\bibitem{Quorum}
+D. Agrawal and A. E. Abbadi. The tree quorum protocol: An efficient approach for managing replicated data. In VLDB’90: Proc. of the 16th International Conference on Very Large Data Bases, pages 243–254, Brisbane, Queensland,Australia, 1990.
+
+\bibitem{RAID levels}
+S. Lynn, ‘RAID Levels Explained’, PC Mag, 2014. [Online]. Available: https://uk.pcmag.com/storage/7917/raid-levels-explained. [Accessed: 06-Dec-2020].
+
+\bibitem{HiveMind}
+J. Hu et al., Eds., HiveMind: A Scalable and Serverless Coordination Control Platform for UAV Swarms. ArXiv, 2020.
+
+\bibitem{blockchainandSwarm}
+D. Calvaresi, A. Dubovitskaya, J. P. Calbimonte, K. Taveter, and M. Schumacher, Multi-Agent Systems and Blockchain: Results from a Systematic Literature Review. Cham, Switzerland: Springer International Publishing, 2018.
+
+\bibitem{Space exploration}
+L. A. Nguyen, T. L. Harman and C. Fairchild, "Swarmathon: A Swarm Robotics Experiment For Future Space Exploration," 2019 IEEE International Symposium on Measurement and Control in Robotics (ISMCR), Houston, TX, USA, 2019, pp. B1-3-1-B1-3-4, doi: 10.1109/ISMCR47492.2019.8955661.
+
+\bibitem{UAV}
+M. Y. Arafat and S. Moh, "Localization and Clustering Based on Swarm Intelligence in UAV Networks for Emergency Communications," in IEEE Internet of Things Journal, vol. 6, no. 5, pp. 8958-8976, Oct. 2019, doi: 10.1109/JIOT.2019.2925567.
+
+\bibitem{Ant communication}
+D. Jackson and F. Ratnieks, ‘Communication in ants,’Current Biology,vol. 16, pp. 570–574, 2006.
+
+\bibitem{Boids}
+C. W. Reynolds, Flocks, Herds, and Schools: A Distributed Behavioral Model. ACM, 1987.
+
+\end{thebibliography}
+
+
+
+\end{document}
+
+
+%%%%%%%%%%%%%%% Example
+%\begin{figure}[htb]
+%\begin{center}
+%\includegraphics[height=3cm]{"./UOY-Logo-Stacked-shield-Black"}
+%\end{center}
+%\caption{A figure containing UoY logo and its caption.}
+%\end{figure}
+
+
+%\begin{table}[htb]
+%\caption{ A table with its caption.}
+%\begin{center}
+%\begin{tabular}{|p{0.3\textwidth}|p{0.6\textwidth}|}
+%\hline
+%column A & column B \\\hline
+%row 1 &
+%Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque quis quam at nisi iaculis aliquet vel et quam. \\\hline
+%row 2 &
+%Aliquam erat volutpat. Nam at velit a risus faucibus aliquet. Aenean egestas vehicula mi, quis rhoncus sem facilisis in. Interdum et malesuada fames ac ante ipsum primis in faucibus. Sed lobortis %lacus quis mauris rutrum auctor. \\\hline
+%\end{tabular}
+%\end{center}
+%\end{table}
