@@ -39,9 +39,12 @@
 %%%%%%%%%%%%%%%%%
 
 
-%%%% Itntroduction Chapter %%%%
-\chapter{Introduction}
-\label{cha:Introduction}
+%%%% Itntroduction %%%%
+\chapter{Literature Review}
+\label{cha:Literature Review}
+
+\section{Introduction}
+\label{sec:Introduction}
 
 Swarms are an increasingly important area of research for society, as the world moves towards a distributed technology future. 
 The research of swarms within a technology setting can be broadly divided into two partitions, these are intelligence and mechanics. 
@@ -76,16 +79,42 @@ A prime example of the type of algorithm is “SKUTE” from \cite{Distributed S
 The objective of this dissertation is to merge three areas of study into an effective/suitable storage policy for swarm-like agents in a setting with high locality and dynamic connection behaviours. 
 Then to perform multiple analyses on the created policy using a variety of simulations to gauge its capability compared to the desired abstract behaviour.
 
-// Talk about the sections of the report once completed.
+To complete the objective of this report we will programmatically break down the problem described in Section \ref{sec:Problem} into solvable tasks. 
+Therefore the report will be structured as follows, firstly we’ll define a clear and concise problem, of which incompaces all disgruntlements described above. 
+Secondly, bring the reader up to date with relevant literature and explain key concepts that will be required for a complete understanding of where the proposed solution has been derived and why said solution might be a relevant stepping stone for future research. 
+This will be covered in the two sections, Section \ref{sec:Cloud} of which goes into detail about current cloud based storage technologies and Section \ref{sec:Robotics} of which will delve into more of a background behind swarms, specifically relating to the problem and possible solutions. 
+We’ll then go through the methodology of the proposed solution’s design.
+How it is supposed to act and react in different scenarios, and the reasons for why. 
+This leads to analysing how effective the proposed policy has kept to standards derived in the methodology section, and whether it solves the problem defined in Section \ref{sec:Problem}.
 
 %%%%%%%%%%%%%%%%%%
 
-%%%% Litreature Review %%%%
-\chapter{Literature Review}
-\label{cha:Literature Review}
+%%%% Problem Definition %%%%
+\section{The Problem}
+\label{sec:Problem}
 
-This chapter will review two areas of relevancy to the project proposed, these are \hyperref[sec:Cloud]{Cloud/Backup storage policies/schemes} and \hyperref[sec:Robotics]{Swarm robotics}. 
-Ideas and concepts from both areas will have to be relied upon for the completion/design of the storage policy.
+The problem is to create an efficent storage system for directional based data.
+This can be broken down into two sections, how data is passed throughout the swarm as to not have to many duplicates of the data but not have to little to not allow for redundancy.
+The second is to have that data spread out based on a coord point, this will simulate the use of said data in that area.
+
+\begin{figure}[htb]
+\label{fig:popdensity}
+\begin{center}
+\centering
+\includegraphics[width=\linewidth]{"./ExplanationImgs/Memory_Pop_Density.png"}
+\caption{Example of data density based of coordinale point}
+\end{center}
+\end{figure}
+
+As shown in Figure \ref{fig:popdensity} we can see how we want the data to spread out across the swarm based off the distance of the agent to the point.
+An example of why this is a requirement is for example in that arbitrary point might be the farm and possible hostilitys around, therefore you want more agents knowing that arbitry point infomation around that area but still have that infomation spread across the network due to possible losses of all the agents near said point.
+
+The goal is to create an effiecent storage and replication policy which can handle the fluctuations of the swarm, and provide reliabilty in the face of both corrilated failures and non-correlated failures of the swarm.
+This policy should take into account poisition of the agent relative to the point that the infomation is needed near.
+
+%%%%%%%%%%%%%%%%%
+
+%%%% Litreture Review %%%%
 
 \section{Cloud/Backup storage policys/schemes}
 \label{sec:Cloud}
@@ -206,8 +235,8 @@ The leaders aren't needed for every single action so fit into a usually hierarch
 
 
 %%%% Motivations %%%%
-\chapter{Motiviation}
-\label{cha:Motivation}
+\section{Motivation}
+\label{Motivation}
 
 As described above in Chapter \ref{cha:Literature Review} it is quite clear that swarm robotics is becoming and already is a soloution to many problems currently faced and going on into the future.
 With indurvidual speeds of computers stagnating \cite{CPU speed}, the world becoming more data oreintated and the drive for humans to explore, distributed technologys need to rise to the challenge.
@@ -227,29 +256,6 @@ It is for this reseon that I have decided to contribute my part to this extensiv
 %%%% Methodology/Design Chapter %%%%
 \chapter{Main}
 \label{cha:Main}
-
-
-\section{The Problem}
-\label{sec:Problem}
-
-The problem is to create an efficent storage system for directional based data.
-This can be broken down into two sections, how data is passed throughout the swarm as to not have to many duplicates of the data but not have to little to not allow for redundancy.
-The second is to have that data spread out based on a coord point, this will simulate the use of said data in that area.
-
-\begin{figure}[htb]
-\label{fig:popdensity}
-\begin{center}
-\centering
-\includegraphics[width=\linewidth]{"./ExplanationImgs/Memory_Pop_Density.png"}
-\caption{Example of data density based of coordinale point}
-\end{center}
-\end{figure}
-
-As shown in Figure \ref{fig:popdensity} we can see how we want the data to spread out across the swarm based off the distance of the agent to the point.
-An example of why this is a requirement is for example in that arbitrary point might be the farm and possible hostilitys around, therefore you want more agents knowing that arbitry point infomation around that area but still have that infomation spread across the network due to possible losses of all the agents near said point.
-
-The goal is to create an effiecent storage and replication policy which can handle the fluctuations of the swarm, and provide reliabilty in the face of both corrilated failures and non-correlated failures of the swarm.
-This policy should take into account poisition of the agent relative to the point that the infomation is needed near.
 
 
 
