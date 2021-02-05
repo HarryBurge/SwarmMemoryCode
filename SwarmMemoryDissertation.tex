@@ -93,24 +93,35 @@ This leads to analysing how effective the proposed policy has kept to standards 
 \section{The Problem}
 \label{sec:Problem}
 
-The problem is to create an efficent storage system for directional based data.
-This can be broken down into two sections, how data is passed throughout the swarm as to not have to many duplicates of the data but not have to little to not allow for redundancy.
-The second is to have that data spread out based on a coord point, this will simulate the use of said data in that area.
+The problem this report will cover is defined as follows. 
+We need to create a storage policy for agents of a swarm, to be able store directional abstract data as a collective, without complete duplication.
+
+This problem can be split into two separate sub-problems. 
+One is the handling of data duplication throughout the swarm as to be able to control for failures of agents, and provide a mechanic for recovery from said failures. 
 
 \begin{figure}[htb]
 \label{fig:popdensity}
 \begin{center}
 \centering
 \includegraphics[width=\linewidth]{"./ExplanationImgs/Memory_Pop_Density.png"}
-\caption{Example of data density based of coordinale point}
+\caption{Data duplication density based off distance to datas desired location}
 \end{center}
 \end{figure}
 
-As shown in Figure \ref{fig:popdensity} we can see how we want the data to spread out across the swarm based off the distance of the agent to the point.
-An example of why this is a requirement is for example in that arbitrary point might be the farm and possible hostilitys around, therefore you want more agents knowing that arbitry point infomation around that area but still have that infomation spread across the network due to possible losses of all the agents near said point.
+The second is controlling where the duplicated data is within a world compared to where the data is needed in that world. 
+A visualization of this can be seen in Figure \ref{fig:popdensity}, this shows the density of duplications within an area based on distance from the desired position of that data. 
+As the reader can see the further we get from the desired point we should have less duplicates of data compared to agents without duplications of that data.
 
-The goal is to create an effiecent storage and replication policy which can handle the fluctuations of the swarm, and provide reliabilty in the face of both corrilated failures and non-correlated failures of the swarm.
-This policy should take into account poisition of the agent relative to the point that the infomation is needed near.
+There are lots of examples where a problem like this could arise, a good example of where this could be applied is operating in a mine filed \cite{Cognitive maps mine detection}. 
+Near the start of the agents operation they will need to map out where potential mines might be and record their location. 
+Obviously once an agent finds a mine we would want it to spread the word of the location of said mine. 
+However due to memory restrictions the agents can only know about a minimal amount of mines, therefore agents closer to the mine should prioritize knowing its whereabouts compared to mines it may never come across. 
+Now bringing this into a more of a practical solution if agents fail individually for example running out of battery, or as a group from a mine going off. 
+We still need the swarm to not lose data, in the case of our example it would still be relevant to know where a possible crater could be.
+
+With this increase in complexity, the storage policy needs to be able to withstand the fluctuations and locality of the swarm. 
+With reliable redundancy to handle correlated (Mine detonation) and non-correlated (Power loss) failures.
+
 
 %%%%%%%%%%%%%%%%%
 
