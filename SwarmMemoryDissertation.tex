@@ -40,8 +40,8 @@
 
 
 %%%% Itntroduction %%%%
-\chapter{Literature Review}
-\label{cha:Literature Review}
+\chapter{Introductury Material}
+\label{cha:Introductury Material}
 
 \section{Introduction}
 \label{sec:Introduction}
@@ -86,7 +86,6 @@ This will be covered in the two sections, Section \ref{sec:Cloud} of which goes 
 We’ll then go through the methodology of the proposed solution’s design.
 How it is supposed to act and react in different scenarios, and the reasons for why. 
 This leads to analysing how effective the proposed policy has kept to standards derived in the methodology section, and whether it solves the problem defined in Section \ref{sec:Problem}.
-
 %%%%%%%%%%%%%%%%%%
 
 %%%% Problem Definition %%%%
@@ -121,46 +120,104 @@ We still need the swarm to not lose data, in the case of our example it would st
 
 With this increase in complexity, the storage policy needs to be able to withstand the fluctuations and locality of the swarm. 
 With reliable redundancy to handle correlated (Mine detonation) and non-correlated (Power loss) failures.
-
-
 %%%%%%%%%%%%%%%%%
 
 %%%% Litreture Review %%%%
+\chapter{Litreture Review}
+\label{cha:Litreture Review}
 
 \section{Cloud/Backup storage policys/schemes}
 \label{sec:Cloud}
 
-Like most things in computer science, cloud storage started off relatively simple (In nowadays terms). As the years have progressed so has the demand and use of the cloud, varying from everyday people storing files to large businesses storing harvested data. This led to the need for much sophisticated storage solutions, which can handle the increasing file size and frequency of use. A component that increased this complexity was the Legal Services Act. 2007 \cite{LSA}. This enforces that cloud storage suppliers must provide reliable and fast data collection for users. Not only that but to also provide near guaranteed longevity of stored data. In this section we will focus on cloud-based storage policies and some background terminology needed for this report.
+Like most things in computer science, cloud storage started off relatively simple (In nowadays terms). 
+As the years have progressed so has the demand and use of the cloud, varying from everyday people storing files to large businesses storing harvested data. 
+This led to the need for much sophisticated storage solutions, which can handle the increasing file size and frequency of use. 
+A component that increased this complexity was the Legal Services Act. 2007 \cite{LSA}. 
+This enforces that cloud storage suppliers must provide reliable and fast data collection for users. 
+Not only that but to also provide near guaranteed longevity of stored data.
+In this section we will focus on cloud-based storage policies and some background terminology needed for this report.
 
-Firstly the reader will need to understand the difference between correlated and non-correlated failures. A non-correlated failure is when a device fails independently and with no relation to other failures with the system as a whole. An example of this within cloud based computing, a server node can shut down due to a software failure, therefore we lose connection and access to the node’s data, typically this is completely independent of other servers in the rack. A correlated failure as the name suggests, is when a device fails with other devices with relation linking why they have failed. A typical example of this in cloud computing would be mass restarts because of a power surge from a storm. The power surge event is what links the failures together, therefore making it correlated. To be correlated doesn't mean they need to be geographically close together, however within our swarm solution will mean geographically close failures. 
+Firstly the reader will need to understand the difference between correlated and non-correlated failures. 
+A non-correlated failure is when a device fails independently and with no relation to other failures with the system as a whole. 
+An example of this within cloud based computing, a server node can shut down due to a software failure, therefore we lose connection and access to the node’s data, typically this is completely independent of other servers in the rack. 
+A correlated failure as the name suggests, is when a device fails with other devices with relation linking why they have failed. 
+A typical example of this in cloud computing would be mass restarts because of a power surge from a storm. 
+The power surge event is what links the failures together, therefore making it correlated. 
+To be correlated doesn't mean they need to be geographically close together, however within our swarm solution will mean geographically close failures. 
 
-To control for these two types of failures there are many different solutions providing different features. Locally what is typically used is a RAID system for local failures within a node, and then a replication policy \cite{Avalability storage} for internode duplication. These in tandem provide stable node storage and redundancy for when a possible node failure acquires.
+To control for these two types of failures there are many different solutions providing different features. 
+Locally what is typically used is a RAID system for local failures within a node, and then a replication policy \cite{Avalability storage} for internode duplication. 
+These in tandem provide stable node storage and redundancy for when a possible node failure acquires.
 
-The most common forms of replication policies will take a piece of data, decide whether the data needs to be duplicated and if so will completely copy the data onto another storage device. This provides a backup in case of failure on either one of those devices. A simplistic approach would be a random replication policy, where data is randomly chosen to be duplicated, typically duplicated within the same datacenter, so on a neighboring rack. This is an efficient design policy for handling non-correlated errors, however, lacks the robustness against correlated errors, and without a tracking of global duplications can lead to over used storage. We can mitigate for correlated errors by allowing for duplications to happen over data centers, however, this leads to downsides which will be explained below. An algorithm like random replication, is substantial for long-term storage where popularity of data and distance to users are averagely the same for all data items.
+The most common forms of replication policies will take a piece of data, decide whether the data needs to be duplicated and if so will completely copy the data onto another storage device. 
+This provides a backup in case of failure on either one of those devices. 
+A simplistic approach would be a random replication policy, where data is randomly chosen to be duplicated, typically duplicated within the same datacenter, so on a neighboring rack. 
+This is an efficient design policy for handling non-correlated errors, however, lacks the robustness against correlated errors, and without a tracking of global duplications can lead to over used storage. 
+We can mitigate for correlated errors by allowing for duplications to happen over data centers, however, this leads to downsides which will be explained below. 
+An algorithm like random replication, is substantial for long-term storage where popularity of data and distance to users are averagely the same for all data items.
 
-Two key concepts of availability and popularity are not taken into account when using a random replication policy. When cloud based storage transitioned from a semi-local backup system to a worldwide daily driver. Random replication can’t withstand the variability of how users interact with files nowadays. An example of why these concepts are needed in today's age, are videos. If a video is hosted in one country and replicated within said country then international viewers might have delays to their streaming. If we then tried to compensate for that by hosting it in multiple countries, those other countries might not view the video as much. This therefore means we are wasting storage space of which we could use for other more popular videos. This therefore leaves us trying to maximise for both situations, and a new replication policy is required.
+Two key concepts of availability and popularity are not taken into account when using a random replication policy. 
+When cloud based storage transitioned from a semi-local backup system to a worldwide daily driver. 
+Random replication can’t withstand the variability of how users interact with files nowadays. 
+An example of why these concepts are needed in today's age, are videos. 
+If a video is hosted in one country and replicated within said country then international viewers might have delays to their streaming. 
+If we then tried to compensate for that by hosting it in multiple countries, those other countries might not view the video as much. 
+This therefore means we are wasting storage space of which we could use for other more popular videos. 
+This therefore leaves us trying to maximise for both situations, and a new replication policy is required.
 
-We will be looking into two different algorithm concepts, of which try to handle the maximisation problem. Both withstand non-correlated failures well because of the nature of replication, so we will only be looking into the other effects. The algorithms have been abstracted from papers on handling "Distributed key-value store" \cite{Key-Value}, where you have key-value pairs on multiple devices on a network where duplication only leads to more fault tolerance of the data stored.
+We will be looking into two different algorithm concepts, of which try to handle the maximisation problem. 
+Both withstand non-correlated failures well because of the nature of replication, so we will only be looking into the other effects. 
+The algorithms have been abstracted from papers on handling "Distributed key-value store" \cite{Key-Value}, where you have key-value pairs on multiple devices on a network where duplication only leads to more fault tolerance of the data stored.
 
-The first approach uses a privileged level of control where it uses its global knowledge to make decisions about whether and how to duplicate items \cite{Avalability storage, Patent}. This doesn’t have to just be data replication, but the same principles can be seen within schema changes \cite{Scheme changes}. Due to the nature of having a privileged user, the control of the policy is a lot easier to make specific behaviours be exhibited and to be understood. This means we have higher guarantees for correlated failures unless on the master node, however this can be handled dynamically by assigning another master, touched upon in Section \ref{sec:Robotics}. Availability and popularity are handled by the policy coded onto the master node.
+The first approach uses a privileged level of control where it uses its global knowledge to make decisions about whether and how to duplicate items \cite{Avalability storage, Patent}. 
+This doesn’t have to just be data replication, but the same principles can be seen within schema changes \cite{Scheme changes}. 
+Due to the nature of having a privileged user, the control of the policy is a lot easier to make specific behaviours be exhibited and to be understood. 
+This means we have higher guarantees for correlated failures unless on the master node, however this can be handled dynamically by assigning another master, touched upon in Section \ref{sec:Robotics}. 
+Availability and popularity are handled by the policy coded onto the master node.
 
-Having an approach that uses a master, doesn’t work effectively for a swarm. This is because the change from a server network to a swarm is quite a drastic change. Servers running over network generally have complete connectivity e.g. Global scope. Also servers have a constant power supply compared to the average swarm agent. When restricting the masters scope we have to rely on messages over other agents which will first of all reduce processing capability and power loss will be more significant to agents closer to the master, possible leading to a cut off from command \cite{Swarm robotics reviewed}. It also doesn’t fit into the ideology of a swarm, this will be talked about in Section \ref{sec:Robotics}.
+Having an approach that uses a master, doesn’t work effectively for a swarm. 
+This is because the change from a server network to a swarm is quite a drastic change. 
+Servers running over network generally have complete connectivity e.g. Global scope. 
+Also servers have a constant power supply compared to the average swarm agent. 
+When restricting the masters scope we have to rely on messages over other agents which will first of all reduce processing capability and power loss will be more significant to agents closer to the master, possible leading to a cut off from command \cite{Swarm robotics reviewed}. 
+It also doesn’t fit into the ideology of a swarm, this will be talked about in Section \ref{sec:Robotics}.
 
-The second approach doesn’t rely on a privileged member and can be adapted for locality. We follow a distributed control approach where each node (In the case described below its each key-value pair) has its own controller. Following the approach used with “SKUTE” as proposed in \cite{Distributed Storage}, it can make four decisions per data item. These decisions are; Migration, Suicide, Replication, and Nothing.
+The second approach doesn’t rely on a privileged member and can be adapted for locality. 
+We follow a distributed control approach where each node (In the case described below its each key-value pair) has its own controller. 
+Following the approach used with “SKUTE” as proposed in \cite{Distributed Storage}, it can make four decisions per data item. 
+These decisions are; Migration, Suicide, Replication, and Nothing.
 
-Migration is the move to a lower cost or more redundant servers. Suicide is the removal of itself, this is usally be because of to many duplicates. Replication is when the data decides that it needs to be duplicated and sent to another node and Nothing is as the name indicates.
+Migration is the move to a lower cost or more redundant servers. 
+Suicide is the removal of itself, this is usally be because of to many duplicates. 
+Replication is when the data decides that it needs to be duplicated and sent to another node and Nothing is as the name indicates.
 
-Because of the highly distributed nature of said approach, when coming to suicide we need to handle the edge case where the only two nodes with duplicates make the decision to suicide at the same time, therefore leaving us with no replications. This is where a consensus algorithm comes into play. Paxos \cite{Paxos} is an example of how both nodes couldn’t suicide at the same time, therefore leading to the ideal case in this example of only one duplicate. 
+Because of the highly distributed nature of said approach, when coming to suicide we need to handle the edge case where the only two nodes with duplicates make the decision to suicide at the same time, therefore leaving us with no replications. 
+This is where a consensus algorithm comes into play. 
+Paxos \cite{Paxos} is an example of how both nodes couldn’t suicide at the same time, therefore leading to the ideal case in this example of only one duplicate. 
 
-Within the domain of server storage networks an approach like “SKUTE” is less commonly used because it adds complexity which is not needed within a global and consistently powered network. Most data warehouses would prefer to have one server running as a controller and other servers running at full capacity compared to all servers at a slightly lower capacity due to extra self computation. However this approach allows for greater redundancy because of having no single point of failure.
+Within the domain of server storage networks an approach like “SKUTE” is less commonly used because it adds complexity which is not needed within a global and consistently powered network. 
+Most data warehouses would prefer to have one server running as a controller and other servers running at full capacity compared to all servers at a slightly lower capacity due to extra self computation. 
+However this approach allows for greater redundancy because of having no single point of failure.
 
-An approach like this is highly adaptable towards a homogeneous swarm. However with heterogeneous swarms the previous algorithm may work a lot better. Differences between the swarm types will be explained in Section \ref{sec:Robotics}. 
+An approach like this is highly adaptable towards a homogeneous swarm. 
+However with heterogeneous swarms the previous algorithm may work a lot better. 
+Differences between the swarm types will be explained in Section \ref{sec:Robotics}. 
 
-Moving towards local redundancy and optimisation is the stagnated study of RAID. This is where we change orderings of multiple storage discs to gain redundancy and/or performance increases. This grouping of disks is called a RAID array and can be structured in a multitude of ways. Common structures are labelled as RAID levels and give different attributes based on what functionality you are pursuing \cite{RAID Levels}. 
+Moving towards local redundancy and optimisation is the stagnated study of RAID. 
+This is where we change orderings of multiple storage discs to gain redundancy and/or performance increases. 
+This grouping of disks is called a RAID array and can be structured in a multitude of ways. 
+Common structures are labelled as RAID levels and give different attributes based on what functionality you are pursuing \cite{RAID Levels}. 
 
-One of the key components of multiple RAID levels is the use of parities \cite{Raid parity}. This is where a function (typically an XOR) is done on two or more sets of data to create one or more parities. The function has a property thus that if a tolerant amount of disks are lost the data that was lost can be reconstructed. In the case of data A, data B and A XOR B, if data B is lost then can be reconstructed using data A and A XOR B. With different levels and functions more than one disk can fail and still retain data however if failures go over that then all data is lost. RAID is predominantly used internally within a storage node to provide redundancy against disk failures and increase speed of writes that are typically on hard disks, because of cost and possible reads after failure of heads. 
+One of the key components of multiple RAID levels is the use of parities \cite{Raid parity}. 
+This is where a function (typically an XOR) is done on two or more sets of data to create one or more parities. 
+The function has a property thus that if a tolerant amount of disks are lost the data that was lost can be reconstructed. 
+In the case of data A, data B and A XOR B, if data B is lost then can be reconstructed using data A and A XOR B. 
+With different levels and functions more than one disk can fail and still retain data however if failures go over that then all data is lost. 
+RAID is predominantly used internally within a storage node to provide redundancy against disk failures and increase speed of writes that are typically on hard disks, because of cost and possible reads after failure of heads. 
 
-The methodology is that as long as the nodes individually are redundant enough and then there is control on a higher level with our replication schemes, that is a sufficient redundancy. RAID could be adapted to run over multiple different storage nodes, however the complexity compared to performance is heavily in the favour for the above methodology for storage networks. We will come back to the possible uses of RAID internally and externally in Section {Improvements}.
+The methodology is that as long as the nodes individually are redundant enough and then there is control on a higher level with our replication schemes, that is a sufficient redundancy. 
+RAID could be adapted to run over multiple different storage nodes, however the complexity compared to performance is heavily in the favour for the above methodology for storage networks. 
+We will come back to the possible uses of RAID internally and externally in Section {Improvements}.
 
 // Finish rewriting
 // improvements refrence
@@ -169,17 +226,29 @@ The methodology is that as long as the nodes individually are redundant enough a
 \section{Swarm robotics}
 \label{sec:Robotics}
 
-As explained in the introduction, the study of swarms are split into two subsections, mechanics and intelligence. Both explained broadly in the Section \ref{sec:Introduction}. 
+As explained in the introduction, the study of swarms are split into two subsections, mechanics and intelligence. 
+Both explained broadly in the Section \ref{sec:Introduction}. 
 
-Continuing on the discussion about swarm intelligence. Typically swarm intelligence focuses on solving abstract problems, like the traveling salesman problem, in a local distributed manner compared to a global manner. From the papers read by the author, it seems that predominantly the topics undertaken are testing distributed solvers compared to already researched solutions to see how they measure up. An example of this within the TSP domain is a genetic algorithm versus AS-TSP \cite{Swarm intellegiegence}. These algorithms provide benefits and drawbacks compared to their counterparts.
+Continuing on the discussion about swarm intelligence. 
+Typically swarm intelligence focuses on solving abstract problems, like the traveling salesman problem, in a local distributed manner compared to a global manner. 
+From the papers read by the author, it seems that predominantly the topics undertaken are testing distributed solvers compared to already researched solutions to see how they measure up. 
+An example of this within the TSP domain is a genetic algorithm versus AS-TSP \cite{Swarm intellegiegence}. 
+These algorithms provide benefits and drawbacks compared to their counterparts.
 
-The concept of swarm intelligence is creating a solver to a problem using a distributed algorithm that can rely on natural parallelism, doesn't rely on global knowledge and is adaptable on the fly, compared to their counterparts. A good example of where these algorithms excel is the networking domain, because of the high parallelism and need for adaptability \cite{Swarm intellegiegence}.
+The concept of swarm intelligence is creating a solver to a problem using a distributed algorithm that can rely on natural parallelism, doesn't rely on global knowledge and is adaptable on the fly, compared to their counterparts. 
+A good example of where these algorithms excel is the networking domain, because of the high parallelism and need for adaptability \cite{Swarm intellegiegence}.
 
-The other subsection can be broadly known as swarm mechanics. This encompasses all of which swarm intelligence doesn’t cover. Swarm mechanics focuses on problems that are less abstract and are usually in the domain of physical implementation \cite{Cognitive maps mine detection, Probabalitic automata foraging robots}. Swarm robotics can be seen as the same as swarm mechanics, however, it doesn’t have a broad enough scope/name to fit everything that can be researched in this author's opinion.
+The other subsection can be broadly known as swarm mechanics. 
+This encompasses all of which swarm intelligence doesn’t cover. 
+Swarm mechanics focuses on problems that are less abstract and are usually in the domain of physical implementation \cite{Cognitive maps mine detection, Probabalitic automata foraging robots}. 
+Swarm robotics can be seen as the same as swarm mechanics, however, it doesn’t have a broad enough scope/name to fit everything that can be researched in this author's opinion.
 
-Two arguments to justify the naming of swarm mechanics are as follows; within this domain we focus on the emergent behaviour of a swarm compared to the solution it might give. The second is that swarm robotics doesn’t encompass the study of swarm behaviour in nature \cite{Swarm intellegiegence, Ant communication}.
+Two arguments to justify the naming of swarm mechanics are as follows; within this domain we focus on the emergent behaviour of a swarm compared to the solution it might give. 
+The second is that swarm robotics doesn’t encompass the study of swarm behaviour in nature \cite{Swarm intellegiegence, Ant communication}.
 
-Delving deeper into swarm robotics we have three different methodologies, heterogeneous, homogeneous and hybrid \cite{Swarm robotics reviewed}. These can be adopted in multiple ways, however, we will focus upon the adoption of these methodologies on decision making and physical attributes of agents. Firstly we will talk about the physical adoptions.
+Delving deeper into swarm robotics we have three different methodologies, heterogeneous, homogeneous and hybrid \cite{Swarm robotics reviewed}. 
+These can be adopted in multiple ways, however, we will focus upon the adoption of these methodologies on decision making and physical attributes of agents. 
+Firstly we will talk about the physical adoptions.
 
 \begin{figure}[htb]
 \begin{center}
@@ -189,46 +258,126 @@ Delving deeper into swarm robotics we have three different methodologies, hetero
 \caption{Example of a hetrogenus ant colony. https://www.pinterest.co.uk/pin/777363585651532845/}
 \end{figure}
 
-A heterogeneous swarm is defined by having differences between agents of the same swarm, as in Figure \ref{fig:anthero}, whether physical or mental \cite{Swarm robotics reviewed, Swarm intellegiegence}. These occur commonly in nature and are less studied \cite{Swarm intellegiegence}, because differences in agents are a rarely needed property in research-based problems. For real-world solutions, heterogeneous swarms can be of great use, allowing other agents to pick up the slack of the swarm, or complete tasks that other swarm members cannot complete. A good example as described in \cite{Swarm robotics reviewed} with a mother ship being a navy boat and a swarm of quadcopters. The boat picks up for the slack of the swarm by being able to transport them longer distances than the swarm could normally cope with.
+A heterogeneous swarm is defined by having differences between agents of the same swarm, as in Figure \ref{fig:anthero}, whether physical or mental \cite{Swarm robotics reviewed, Swarm intellegiegence}. 
+These occur commonly in nature and are less studied \cite{Swarm intellegiegence}, because differences in agents are a rarely needed property in research-based problems. 
+For real-world solutions, heterogeneous swarms can be of great use, allowing other agents to pick up the slack of the swarm, or complete tasks that other swarm members cannot complete. 
+A good example as described in \cite{Swarm robotics reviewed} with a mother ship being a navy boat and a swarm of quadcopters. 
+The boat picks up for the slack of the swarm by being able to transport them longer distances than the swarm could normally cope with.
 
-The argument against heterogeneous swarms is that there is a tendency to over rely on the differences of agents. Running with the example from \cite{Swarm robotics reviewed}, the agents rely on the naval boat to be able travel longer distances and have to have a recharge point. Without the boat the swarm fails after some time. The decision to have a heterogeneous swarm in this case is valid because if the naval ship is lost, then something has already gone horrendously wrong.
+The argument against heterogeneous swarms is that there is a tendency to over rely on the differences of agents. 
+Running with the example from \cite{Swarm robotics reviewed}, the agents rely on the naval boat to be able travel longer distances and have to have a recharge point. 
+Without the boat the swarm fails after some time. 
+The decision to have a heterogeneous swarm in this case is valid because if the naval ship is lost, then something has already gone horrendously wrong.
 
-To have physical differences in agents, is to breed efficiency. However this can only hold true if the vulnerability of losing too many agents of the same type, that’s work is key to the survival of the swarm, is mitigated. This vulnerability can be controlled for in multiple ways. Common rules are found in nature's swarms and can be extracted from them. These are; jobs need to be either interchangeable between all types of agents however some agents are more efficient at that job \cite{Ant communication} or the jobs that are specific need to be non-essential for the colony's survival. 
+To have physical differences in agents, is to breed efficiency. 
+However this can only hold true if the vulnerability of losing too many agents of the same type, that’s work is key to the survival of the swarm, is mitigated. 
+This vulnerability can be controlled for in multiple ways. 
+Common rules are found in nature's swarms and can be extracted from them. 
+These are; jobs need to be either interchangeable between all types of agents however some agents are more efficient at that job \cite{Ant communication} or the jobs that are specific need to be non-essential for the colony's survival. 
 
-Ants typically fit into this category where ants have different types, as shown in Figure \ref{fig:anthero}. Some ant species, like Leaf-Cutter Ants, even have subcategories within a category of type. Leaf-Cutters have workers that will specialise in certain tasks like fungus farming. The best example of showing the interchangeability of these roles is when major ants do worker jobs when there is a significant loss of workers \cite{Swarm intellegiegence}. This leads us more towards a hybrid approach which is explained later on in this section.
+Ants typically fit into this category where ants have different types, as shown in Figure \ref{fig:anthero}. 
+Some ant species, like Leaf-Cutter Ants, even have subcategories within a category of type. 
+Leaf-Cutters have workers that will specialise in certain tasks like fungus farming. 
+The best example of showing the interchangeability of these roles is when major ants do worker jobs when there is a significant loss of workers \cite{Swarm intellegiegence}. 
+This leads us more towards a hybrid approach which is explained later on in this section.
 
 Because practical implementations of what humans can achieve currently in their robots, they don’t have the adaptability that biology can provide, without making agents too complex.
 
-Homogeneous swarms are defined by each agent being the same. This is found less often in nature, except for at the microbial level, and is commonly found in man-made agents. Because of biology's natural adaptability compared to current standards of robotics, semi-heterogeneous swarms are exploited better \cite{Swarm robotics reviewed, Swarm intellegiegence}. Therefore we maximise for the floors of our current technology, however with a sufficiently complex agent homogeneous swarms are the most optimal, but that is getting into speculative futuristic technologies of self replication, advanced intelligence and nano size.
+Homogeneous swarms are defined by each agent being the same. 
+This is found less often in nature, except for at the microbial level, and is commonly found in man-made agents. 
+Because of biology's natural adaptability compared to current standards of robotics, semi-heterogeneous swarms are exploited better \cite{Swarm robotics reviewed, Swarm intellegiegence}. 
+Therefore we maximise for the floors of our current technology, however with a sufficiently complex agent homogeneous swarms are the most optimal, but that is getting into speculative futuristic technologies of self replication, advanced intelligence and nano size.
 
-Homogeneous swarms benefit from maximum redundancy, this is because if any agent goes down there are still an entire swarm's worth of agents to take its place. With this benefit of redundancy we acquire some possible losses in efficiency which could have been exploited with agents with specific hardware. The design for homogeneous agents is a complex one, either the agent is too simplistic therefore loses efficiency in their tasks. Or they are too over engineered to the point that all agents have the ability for every specialism and may never need said hardware. There is a thin line between the two, where either we lose practical power of the swarm or we have to invest more into the swarm than it actually needs. An example to show this dynamic is if we have agents that need to mine and farm, they all have hands so can do the task at a suboptimal speed. We then as an improvement give them picks and hoes instead of arms. This gives us an increase in mining and planting speed, but why would the miners need a hoe.
+Homogeneous swarms benefit from maximum redundancy, this is because if any agent goes down there are still an entire swarm's worth of agents to take its place. 
+With this benefit of redundancy we acquire some possible losses in efficiency which could have been exploited with agents with specific hardware. 
+The design for homogeneous agents is a complex one, either the agent is too simplistic therefore loses efficiency in their tasks. 
+Or they are too over engineered to the point that all agents have the ability for every specialism and may never need said hardware. 
+There is a thin line between the two, where either we lose practical power of the swarm or we have to invest more into the swarm than it actually needs. 
+An example to show this dynamic is if we have agents that need to mine and farm, they all have hands so can do the task at a suboptimal speed. 
+We then as an improvement give them picks and hoes instead of arms. 
+This gives us an increase in mining and planting speed, but why would the miners need a hoe.
 
-Within the practical implementation of swarms, everything gets a bit messy. Usually there is not a clear cut framework or design that a swarm is designed to be like. They are designed to be as efficient as we can make them to be in any type of problem faced, this is where research and engineering have a bit of a disconnect. This is where hybrid approaches come into their own.
+Within the practical implementation of swarms, everything gets a bit messy. 
+Usually there is not a clear cut framework or design that a swarm is designed to be like. 
+They are designed to be as efficient as we can make them to be in any type of problem faced, this is where research and engineering have a bit of a disconnect. 
+This is where hybrid approaches come into their own.
 
-A hybrid approach tries to exploit the benefits of both heterogeneous and homogeneous designs without the downsides. Carrying on from our example of farmer and miner swarms, a hybrid approach to the physicality of an agent would go something like as follows. Each agent would have exactly the same body and could wield either a pickaxe or a hoe, but the key point is that a miner could become a farmer if it was required. The reader might wonder why physical hybrid approaches aren’t regarded as the best of all approaches. This is because when bringing a theoretical solution into the real-world we gain massive complexities. How can we guarantee job type distribution? What about the complexity of changing between job type hardware? These are all questions that are needed to be explored by the person creating the hybrid swarm. Usually it is easier to go for the simpler solution and deal with the possible loss of either efficiency or adaptability.
+A hybrid approach tries to exploit the benefits of both heterogeneous and homogeneous designs without the downsides. 
+Carrying on from our example of farmer and miner swarms, a hybrid approach to the physicality of an agent would go something like as follows. 
+Each agent would have exactly the same body and could wield either a pickaxe or a hoe, but the key point is that a miner could become a farmer if it was required. 
+The reader might wonder why physical hybrid approaches aren’t regarded as the best of all approaches. 
+This is because when bringing a theoretical solution into the real-world we gain massive complexities. 
+How can we guarantee job type distribution? 
+What about the complexity of changing between job type hardware? 
+These are all questions that are needed to be explored by the person creating the hybrid swarm. 
+Usually it is easier to go for the simpler solution and deal with the possible loss of either efficiency or adaptability.
 
-Moving on to the control/decision making of a swarm following these approaches. Homogeneous control follows the purest form of swarm robotics, where each agent has control of its own decision making based on what other agents in its locality are doing, sometimes labbelled distributed intelligence. This therefore creates an emergent/structured behaviour of the swarm even though each agent is acting of its own fruition and can usually only see locally. A simple example of this is \cite{Boids}.
+Moving on to the control/decision making of a swarm following these approaches. 
+Homogeneous control follows the purest form of swarm robotics, where each agent has control of its own decision making based on what other agents in its locality are doing, sometimes labbelled distributed intelligence. 
+This therefore creates an emergent/structured behaviour of the swarm even though each agent is acting of its own fruition and can usually only see locally. 
+A simple example of this is \cite{Boids}.
 
-Heterogeneous control is also very simple in nature, where certain agents control other agents' decision making. This can be handled in multiple ways, two promoniante ways are hivemind control \cite{HiveMind} and royalty/hierarchical control. Hivemind is where one agent controls the entire swarms decision making e.g. The hivemind controller will say the swarm needs to move to the left and then the agents handle that the way it decides. In a hierarchical approach it follows the same style as hive mind however deals with scalability better. Where we somehow have a power structure of certain agents being sub leaders of leaders. This control structure leaves itself vulnerable in the same way as its physical implementation, however, also has the fear of bad actors and power loss distributions over the swarm. These still can affect homogeneous swarms however is less of a threat than on a heterogeneous controlled swarm.
+Heterogeneous control is also very simple in nature, where certain agents control other agents' decision making. 
+This can be handled in multiple ways, two promoniante ways are hivemind control \cite{HiveMind} and royalty/hierarchical control. 
+Hivemind is where one agent controls the entire swarms decision making e.g. The hivemind controller will say the swarm needs to move to the left and then the agents handle that the way it decides. 
+In a hierarchical approach it follows the same style as hive mind however deals with scalability better. 
+Where we somehow have a power structure of certain agents being sub leaders of leaders. 
+This control structure leaves itself vulnerable in the same way as its physical implementation, however, also has the fear of bad actors and power loss distributions over the swarm. 
+These still can affect homogeneous swarms however is less of a threat than on a heterogeneous controlled swarm.
 
-Hybrid approaches to control of a swarm are just heterogeneous control policies that can adapt to changes of leaders and are usually designed for homogenous/hybrid swarms. The choice of leader(s) is usually done through a consensus algorithm \cite{Paxos} rather than based on any form of physical or mental difference. This allows for homogenous style bots to act in heterogeneous fashion. This can create more deterministic behaviours compared to emergent behaviors of homogeneous control, and can also help with the power loss distribution problem by re-electing leaders in different locations to help distribute where messages are relayed.
+Hybrid approaches to control of a swarm are just heterogeneous control policies that can adapt to changes of leaders and are usually designed for homogenous/hybrid swarms. 
+The choice of leader(s) is usually done through a consensus algorithm \cite{Paxos} rather than based on any form of physical or mental difference. 
+This allows for homogenous style bots to act in heterogeneous fashion. 
+This can create more deterministic behaviours compared to emergent behaviors of homogeneous control, and can also help with the power loss distribution problem by re-electing leaders in different locations to help distribute where messages are relayed.
 
-Humans themselves are a great example of a fully hybrid based swarm both in design and communication. Though humans have variations in characteristics they can be seen as pretty homogeneous in terms of the tasks that they can perform, obviously removing edge case actions like child birth. Tools and knowledge can be spread between humans to make the swarm more efficient and an agent can specialize in a certain area. However, if some agents are lost other agents can replace them by using the same tools and knowledge from the remaining agents of that specialism. Also, the natural power-based structure of humans fits a hybrid model in terms of electorship of some kind, and not of genetics (Except with royalty, however, this is more of a label rather than a genetic difference). The leaders aren't needed for every single action so fit into a usually hierarchical power structure, compared to something of a hivemind model.
+Humans themselves are a great example of a fully hybrid based swarm both in design and communication. 
+Though humans have variations in characteristics they can be seen as pretty homogeneous in terms of the tasks that they can perform, obviously removing edge case actions like child birth. 
+Tools and knowledge can be spread between humans to make the swarm more efficient and an agent can specialize in a certain area. 
+However, if some agents are lost other agents can replace them by using the same tools and knowledge from the remaining agents of that specialism. 
+Also, the natural power-based structure of humans fits a hybrid model in terms of electorship of some kind, and not of genetics (Except with royalty, however, this is more of a label rather than a genetic difference). 
+The leaders aren't needed for every single action so fit into a usually hierarchical power structure, compared to something of a hivemind model.
 %%%%%%%%%%%%%%%%
 
 
+%%%% Approach %%%%
+\chapter{Approach and Motivation}
+\label{cha:Approach and Motivation}
+
+\section{Inital Soloution Ideas}
+\label{sec:Inital Soloution Ideas}
+
+Initially before reading much litreature the idea the authour had was to create an adaptable version of RAID, where drives could come in and out of scope and still have guarantes on redundancy.
+The design would be as follows, for each agent that has space in memory and two agents in its vicinity, we would create a parity of two data points in the other agents that were not duplicates of either eachother or data already in the primary agent.
+Then each agent would check what agents are around it and check for if any of the paritys are missing an agent that builds its parity.
+If so then recreate the lost data, else if both agents are lost then delete the parity, otherwise do nothing.
+
+After reading into cloud based computing and hypothsising about the result of said algorithm it is clear that this algorithm wouldn't be good enough of a soloution and would be difficult to deal with the directionality of the data.
+This is because said algorithm doesn't take into account coordinates of the agents, and the spreading of the data relys heavily on connection losses, and in a semi-stable swarm this would not acquire enough.
+
+
+\section{Analysis of soloutions}
+\label{sec:Analysis of soloutions}
+
+
+%%%%%%%%%%%%%
+
 %%%% Motivations %%%%
 \section{Motivation}
-\label{Motivation}
+\label{sec:Motivation}
 
-In the previous sections we have described a quite clear picture as to why the study of swarms is becoming more of an integral part for leading us to the future. With sequential computation reaching its limits \cite{CPU speed}, and the world becoming increasingly data rich, the need for distributed problem solving is heavily required. As technology gets more efficient, the ability to make swarms become exponentially more viable, especially with recent advances in nano technology/biology.
+In the previous sections we have described a quite clear picture as to why the study of swarms is becoming more of an integral part for leading us to the future. 
+With sequential computation reaching its limits \cite{CPU speed}, and the world becoming increasingly data rich, the need for distributed problem solving is heavily required. 
+As technology gets more efficient, the ability to make swarms become exponentially more viable, especially with recent advances in nano technology/biology.
 
-Swarm robotics is limited by the technology of its time. The use of research is limited and far between in our day and age. We research this for the possible future where technology can support and utilize the fullest potential that swarms can bring to the table.
+Swarm robotics is limited by the technology of its time. 
+The use of research is limited and far between in our day and age. 
+We research this for the possible future where technology can support and utilize the fullest potential that swarms can bring to the table.
 
-The main uses nowadays are within surveillance \cite{UAV, HiveMind}, delivery or military \cite{Swarm robotics reviewed}. However, to see the full scope of what man-made swarms could do we look to the future. Whether it be for space exploration \cite{Space exploration}, nano-robots in medicine or in the parallel/distributed software domain \cite{blockchainandSwarm}. 
+The main uses nowadays are within surveillance \cite{UAV, HiveMind}, delivery or military \cite{Swarm robotics reviewed}. 
+However, to see the full scope of what man-made swarms could do we look to the future. 
+Whether it be for space exploration \cite{Space exploration}, nano-robots in medicine or in the parallel/distributed software domain \cite{blockchainandSwarm}. 
 
 It is for these reasons that I have decided to contribute my part to this extensive and breakthrough field, and will hopefully see it grow to its fullest potential.
-
 %%%%%%%%%%%%%
 
 
