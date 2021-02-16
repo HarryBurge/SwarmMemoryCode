@@ -352,11 +352,45 @@ Then each agent would check what agents are around it and check for if any of th
 If so then recreate the lost data, else if both agents are lost then delete the parity, otherwise do nothing.
 
 After reading into cloud based computing and hypothsising about the result of said algorithm it is clear that this algorithm wouldn't be good enough of a soloution and would be difficult to deal with the directionality of the data.
-This is because said algorithm doesn't take into account coordinates of the agents, and the spreading of the data relys heavily on connection losses, and in a semi-stable swarm this would not acquire enough.
+This is because said algorithm doesn't take into account coordinates of the agents, and the spreading of the data relys heavily on connection losses, so within a semi-stable swarm this would not acquire enough.
+
+This therefore leads us into replication policys, which can provide us directionality and duplication even on a stable network.
+Because of the nature of a swarm though usally it is semi stable if tlaking about iteration to iteration time scales, we can therefore look at the problem as a stable network problem but have the ability to control for failures.
+There were two algorithm types that seemed to be the best for a swarm, however one relied on hetrogenus/hybrid control with a controller telling other agents where to move/duplicate items.
+This would work effectively on a hetrogenusus swarm, but on a homogenusus swarm we would have to rely on masters only controlling there locality or masters be able to talk across the global network hoping packets from agent to agent.
+
+This is the reseaon for picking a ditriubuted control approach where each agent makes its own decisions based off its locality. 
+The benefits of this type of design are that we would have an average power loss over the swarm, because there is no hoping packets to singular points, focusses on higher parraelism.
+A downside to using this algorithm is that we can't gaurantee no data loss because in certain conditions an agent might not send off its data due to its locallity.
+Even with the significance of the drawback this was the algorithm picked due to the all round ability for the algorithm to be adaptable and the benefits of what it does do compared to other algorithms un-ability.
+
+We will model our design of "SKUTE" however we will have to change a few bits.
+We will take out migration because of added complexity, however this would be good to add in the future for handiling of swarm induced failures.
+Swarm induced failures would be filures that we couldn't account for with simple designs like an agent being in contact with no other agents therefore it can't pass on its data and leads to a vunrability.
+Going on from this problem we might get a case where agents in the locality of an agents has full memory this would lead to the same sort of disconnect as having no agents around.
+This could be mitigated for by either using a priority based system based of factors around the agent, using migration of data onto agents that have more free space on the public memory or a hybrid of the both where is an agent is maxed out and a high proirty store is coming in migrate a lower priority data out a take in the high prority data.
+
+// Possibly change to account for the migration addidtion
 
 
 \section{Analysis of soloutions}
 \label{sec:Analysis of soloutions}
+
+We will analys soloutions propsed using varying scientific methods.
+We will however not be doing p-value tests due to not having other algorithms to be able to compare it too.
+We could do tests between each algorithm propsed however the outputs are too subjective to be analysed with those types of results meaningfully.
+
+The analysis will be done by changing diffrent factors or diffrent algorithms, doing ten runs with ten thousand iterations.
+Within the ten runs we will average these results to be able to give us infomation like per data duplications globally, duplication distance to data points, number of agents and density of duplications about data point.
+This will overall give us a good anaylsis on how these algorithms perform, when changing factors like non-correlated failure rate, movement styles and correlated failures.
+It will also show us infomation on how changing certain paramters affects the bahavouir of the algorithm like total duplication.
+
+Even though this pretty much highlights all behavouirs of the algorithm we will also need to create a analysis for seeing instability with in the runs.
+This is because the data collected is at the end of the iteration of a agent and doesn't take into account which agents had what data, it only mesaures that there was for example five duplications.
+Therefore we need to see how many times that data might change agents to account for the stability of the "network".
+The stabilty is needed because excessive amounts of passing data is likely to cause errors of transmission and will increase power draw over the network.
+
+We will then review this data to see how well we think it performed to the expectations we have set out in Section \ref{sec:Problem} and show it can be adjusted to users needs.
 
 
 %%%%%%%%%%%%%
