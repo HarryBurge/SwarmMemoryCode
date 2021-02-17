@@ -392,6 +392,8 @@ The stabilty is needed because excessive amounts of passing data is likely to ca
 
 We will then review this data to see how well we think it performed to the expectations we have set out in Section \ref{sec:Problem} and show it can be adjusted to users needs.
 
+// Talk about specific things of analysis
+
 
 %%%%%%%%%%%%%
 
@@ -416,32 +418,39 @@ It is for these reasons that I have decided to contribute my part to this extens
 
 
 %%%% Methodology/Design Chapter %%%%
-\chapter{Main}
-\label{cha:Main}
-
+\chapter{Design}
+\label{cha:Design}
 
 
 \section{Simulation Infomation}
 \label{sec:Sim Info}
 
-The base simulation that the policys will be running on is a specified.
-There will be an area of which agents can move around, each point within that area can have a peice of data learned in that area.
-When a peice of data is learned in that area , the data stores where is was created and the policys will take that starting place into account.
-This is how we have defined our directional data aspect to the simulation, in real life this could be something like a learnt behavoiur that is needed for that specifc enviroment, however, for test purposes it is just a string.
+This section will describe the environment of which the agents will be simulated in. 
+The simulation is a 2D representation of a flat surface where agents can move freely around. 
+Agents are randomly located on the surface within the center 75\% area. 
+Points are then selected on the surface, and at the start of simulation the closest agent to that point learns the data, that data can never be learnt again other than from passing information from agent to agent. 
+The data is directional so when stored in agents memory the coordinates of where it originated is saved as well. 
+The directionality is needed later for policy calculations.
 
-Each agent has two bounded partitions of memory, these are called private and public memory.
-Private memory is for knowledge that is learnt by that agent, and public memory is infomation that that agent has learned from other agents.
-Both public and private memory cannot have duplicate data inside including across partitions.
-This split was made arbitraraly and isn't needed for a practical soloution however was created due to agents being more likely to pick up learned data by not having to delete infomation in memory to make space for said leanred infomation.
-In general public memory should be larger in size than private memory due to there being magnitudes more public infomation compared to private infomation for an agent.
+Agents are homogenous, with a small connection radius around them. 
+The world is width/height of 2, agents connection radius is 0.25. 
+We are assuming that connections between agents are perfect, and that each agent can simultaneously respond to incoming packets and send outbound packets.
 
-Agents are homogenus, and have the same connection radius of which they can talk to other agents within.
-Agents are assumed to be able to recieve and send packets whilst also doing actions like sending and recieveing itself, in real world soloutions this would likely be that each agent would need two recivers and senders or a control algortihm to handle this type of behavouir.
-In this simulation we assume that data transfer is perfect.
+Agents have two partitions of memory, public and private. 
+This is mainly a symbolic partition rather than an actual necessity. 
+Private memory is data that has been learnt directly by said agent, and public memory is information that the agent has learnt from another agent.
+Both public and private memory cannot have duplicate data in themselves or across partitions. 
+This partition is symbolic because it is not required, however useful to have. 
+It allows us to not require memory management of which having the memory as one partition might require. 
+An example of this in a one partition model, if an agent's memory is full with lots of public information and tries to learn a private data point, we would have to construct a way of dealing with these collisions. 
+This is because of the priority difference between holding duplicate data compared to the gathered data, this is because the gathered data can only be learned once. 
+With this partition we don’t have to deal with this problem, however we do lose efficiency in how much information an agent can store. 
+For the purpose of our testing and implementation, this efficiency is not a priority and is overlooked.
 
-Each agent moves randomly in circles varying in shapes and sizes to gain a swarm like movement of connections being broken and reconnected.
-Agents our running in diffrent threads so run at diffrent speeds and acts more like a real world swarm.
-Data is introduced at the start based of an amount wanted, and during the simulation data can be learned based an amount wanted.
+The control structure of the simulation runs 10,000 iterations. 
+Each iteration all agents are put into a parallel for loop to do its iteration, they are selected randomly in order to achieve the most real life-like simulation of individual agents that is possible for the author to use. 
+The reason for not having the agents run in all different threads is because the scheduling policy has a tendency to prioritize a few agents over all other agents therefore over a certain time period one agent might have completed 500 steps and another just 1, this is unlikely in real life implementations. 
+As a future improvement it would be good to have hardware that can support the number of agents all at the same time, compared to having to restrict the frequency because of the scheduling algorithm.
 
 \begin{figure}[htb]
 \label{fig:Connarea}
@@ -453,10 +462,58 @@ Data is introduced at the start based of an amount wanted, and during the simula
 \end{figure}
 
 In Figure \ref{fig:Connarea} we can see an example of what the 2D simulation looks like.
-Dots are agents, and the red circle around them are their connection radius of which they can talk to other agents, these are usally omitted from being draw due to making the images messyer and harder to understand.
-The blue consentic circles are a positional datas stages of allowed duplications, this is explained more in Section \ref{sec:Simple1}.
-The connection lines between the agents are just showing that data can pass between these two agents, these lines change colour based of what frames are being passed across them, this will be touched upon more in specific examples due to colours meaning diffrent things.
-As a simple visuallisation of how data is being passed between the agents, in this example the agent is blue signifiying that it holds the duplicate of blue data, e.g. the consetric circle.
+Dots are agents, and the red circle around them is their connection radius of which they can talk to other agents, these will be omitted from other images of the simulation to keep it cleaner and more understandable.
+The blue concentric circles are an example of the datas positional attribute, these will be omitted for a red circle in other images for the same reason as beforehand.
+The connection lines between the agents are just showing that data can pass between these two agents. These lines change colour based on what packets are being passed across them, this is for debug purposes and most likely won’t be seen in any images. 
+As a simple visualisation of how data is being passed between the agents, in this example the agent is blue signifying that it holds the duplicate of blue data, e.g. the data from the  concentric circle data point.
+
+
+
+\section{Static Heursitic}
+\label{sec:Simple2}
+
+
+\section{Dynamic Heuristic}
+\label{sec:Simple3}
+
+
+\section{Dynamic Heursitic with Migration}
+\label{sec:Simple4}
+
+%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%% Analysis %%%%
+\chapter{Analysis}
+\label{cha:Analysis}
+
+
+\section{Static Heursitic}
+\label{sec:Simple2a}
+
+
+\section{Dynamic Heuristic}
+\label{sec:Simple3a}
+
+
+\section{Dynamic Heursitic with Migration}
+\label{sec:Simple4a}
+
+%%%%%%%%%%%%%%
+
+
+%%%% Conclusion %%%%
+\chapter{Conclusion}
+\label{cha:conclusion}
+%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+\chapter{Main}
+\label{cha:Main}
 
 
 
@@ -561,55 +618,8 @@ However sometimes an important agent is removed the duplicate layout changes qui
 %%%%%%%%%%%%%%%%%%%%%
 
 
-%%%% Analysis and Conclusion %%%%
-\chapter{Conclusion}
-\label{cha:conclusion}
-%%%%%%%%%%%%%%%%%%%
-
-
 \appendix
 \chapter{Code apendix}
-
-\begin{algorithm}
-\caption{Agent's control loop}
-\label{Agent_Control_Loop}
-\begin{algorithmic}[1]
-\Procedure{Step}{}
-\State \text{move()}
-\State
-\If {item in private mem not in other agents public mem}
-\State \text{Replicate item}
-\State \Return true
-\EndIf
-\State
-\State $item \gets \text{random public mem item}$
-\State $allowed dupes \gets \textit{heuristic}(item)$
-\State $current dupes \gets \text{(local) number of agents with item in public mem}$
-\State
-\If {allowed dupes > current dupes}
-\State \text{Replicate item once}
-\ElsIf { allowed dupes < current dupes}
-\State \text{Suicide item using paxos}
-\Else
-\State \text{Randomly Replicate}
-\EndIf
-\State
-\State \Return true
-\EndProcedure
-\State
-\Procedure{Heuristic(Item)}{}
-\State $dist  \gets \text{agent distance to items target point}$
-\State $allowed dupes \gets \text{items max dupes} - (dist / \text{items step})$
-\State
-\If {allowed dupes <= 0}
-\State \Return 0
-\Else
-\State \Return allowed dupes
-\EndIf
-\EndProcedure
-\end{algorithmic}
-\end{algorithm}
-
 
 \begin{algorithm}
 \caption{Agent's control loop}
@@ -644,105 +654,6 @@ However sometimes an important agent is removed the duplicate layout changes qui
 
 
 \chapter{Results apendix}
-
-\begin{figure}[htb]
-\label{fig:Data1}
-\begin{center}
-\centering
-\includegraphics[width=\linewidth, height=8cm]{"./PrelimData/SimpleSuicRep_m4_r0.5_c1_n50.png"}
-\caption{Distance and number of duplicates on a run without a random replication factor}
-\end{center}
-\end{figure}
-
-\begin{figure}[htb]
-\label{fig:Data2}
-\begin{center}
-\centering
-\includegraphics[width=\linewidth, height=8cm]{"./PrelimData/SimpleSuicideReplication_4d_4m_0.5r_50n.png"}
-\caption{Distance and number of duplicates on a run without a random replication factor}
-\end{center}
-\end{figure}
-
-\begin{figure}[htb]
-\label{fig:Data3}
-\begin{center}
-\centering
-\includegraphics[width=\linewidth, height=8cm]{"./PrelimData/SimpleSuicideReplication_n50_r0.5_c1_m4_repchance0.1_avg5.png"}
-\caption{Distance and number of duplicates on average of 5 runs with a random replication factor=0.1}
-\end{center}
-\end{figure}
-
-\begin{figure}[htb]
-\label{fig:Data4}
-\begin{center}
-\centering
-\includegraphics[width=\linewidth, height=8cm]{"./PrelimData/SimpleSuicideReplication_n50_r0.5_c1_m4_repchance0.5_avg5.png"}
-\caption{Distance and number of duplicates on average of 5 runs with a random replication factor=0.5}
-\end{center}
-\end{figure}
-
-\begin{figure}[htb]
-\label{fig:Data5}
-\begin{center}
-\centering
-\includegraphics[width=\linewidth, height=10cm]{"./PrelimData/Non_correlated_errors_test1.png"}
-\caption{Example of non-correlated errors on agents with a failure rate=0.003 per iteration}
-\end{center}
-\end{figure}
-
-\begin{figure}[htb]
-\label{fig:Data6}
-\begin{center}
-\centering
-\includegraphics[width=\linewidth, height=8cm]{"./MiscImgs/Replication_No_Suicide_threshold_Together.png"}
-\caption{Example of diffrent values of replication threshold on homogenus density swarm}
-\end{center}
-\end{figure}
-
-\begin{figure}[htb]
-\label{fig:Data7}
-\begin{center}
-\centering
-\includegraphics[width=\linewidth, height=8cm]{"./MiscImgs/Replication_No_Suicide_threshold_0.8_c2_Non_uniform.png"}
-\caption{Example of two datas on a non-uniform density agent network}
-\end{center}
-\end{figure}
-
-\begin{figure}[htb]
-\label{fig:Data8}
-\begin{center}
-\centering
-\includegraphics[width=\linewidth, height=8cm]{"./MiscImgs/Rep_Sui_0.8_0.4-0.45_uniform_no_mo.png"}
-\caption{Example of suicide threshold changes on data policy, on a uniform agent density}
-\end{center}
-\end{figure}
-
-\begin{figure}[htb]
-\label{fig:Data9}
-\begin{center}
-\centering
-\includegraphics[width=\linewidth, height=8cm]{"./MiscImgs/Rep_Sui_no_uniform_no_mo.png"}
-\caption{Example of suicide threshold changes on data policy, on a non-uniform density}
-\end{center}
-\end{figure}
-
-\begin{figure}[htb]
-\label{fig:Data10}
-\begin{center}
-\centering
-\includegraphics[width=\linewidth, height=8cm]{"./PrelimData/New_Replication_Scheme_No_Death_0.8r_0.45s.png"}
-\caption{Example of Algorithm \ref{Agent_Control_Loop2}, with no failures}
-\end{center}
-\end{figure}
-
-\begin{figure}[htb]
-\label{fig:Data11}
-\begin{center}
-\centering
-\includegraphics[width=\linewidth, height=10cm]{"./PrelimData/Non_correlated_errors_test2_0.8_0.45.png"}
-\caption{Example of Algorithm \ref{Agent_Control_Loop2}, with failures at 0.003}
-\end{center}
-\end{figure}
 
 
 
