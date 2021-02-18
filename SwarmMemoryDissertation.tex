@@ -472,6 +472,73 @@ As a simple visualisation of how data is being passed between the agents, in thi
 \section{Static Heursitic}
 \label{sec:Simple2}
 
+This solution takes heavy inspiration from \cite{Distributed Storage}, we take the methodology of each agent controlling its own data and how it wants to distribute it. 
+We do this using the actions of Replication, Suicide and Nothing. 
+Migration is taken out due to the natural movements of the swarm, we don’t want all data to be funneled back to the point, this is to deal with correlated errors.
+
+We then use a heuristic to decide whether to do either three of these actions. 
+In this case we have two heuristics based off these factors:
+
+\begin{description}
+\item[$\bullet$] Amount of agents in connection range that have a duplicated data compared to not having duplicated data
+\item[$\bullet$] Distance to datas target area
+\item[$\bullet$] Agents around average available public memory
+\end{description}
+
+We then used a weighted sum, to calculate the heuristic value. 
+If the replication heuristic is above the replication threshold then we replicate and same for suicide, else do nothing. 
+The weights of either action are set such that they sum to one, so they can be seen as what percentage of the output should this value account for. 
+The reason for this algorithm being called static is that, mappings of where duplicated should be is deterministic and doesn’t rely on any previous knowledge. 
+
+A pseudo code version of this can be seen in Algorithm \ref{Agent_Control_Loop2}. 
+In this we can see how the agents work on an individual basis. 
+Every step we check whether we have learnt any new private data, if so then duplicate that data onto all agents around. 
+If this doesn’t happen because of external factors like no other agents around, it will class that data has just been learnt in the next iteration. 
+This is done to gain as much redundancy as quickly as possible, if a correlated failure happened early and we didn’t do this, there is a high probability that all that data could be lost, so we transfer it to all agents and take the possible transfer energy cost losses.
+
+We then move onto the factors mentioned in the bullet points above, in lines 8-10. 
+For this iteration we focus on one data point in public memory, and in line 18 we switch to a new item in public memory. 
+This means we are sequentially going through the public data and checking if we should do an action to it, over iterations equal to size of public memory stored. 
+This is not good for scaling however for the size of data that we are using for testing it is addicaute, this will be talked about more in Section \ref{further improvements}. 
+To gain the information needed for these three factors the agent broadcasts a packet to other agents in its vicinity. 
+They will then respond by sharing whether they have a duplicated version of the data in their public memory, and how full their memory is. 
+To check whether they have duplicated data is a simple look if they have a data item with the same id in private or public memory. 
+Once collated at the originating agent we can work out the specified values as shown in the code. 
+There are improvements that can be made to the handling of broadcasting and replying to mean we aren’t using as much power draw, however we will not go into this in the project and will be explained a bit more in the Section {further improvements}.
+
+After getting the three factors we make sure they are on a scale from 0 to 1, and rearrange them to grow higher when we need to do a certain action. 
+For example duplications go up when there is a higher density of duplications therefore on the replication heuristic we want it to be the other way around hence (1-dupes).
+
+\begin{figure}[htb]
+\label{fig:changing}
+\begin{center}
+\centering
+\includegraphics[height=5cm]{"./ExplanationImgs/planned_changes.png"}
+\caption{Example of changing of replication and suicide threshold on a uniform agent density}
+\end{center}
+\end{figure}
+
+With changes to different weightings and thresholds, we get significantly different behaviours. 
+An example of this is the increase of the replication threshold means that duplications will spread out less, avoid higher duplication density areas and not spread when agents are saturated in other data. 
+The higher the suicide factor means there is less of a duplication density diffrence across the network.
+
+For an easier understanding of the heuristics behaviour when changing the threshold values we can look at Figure \ref{fig:changing}. 
+This is not a full representation of how the heuristic will work, this diagram shows what the duplication density would be like over a uniformly spaced swarm with exactly the same number of data in public memory. 
+The smaller red dots are data duplicates originating from the datas area which is signified by the large red circle. 
+When the replication threshold is increased in size, this can be seen as changing the range that agents can have duplicated data, as visualized with the blue circle getting smaller. 
+Suicide threshold increasing, increases the diffrence in density across distances from the data area, as visuallised from left to right being lower to higher.
+
+Weightings can also be changed to fit the behaviour style of the heuristic, for example if you wanted to favour just distance information you could change values accordingly. 
+Having this weighted sum and threshold lends the algorithm to being optimised with a genetic algorithm, with a fitness function dependent on the results that a user might want. 
+This would have to be done for all different applications types because the difference in weights changes the behaviour. 
+For our runs we use, b = {0.45, 0.45, 0.1} and p = {0.3, 0.7}, b was picked arbitrary based off preliminary guesses of what would be best, and p was picked to make the average values duplications ratio and distance to data be roughly equally weighted.
+
+Originally “suicide data” in Line 16 of Algorithm \ref{Agent_Control_Loop2}, was done using Paxos \cite{Paxos}. 
+This was used to ensure that in a scenario where all of one data duplications are in a locality and could all be deleted at once, therefore having no duplications left of that data, wouldn’t occur. 
+However from preliminary testing this didn’t make much of a difference in our scenario, but should be added into any practical applications of this algorithm for more guaranteed redundancy. 
+
+// Further improvements refrence
+
 
 \section{Dynamic Heuristic}
 \label{sec:Simple3}
