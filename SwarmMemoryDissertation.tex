@@ -393,6 +393,7 @@ The stabilty is needed because excessive amounts of passing data is likely to ca
 We will then review this data to see how well we think it performed to the expectations we have set out in Section \ref{sec:Problem} and show it can be adjusted to users needs.
 
 // Talk about specific things of analysis
+// Redo and talk about the specific tests
 
 
 %%%%%%%%%%%%%
@@ -558,6 +559,58 @@ However from preliminary testing this didn’t make much of a difference in our 
 \section{Static Heursitic}
 \label{sec:Simple2a}
 
+\begin{figure}[htb]
+\label{fig:static_movement_non}
+\begin{center}
+\centering
+\includegraphics[width=\linewidth]{"./Static_Heuristic/static_movement_non.png"}
+\caption{$Static Heuristic on semi-static movement swarm, with non_correlated failures$}
+\end{center}
+\end{figure}
+
+To understand and evaluate our solotuin we look at how the solotuion reacts to diffrent scenrios.
+These are as follows:
+
+\begin{description}
+\item[$\bullet$] Semi-Static moving swarm with non-corrilated failures, Figure \ref{fig:static_movement_non}
+\item[$\bullet$] Semi-Static moving swarm with a corrilated failure, Figure \ref{fig:static_movement_con}
+\item[$\bullet$] Circlular moving swarm with non-corrilated failures, Figure \ref{fig:circle_movement_non}
+\item[$\bullet$] Circular moving swarm with a corrilated failure, Figure \ref{fig:circle_movement_con}
+\item[$\bullet$] Changing of replication and suicide thresholds, Figure \ref{fig:Threshold_Changes}
+\end{description}
+
+However first of all we will explain what each diagram means inside of Figure \ref{fig:static_movement_non}.
+
+"Number of agents with duplicated data", as the name explains it shows how many agents had that data at that iteration.
+Each of the lines show a diffrent datas mean duplicates over five simulations.
+The green coloured area is the standard deviation from the mean over all duplicated data.
+The reseaon for having all the indurvidual lines is incase one of our data duplicates had significantly lower results we could see.
+This could happen if in the runs the data was completly lost all the other data points would scew the mean to look like nothing bad had happend.
+
+"Number of agents", also as the name implies is the number of active agents over all five runs.
+The purple line is mean over all runs and the green area is the standard deviation from the mean.
+This is displayed to see the effects of agent lose.
+
+"Distance from desired point", this is what is the average distance that a data duplicate is from its desired point.
+The lines and green area are the same as before, and the yellow area shows the mean maximum and mean minmum distances from the desired point.
+This is shown to see how much of a fault tolerance we could have in a correlated failure.
+If the distance maxs out at 0.5 and we have a correlated failure that destorys all agents in a 0.6 raduis then we will lose that data from the swarm.
+
+"Duplicate to no duplicate or vice-versa", this shows the stability of the system, indicating when an agent has changed from either having a peice of data to not or from not having a piece of data to having said data.
+Everytime this happens we count it as one point and this is averaged over five runs.
+
+All data has been guassian filtered of a range of 50 iterations.
+This is to keep data readable, if we had a system that wasn't stable the mean would change drastically over each iteration, 10,000 times.
+We are only really intreseted in the trend and stability will show us the behavouir that we lose by using the filter.
+
+And lastly we have duplication density visualliser on the right.
+We take a 20 by 20 grid and at each iteration get how many duplicates of data there where of a specific data point in that grid section.
+We also take note of the complete number of agents in that grid on that iteration.
+We then can cumulate this and average out over five runs to see how the data duplication density changes from distance around the point of datas origin.
+The reseaon for doing the ratio rather than just a summation is because of this example, if a gridpoint has 100 agents in it and 10 duplicates of data the summation would say that there is more data there, howerver a gridpoint with 20 agents and 10 duplicates has a much higher density of duplicates.
+This therefore gives us a better depiction of what is going on.
+
+
 
 \section{Dynamic Heuristic}
 \label{sec:Simple3a}
@@ -720,8 +773,62 @@ However sometimes an important agent is removed the duplicate layout changes qui
 \end{algorithm}
 
 
+\begin{algorithm}
+\caption{Semi-Static movement}
+\label{semistaticmove}
+\begin{algorithmic}[1]
+\Procedure{Move}{}
+\State $dirforce \gets \text{define vectors from other agents to self}$
+\State $forces \gets \text{$dirforce$ with magnitudes $($0.24 $-$ current magnitude$)$}$
+\State
+\State \text{Apply small force to center of map}
+\State
+\State $face \gets \text{angle of resultant force on $forces$}$
+\State \text{point at angle $face$ and move forward by 0.0002}
+\State
+\State \Return True
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+
 \chapter{Results apendix}
 
+\begin{figure}[htb]
+\label{fig:Threshold_Changes}
+\begin{center}
+\centering
+\includegraphics[height=6.5cm]{"./Static_Heuristic/Threshold_Changes.png"}
+\caption{$Static Heuristic on semi-static movement swarm, with threshold changes$}
+\end{center}
+\end{figure}
+
+\begin{figure}[htb]
+\label{fig:static_movement_con}
+\begin{center}
+\centering
+\includegraphics[height=7cm]{"./Static_Heuristic/static_movement_con.png"}
+\caption{$Static Heuristic on semi-static movement swarm, with correlated failures$}
+\end{center}
+\end{figure}
+
+\begin{figure}[htb]
+\label{fig:circle_movement_non}
+\begin{center}
+\centering
+\includegraphics[height=7cm]{"./Static_Heuristic/circle_movement_non.png"}
+\caption{$Static Heuristic on circular movement swarm, with non_correlated failures$}
+\end{center}
+\end{figure}
+
+\begin{figure}[htb]
+\label{fig:circle_movement_con}
+\begin{center}
+\centering
+\includegraphics[height=7cm]{"./Static_Heuristic/circle_movement_con.png"}
+\caption{$Static Heuristic on circular movement swarm, with correlated failures$}
+\end{center}
+\end{figure}
 
 
 \begin{thebibliography}{100}
