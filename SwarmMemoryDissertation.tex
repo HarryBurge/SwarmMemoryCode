@@ -610,7 +610,51 @@ We then can cumulate this and average out over five runs to see how the data dup
 The reseaon for doing the ratio rather than just a summation is because of this example, if a gridpoint has 100 agents in it and 10 duplicates of data the summation would say that there is more data there, howerver a gridpoint with 20 agents and 10 duplicates has a much higher density of duplicates.
 This therefore gives us a better depiction of what is going on.
 
+Firstly we need to see whether the algorithm runs as expected from the design.
+In Figure \ref{fig:changing}, we can see how the algorithms duplication density is meant to change across the network, not accounting agents density or space in memory.
+Running the tests on a semi-static movement swarm changing the suicide and replication threshold values as in the Firgure \ref{fig:changing} we get roughly the correct behavouir, as can be shown in Figure \ref{fig:Threshold_Changes}.
+At very extreme values of replication threshold we can see because we have such little reduis of agents that can have the data the suicide threshold doesn't affect density changes as when we have a lower replication threshold.
+When replication threshold is low enough we get a larger spread so the density of the data can be seen much clearer.
+We can also deduce that suicide threshold is inversily corrilated with the stability of the network.
 
+In the bttom left corner of Figure \ref{fig:Threshold_Changes}, we can see it has a nice spread however its is very unstable with on average 13 agents changing from either having a duplicate to no or vice-versa.
+This could be solved using a new factor in the heuristic that takes into account stability.
+Within the threshold domain we can see that it performed as expected however will need to be improved, this will be covered in Section \ref{sec:Simple3}.
+
+Now moving onto the most pressing topic of the algorithm is how it performs with correlated and non-correlated failures in two completly diffrent swarm enviroments.
+Starting with non-correlated failures, in Figure \ref{fig:static_movement_non}, we can see in a semi-stable movement swarm that even as agents fail indurvivdually the number of duplicates of data fights the downwards trend.
+Even though over the swarm we lost on average 2/5 of our agents the data our duplicated data has a diffrent gradient of loss, this shows good redundancy against non-correlated failures.
+We can also observe that distances and the density spreads are correctly working.
+In the stability graph we can see that it is very unstable at the start and becomes stable over time however this is indicative of a semi-stable movement swarm rather than of the algorithm as can be seen in Figure \ref{fig:circle_movement_non}
+
+In  a circular movement network we get a lot of connections broken at each iteration and in a repeating fashion, this can be seen in the stability graph with an osicilating pattern.
+Something obeserved is that in circular moving swarms we were getting larger spreads over distance of duplicated data, as can be seen in the diffrenses in the duplication densitys of both figures.
+This can be explained by the behavouir of the swarms movement.
+Agents that have the data will move with it so therefore will change distances from the data area, and contribute to the data looking more spread out on a average over time desnity graph.
+I beilieve it to be this becuase in the regions comparitivly semi-static has an effect of a hill, whereas the circular movement is like a pancake.
+Another observed behavouir is the duplications spreading across the network is faster in the semi-static movement model, I beileve this to be inhernet diffrences in the swarms networking rather than the algorithms effectiveness.
+The behavouir of a circular moving network is indicative of having gaps in connections from one side of the plane to the other comapred to the semi-static swarm because they are usally linked well, so infomation is spread unimpeeded.
+
+Moving onto correlated failures testing.
+The failures happened at the 3000th iteration and happened at the centre with a raduis of 0.25, so the same range as an agent can talk to.
+In Figure \ref{fig:static_movement_con}, we can see that number of agents drops at the 3000 mark, this is smoothed out, however in the real simulation it happened instantanoulsy.
+
+Puple/liliac is the centre data on this graph as can be implied from the corrilated failure affecting the average distance the most.
+We can see that other data points were affected by the correlated failure but was an inverse affect of moving the average close because data was lost further away from them.
+Data duplicates handled very well and recorverd strongly and stablity was only changed slightly except for on lime.
+I beileve the stability of lime is an outlier, however not a really bad one because the scale of stability is very insuggnificant.
+Lime was kept in the graph for transparancy of results.
+
+We can see that the diffrence between Figure \ref{fig:static_movement_con} and Figure \ref{fig:circle_movement_con} are nearly exactly the same as diffrences between Figure \ref{fig:static_movement_non} and Figure \ref{fig:circle_movement_non}.
+With Figure \ref{fig:circle_movement_con} we can see that there it is less affected by the correlated failure, mainly because of the amount of agents that were actually lost.
+In the duplication density graphs we can see the lasting affects of the correlated failure on the distrubutions of the corner data points.
+
+My beilef is that this algorithm works more effectivly on a swarm that is higher natural instability and irregular movements, compared to a regularly organised swarm that doens't change much iteration to iteration.
+This is my beleif because of the distance spreads of data, and the handling of both corrilated and non-corrilated failures.
+Because of the identified instability that was found from the changing of the static thresholds we will focus now on creating a more stable enviroment to the swarm, using a dynamic models comapre to static, in Section \ref{sec:Simple3}.
+
+
+/// Talk about static movement because it isn't talked about
 
 \section{Dynamic Heuristic}
 \label{sec:Simple3a}
@@ -626,116 +670,6 @@ This therefore gives us a better depiction of what is going on.
 \chapter{Conclusion}
 \label{cha:conclusion}
 %%%%%%%%%%%%%%%%%%%
-
-
-
-
-
-
-\chapter{Main}
-\label{cha:Main}
-
-
-
-\section{Simple Scattered Memory Policy}
-\label{sec:Simple1}
-
-Taking on from the design of algorithm presented in \cite{Distributed Storage}, I applied a simple distributed storage policy onto a swarm that takes into account positional data.
-This policy has two actions that it can perform, suicide and replication, suicide is when a piece of data decides using a heuristic that it is not worth being stored in an agents memory so deletes itself, replication is where based on a heuristic the data believes it is worth spreading the infomation so will replicate to one member of the swarm.
-
-\begin{figure}[htb]
-\label{fig:Heuristic}
-\begin{center}
-\centering
-\includegraphics[height=5cm]{"./ExplanationImgs/Heuristic.png"}
-\caption{Poistional data heuristic for agents}
-\end{center}
-\end{figure}
-
-The heuristic mentioned above follows these rules, and Figure \ref{fig:Heuristic} helps visuallise the conecept. 
-At the grey agent in the middle is an example of when the data is learned, when learned this data will have a poistion that it was learned a radius at which you want the allowed duplications (including own duplicate) of that data to be one.
-The red line signifys that distance and the value in this example four is the maximum duplications of that data.
-The green line is just an easy way to compute which band an agent might be in.
-
-As an agent moves closer through the gradient of allowed duplicates it will want to have more duplicates in its area, therefore allowing for a higher concentration of said duplicated data in that area.
-We can then use this simple heuristic per item of data to be able to get the distribution that we want, one implementation of this is described below in Algorithm \ref{Agent_Control_Loop}.
-The reason for having a random replication when the allowed duplications equal the actual duplications is to try and breakthrough the boudarys at the edge where allowed dupes equals 1.
-
-Without this replication we would have data sit inside the data area to much, this can be seen on some prilimany test results Figure \ref{fig:Data1} and Figure \ref{fig:Data2}.
-Blue line is amount of agents with that duplicated data.
-Purple line is the mean distance of agents with duplicated data from the data point, Green area is the standard deviation and yellow/orange is the data range.
-A guassian filter has been passed over the results due to the mild fluctions every iteration creating a harder to see results.
-
-From the results shown in Figure \ref{fig:Data1} we can see that the distance from the area point likes to stay within side the data\_radius bounds, this was tested on diffrent sizes of data radius and max duplications allowed and still found to hold true.
-We then tested the algorithm which has a random replication value to be able to try push through the borders of the data radius.
-We ran these on two diffrent values of replication value for five times on each, Figure \ref{fig:Data3} is with a random replication value of 10\% when allowed duplicates = actual duplicates.
-Figure \ref{fig:Data4} is the same values as before however with a replication value of 50\% to see how roughly this will effect the results.
-
-We can see that having the replication value higher keeps data at a more consistent distance away from the data point rather than dealing with the fluctuations of the circluar movement of the agents.
-From personal observations of the algorithm running it was observed that the data transfers became more volatile with the higher replication number.
-Volatility meaning that data was replicated therefore making actual duplications to high then suiciding to get back down to the correct value, this would repeat often.
-In a real world soloution this would not be ideal due to data transfers costing energy and possible data loss, this means that we need to design an algorthim that can take this into account more.
-
-When comapring Figure \ref{fig:Data1}, Figure \ref{fig:Data2}, Figure \ref{fig:Data3} and Figure \ref{fig:Data4} we can impliy that the algorithm change doesn't affect the max distances like our desired outcomes want.
-With this algorithm we do get the desired affect when dealing with non-correlated errors as shown in \ref{fig:Data5}.
-In this graph we can see as the number of agents is decreasing the number of replications trys to fight that change, however some improvements might want to be made when a more thourgh investigation is done.
-Correlated errors were not tested currently due to the failures in distance from the data point, we want a larger min max range of values before this is tested.
-
-
-
-\section{Improved Heuristic}
-\label{sec:Simple2}
-
-To improve from the last design was to create a new heuristic that can take more into account and have scalable values, that can be modifyied to get diffrent behavoiur from the swarm network.
-This was done by identifying diffrent factors that we want to play a role in the choose to replicate and the chose to commit suicide.
-These were:
-
-\begin{description}
-\item[$\bullet$] Amount of agents in connection range that have a duplicated data compared to not having duplicated data
-\item[$\bullet$] Distance to datas target area
-\item[$\bullet$] Agents around average available public memory
-\end{description}
-
-The updated code can be seen in Algorithm \ref{Agent_Control_Loop2}, with this we can see that there are diffrent heurisitics for both suicide and replication.
-With the above factors we made sure that they were bounded [0, 1] by doing ratios of the max value.
-Then we had parameter values that sum to one as to show the percentage of what the parameter effects the heursitic, this can be seen in lines 12 and 15.
-After these have been summed together the value is bounded between [0, 1] which we then set a threshold value for at what point we want the code benith to activate, e.g. Replication or Suicide.
-Changing of these parameters creates diffrent charatersistics as an example can be shown with just replication and no suicide, Figure \ref{fig:Data6} and Figure \ref{fig:Data7}.
-
-With this we can see that making the replication threshold higher decreses the likelhood of replication and gives a semi bound in a uniform density swarm and within non-uniform density swarm.
-In figures shown you will see there is usally a black agent close to the red cricle (Data target area), this is because the agent that learned the data has it stored in private memory so isn't counted as changing colour to show it is a duplicated piece of data in public memory.
-With both Figures we can see that suicide is definetly needed due to movement of agents as in Figure \ref{fig:Data7} and within Figure \ref{fig:Data6} we can see its needed due to all agents in an area around the point have the data.
-This goes against what this storage policy is meant to provide, we need a way to vary duplicate density within that semi-bound around the data target area.
-
-To this we add in the suicide option which only takes into account the first to features meantion in the bullet points above.
-This will change the actions of the swarm to create a better policy as described in Section \ref{sec:Problem}.
-
-As we can see in Figure \ref{fig:Data8} adding in the suicide ability and changing the threshold value creates diffrent duplication densitys within the replication bounds.
-In simple terms it changes the desnity of duplications closer to the data target area if the density of agents is uniform in desnity.
-When talking about non-uniform densitys it wil also take into account the desnity of agent duplications, however basically applies the same affect of having less duplicates where that is wanted, an example of this can be seen in Figure \ref{fig:Data9}.
-
-With this current design it leads itself to diffrent observations based of parameter values.
-The right values need to be picked for the algorithm to work effectivaly, for example sometimes if suicide threshold goes to low it leads to massive instability with repeating duplicates and suicides which is wasted bandwidth and energy.
-This problem could be taken into account by also taking into account when the data was last replicated and allowing a sort of grace period within the heuristic to be able to allow natural movements to take those unstable agents apart.
-The heurisitc and threshold values lends itself towards a learning algorithm for example a gentic algorithm to pick the best value for the certain task or wanted behavoiur.
-
-As a prelimanry test run on an average of five runs, Figure \ref{fig:Data10}, we can see that we have managed to create an algorithm that is more stable to the periods of the swarms movement, in our case circles.
-This was designed into the simulation to be able to test an algortihms abilitys to be able to handle fluctions in a repeating manner that can be visible.
-We can also see that the range from maximum and minimum distances has now been increased which was something we wanted in for improvement from Algortim \ref{Agent_Control_Loop}.
-However we can see that the mean value is roughly within the middle of the maximum and minimum value which leads me to believe that the algorithm isn't performing as expected.
-We prefurably want the mean to tend towards being closer to the minimum rather than in the middle, this is to show the desnsity diffrence of duplicated data.
-This will have to be investigated further as to whether it is the nature of the heuristic or whether it was the values of the parameters which were picked manually.
-
-There is also an example of this algorithm running on a non-correlated errors in Figure \ref{fig:Data11}.
-With this we can see roughly that the duplicates stay at about 40\% of the total number of agents even with non-correlated errors happening at a very extreme rate.
-An observation within the simulations is some failures of agents can affect the total value suggnificantly until it gets into a stable state.
-Due to the nature of the heuristic it is deterministic and likes to hang in an optimum as much as possible, therefore some loss of agents doesn't change much.
-However sometimes an important agent is removed the duplicate layout changes quite quickly changing the layout across the swarm in a ripple like effect, until it gets back to an optimium (Stable state).
-
-
-
-
-%%%%%%%%%%%%%%%%%%%%%
 
 
 \appendix
