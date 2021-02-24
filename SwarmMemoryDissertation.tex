@@ -544,6 +544,63 @@ However from preliminary testing this didn’t make much of a difference in our 
 \section{Dynamic Heuristic}
 \label{sec:Simple3}
 
+To deal with instability of the static heurisitic, Algorithm \ref{Agent_Control_Loop2}, described in Section \ref{sec:Simple2a}.
+We need to do something to control when to replicate and suicide based of local infomation.
+The overall goal is to be able to reduce instability of the algorithm, whilst also taking into account practical limitiations of a real implementation.
+We could learn a lot about instability of the system if we polled agents around the selected agent, however doing that poll will be an increase in either amount of times we need to message and recieve infomation or the size of said infomation.
+Currently we only contact other agents around once, asking for their poisition, whehter they have a certain id in memory and how much free space in memory they have.
+To implement an accurate representation of global instability locally would also require all agents to have a table holding all data id's that has been held by the agent and how many times it has been changed over n iterations.
+We would then have to pass this infomation between agents which would then lead to loss of performance in practical soloutions.
+
+We therefore use a diffrent completely design to keep track of instability.
+First of all we want to restrict suicides for a small time period after a suicide has been completed, this is to slow down the rate at which we might lose data.
+This is not nesicarliry because of instability however helps to solve the rate of which instability happens, e.g. means less agents change per iteration and smooths changes to help with predictrability of the second part of the algorithm.
+This is where we restrict replication tending with instabilty.
+Instability occurs between three scenrios, either threshold parameters have been set incorrectly, an agent has failed or natural agent movement has broken its connection.
+We therefore restrict a agent from replicating its data if instability happens to try smooth out said instability.
+
+We do this using sigmoid functions with the above factors as inputs, this gives the threashold a dynamic ability to change based of the behavouir we give the sigmoid function.
+For replication it is:
+\begin{equation}
+\label{eq:1}
+\lambda_{rep}  = \big( \frac{1}{1+ e^{- \frac{ \theta -  \alpha }{ \beta } } } \big)
+\end{equation}
+
+We then use a classical weighted sum as before:
+
+\begin{equation}
+\textbf{W}_{rep}  = \begin{bmatrix}0.45 & 0.45 & 0.1 & -0.6 \end{bmatrix}
+\textbf{X}_{rep}  =  \begin{bmatrix} 1-r & \frac{\sqrt{8}-d}{\sqrt{8}} & s & \lambda_{rep}  \end{bmatrix} 
+\end{equation}
+
+For suicide we use similily the same version of a weigthed function however it has less parameters and the sigmoid is flipped:
+
+\begin{equation}
+\label{eq:2}
+ \lambda_{sui}  = - \big( \frac{1}{1+ e^{- \frac{\psi -  \alpha }{ \beta } } } \big) + 1
+\end{equation}
+
+\begin{equation}
+\textbf{W}_{sui}  = \begin{bmatrix}0.3 & 0.7 & -0.6 \end{bmatrix}
+\textbf{X}_{sui}  =  \begin{bmatrix} r & \frac{d}{\sqrt{8}} & \lambda_{sui}  \end{bmatrix} 
+\end{equation}
+
+We then workout $h_{rep}$ and $h_{sui}$ using multiplication as below:
+
+\begin{equation}
+ h  = \textbf{W}  \textbf{X} ^{T} 
+\end{equation}
+
+Where r is duplication ratio, d is distance to the datas target point, s is average space in agents in the locallity, this is the same as in Section \ref{sec:Simple2}.
+$\theta$ in Equation \ref{eq:1} is iterations since last suicide, once a suicide occurs on this agent $\theta=0$.
+$\psi$ in Equation \ref{eq:2} is a value based off how many agents asked the current agent to store a bit of data, this naturally increases as instability is increased.
+$\psi$ is reduced every iteration until 0.
+
+Sigmoid functions where used because we can control when the heuristic should be unimpedded or impredded with a grey area inbetween so if a data needs to duplicate quickly it can still over power the block.
+$\alpha$ and $\beta$ can be chnaged on both heuristics to give diffrent behavouirs.
+
+
+
 
 \section{Dynamic Heursitic with Migration}
 \label{sec:Simple4}
@@ -725,6 +782,8 @@ Because of the identified instability that was found from the changing of the st
 \end{algorithmic}
 \end{algorithm}
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Results apendix}
 
