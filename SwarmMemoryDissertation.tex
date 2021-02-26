@@ -600,10 +600,18 @@ Sigmoid functions where used because we can control when the heuristic should be
 $\alpha$ and $\beta$ can be chnaged on both heuristics to give diffrent behavouirs.
 
 
-
-
 \section{Dynamic Heursitic with Migration}
 \label{sec:Simple4}
+
+With the success of the dynamic heuristic in Section \ref{sec:Simple3}, we need to think about even more further improvements.
+One problem mentioned before is that because we are using a swarm we have inherent problems of connections between agents.
+As desribed about before if we have an agent that learns something but all agents around it are full up in memory then we are essentially locked out of the swarm.
+We could handle this using internal control of memory by assigning prioritys, and having a mangement system quite easily.
+However this could lead to loss of duplicates that might later be needed.
+Therefore we come up with a system for agents with higher data loads to pass of duplicates to agents with lower data loads.
+This is also known as Migration from "SKUTE" \cite{Distributed Storage}.
+
+// Continue on once migrtion has been added boi
 
 %%%%%%%%%%%%%%%%%%%%%%
 
@@ -621,7 +629,7 @@ $\alpha$ and $\beta$ can be chnaged on both heuristics to give diffrent behavoui
 \begin{center}
 \centering
 \includegraphics[width=\linewidth]{"./Static_Heuristic/static_movement_non.png"}
-\caption{$Static Heuristic on semi-static movement swarm, with non_correlated failures$}
+\caption{Static Heuristic on semi\-static movement swarm, with non\_correlated failures}
 \end{center}
 \end{figure}
 
@@ -716,6 +724,38 @@ Because of the identified instability that was found from the changing of the st
 \section{Dynamic Heuristic}
 \label{sec:Simple3a}
 
+We go about the same approach as in Section \ref{sec:Simple2a}, however we are focusing on how the new approach has affected the stability of the algorithm.
+We also need to llok at how the new heurisitc might have been affteced with the chnage to the heurisitc, even though it was designed to make a minimal impact when the prevouis heursitic is running smoothly.
+
+For all tests ran we use $\alpha_{rep}$ = 15, $\beta_{rep}$ = 2, $\alpha_{sui}$ = 150, $\beta_{rep}$ = 3, $\theta$ is 50*(number of times successfully replicated other data onto self).
+These are in accordance to the equations in Section \ref{sec:Simple3}.
+
+First we want to test the distribution like we did last time with the Static Heuristic, Section \ref{sec:Simple2a}.
+Within this test we saw how the thresholds being incorrect can lead to massive instability.
+With the results in Figure \ref{fig:Threshold_Changes2} we can see that instability has been massivley reduced compared to with the same threasholds as shown in Figure \ref{fig:Threshold_Changes}.
+Although this is indicitive of showing that we have more stability, the graph has the same shape as in Figure \ref{fig:Threshold_Changes}.
+This means we could just be slowing down the rate of stability rather than solving it.
+There is the possibility that we have more or less duplications creating the stability comparitivly so we will need to look further into the data.
+This could also be because of the suicide rate being at a reduced rate, if this is the case then we should see that there will be a suggnificant increase in duplications comparitivly to the static heuristic.
+
+Comparing Figure \ref{fig:circle_movement_con} and Figure \ref{fig:circle_movement_con2} we can see that we have managed to stabilize for the random flucuations of the circular movement, this is also true for Figure \ref{fig:circle_movement_non2}.
+However the fears of having more duplications is true in these two results where the number of duplicates doesn't seem to level off as much as in the static heuristic, this could be a problem and will have to be examined in the other results.
+Overall in this test it performed like it should have.
+
+When comparing Figure \ref{fig:circle_movement_non} and Figure \ref{fig:circle_movement_non2}, we can also see that the stability has been made more consistent, however the deviation is reduced as number of duplications reduces.
+This is to be expected, however wasn't visible in the past circluar movement tests, this could be due to randomness or the algorithm.
+
+With both circular movements the duplicates density graphs show data having a tendancy to hug the sides of the plane.
+This can be counted as partially onmouless because within viewing of the simulation some agents with the duplications of the data were hanging on the outer ages without connections therefore never suiciding making the duplication denisity in that area seem high.
+
+There is not much to say about Figure \ref{fig:static_movement_con2}, it looks pretty much exactly the same as Figure \ref{fig:static_movement_con}, except for duplications being lower and that stability converges nicely.
+These are all plossibly down to randomness in the simulation.
+
+Compairing Figure \ref{fig:circle_movement_non} and Figure \ref{fig:circle_movement_non2} we can see that stability has been increased, however it doesn't look like it due to the y-axis bounds being larger in Figure \ref{fig:circle_movement_non}.
+
+Overall all test points the new dynamic algorithm has performed the same if not better in all of them.
+This shows that the dynamic thresholding works as inteneded to not affect the algorithm when things are running smoothly, and then step on the breaks when we are put in a bit less of a stable state.
+
 
 \section{Dynamic Heursitic with Migration}
 \label{sec:Simple4a}
@@ -791,8 +831,8 @@ Because of the identified instability that was found from the changing of the st
 \label{fig:Threshold_Changes}
 \begin{center}
 \centering
-\includegraphics[height=6.5cm]{"./Static_Heuristic/Threshold_Changes.png"}
-\caption{$Static Heuristic on semi-static movement swarm, with threshold changes$}
+\includegraphics[height=7cm]{"./Static_Heuristic/Threshold_Changes.png"}
+\caption{Static Heuristic on semi\-static movement swarm, with threshold changes}
 \end{center}
 \end{figure}
 
@@ -801,7 +841,7 @@ Because of the identified instability that was found from the changing of the st
 \begin{center}
 \centering
 \includegraphics[height=7cm]{"./Static_Heuristic/static_movement_con.png"}
-\caption{$Static Heuristic on semi-static movement swarm, with correlated failures$}
+\caption{Static Heuristic on semi\-static movement swarm, with correlated failures}
 \end{center}
 \end{figure}
 
@@ -810,7 +850,7 @@ Because of the identified instability that was found from the changing of the st
 \begin{center}
 \centering
 \includegraphics[height=7cm]{"./Static_Heuristic/circle_movement_non.png"}
-\caption{$Static Heuristic on circular movement swarm, with non_correlated failures$}
+\caption{Static Heuristic on circular movement swarm, with non\_correlated failures}
 \end{center}
 \end{figure}
 
@@ -819,7 +859,52 @@ Because of the identified instability that was found from the changing of the st
 \begin{center}
 \centering
 \includegraphics[height=7cm]{"./Static_Heuristic/circle_movement_con.png"}
-\caption{$Static Heuristic on circular movement swarm, with correlated failures$}
+\caption{Static Heuristic on circular movement swarm, with correlated failures}
+\end{center}
+\end{figure}
+
+\begin{figure}[htb]
+\label{fig:Threshold_Changes2}
+\begin{center}
+\centering
+\includegraphics[height=7cm]{"./Dynamic_Heuristic/Thresholdchanges.png"}
+\caption{Dynamic Heuristic on semi\-static movement swarm, with threshold changes}
+\end{center}
+\end{figure}
+
+\begin{figure}[htb]
+\label{fig:static_movement_non2}
+\begin{center}
+\centering
+\includegraphics[height=7cm]{"./Dynamic_Heuristic/Static_move_non.png"}
+\caption{Dynamic Heuristic on semi\-static movement swarm, with non\_correlated failures}
+\end{center}
+\end{figure}
+
+\begin{figure}[htb]
+\label{fig:static_movement_con2}
+\begin{center}
+\centering
+\includegraphics[height=7cm]{"./Dynamic_Heuristic/Static_move_con.png"}
+\caption{Dynamic Heuristic on semi\-static movement swarm, with correlated failures}
+\end{center}
+\end{figure}
+
+\begin{figure}[htb]
+\label{fig:circle_movement_non2}
+\begin{center}
+\centering
+\includegraphics[height=7cm]{"./Dynamic_Heuristic/Circle_move_non.png"}
+\caption{Dynamic Heuristic on circular movement swarm, with non\_correlated failures}
+\end{center}
+\end{figure}
+
+\begin{figure}[htb]
+\label{fig:circle_movement_con2}
+\begin{center}
+\centering
+\includegraphics[height=7cm]{"./Dynamic_Heuristic/Circle_move_con.png"}
+\caption{Dynamic Heuristic on circular movement swarm, with correlated failures}
 \end{center}
 \end{figure}
 
