@@ -611,7 +611,17 @@ However this could lead to loss of duplicates that might later be needed.
 Therefore we come up with a system for agents with higher data loads to pass of duplicates to agents with lower data loads.
 This is also known as Migration from "SKUTE" \cite{Distributed Storage}.
 
-// Continue on once migrtion has been added boi
+This affect is likely to happen if there are massive disparitys in agents avialable memory.
+We can currently see in most runs we have a wide spread in our memory, this is not optimal for best performance of the swarm.
+The most optimal soloution is where every agent has roughly the same amount of data as every other agent, to teduce the affects possible disconnect from the wider swarm because of memory.
+As a biproduct of this proposed behavouir we get correlation with gloabl infomation as a single local agent.
+
+We implement this similarily to suicides where we don't want them to happen to often because of stability, however there isn't a complex heuritic for this.
+If the agent with the the most space in memory has two more than the current agent the migrate the data.
+Migrating is just when we transfer the data to the other agent then delete on our own agent.
+We don't use a complex heuristic like increasing the chance over time after a migration due to wanting this to be a definite behavoiur.
+We get a bit of a natural stability controller with the amount of leway we give agents, for example we picked two however if you really didn't want stability problems you would pick a larger leeway.
+You could also use parameters as provided by Section \ref{sec:Simple3}.
 
 %%%%%%%%%%%%%%%%%%%%%%
 
@@ -863,6 +873,8 @@ This shows that the dynamic thresholding works as inteneded to not affect the al
 \end{center}
 \end{figure}
 
+%%%%
+
 \begin{figure}[htb]
 \label{fig:Threshold_Changes2}
 \begin{center}
@@ -907,6 +919,48 @@ This shows that the dynamic thresholding works as inteneded to not affect the al
 \caption{Dynamic Heuristic on circular movement swarm, with correlated failures}
 \end{center}
 \end{figure}
+
+%%%%
+
+\begin{figure}[htb]
+\label{fig:static_movement_non3}
+\begin{center}
+\centering
+\includegraphics[height=7cm]{"./Dynamic_Migration/Static_Move_non.png"}
+\caption{Dynamic Heuristic with Migration on semi\-static movement swarm, with non\_correlated failures}
+\end{center}
+\end{figure}
+
+\begin{figure}[htb]
+\label{fig:static_movement_con3}
+\begin{center}
+\centering
+\includegraphics[height=7cm]{"./Dynamic_Migration/Static_Move_con.png"}
+\caption{Dynamic Heuristic with Migration on semi\-static movement swarm, with correlated failures}
+\end{center}
+\end{figure}
+
+\begin{figure}[htb]
+\label{fig:circle_movement_non3}
+\begin{center}
+\centering
+\includegraphics[height=7cm]{"./Dynamic_Migration/Cicrle_Move_non.png"}
+\caption{Dynamic Heuristic with Migration on circular movement swarm, with non\_correlated failures}
+\end{center}
+\end{figure}
+
+\begin{figure}[htb]
+\label{fig:circle_movement_con3}
+\begin{center}
+\centering
+\includegraphics[height=7cm]{"./Dynamic_Migration/Circle_Move_con.png"}
+\caption{Dynamic Heuristic with Migration on circular movement swarm, with correlated failures}
+\end{center}
+\end{figure}
+
+%%%%
+
+
 
 
 \begin{thebibliography}{100}
