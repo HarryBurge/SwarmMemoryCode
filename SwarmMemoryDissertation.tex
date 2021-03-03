@@ -820,7 +820,38 @@ To solve for this we could have a directionaliy component to migration, or after
 \section{Conclusion}
 \label{sec:conc}
 
+The algorithms proposed, can be seen to atleast solve the problem provided in Section \ref{sec:Problem}.
+How effective they are compared to other theoretical soloutions is a diffrent topic.
+With the first algorithm proposed in Section \ref{sec:Simple2}, we saw that it worked effectively for a simulation based of this problem.
+We had good results when coiming to spread, less so in a semi-static swarm, and also duplications were handled correctly.
+However when abstracting this algorithm to a real world soloution, floors became apprant in the algorithm which relyed to much on perfect communication, well picked threshold values and smaller sized corrilated failures.
 
+Due to the thought expriment of abstracting this idea to real world soloution, some things within the heurstic needed to be changed.
+This was the instability of the system in certain scenrios, for example a more contrived situation was when the suicide threshold is to low.
+This would mean that agents would suicide to often and then other agents would replicate again, theerefore leading to useless transistions of data which was not needed.
+
+To cmbat this we create some dynamic threshold changes so that we can slow down the instability using diffrent parameters.
+We directly put a time based slow on suicides and for replication we slowed it by the amount of local instability.
+This gave us the best of both worlds with fast growth of duplication and a slower release of the data.
+Overall this significantly improved the algortihms perfomance, espically when coming to a circular movement swarm.
+We can see that even though we slowed down the stability issues we didn't end up actually solving the issues, this could be seen with the fact that stability graphs had roughly the same shape but at lower magnitudes.
+This was touched upon in Section \ref{sec:further}, on ways that this could be improved.
+
+The third algorithm proposed in Section \ref{sec:Simple4} is the most controversial of the bunch.
+This is because it sets out to do what it was propsed to do however we gaina natural boost to the instability due to movement of the data duplications from, agent to agent.
+We could see that this algorithm was affective for larger distance corrilated failures, however amount of duplications seemed to be affected more than prevouis algorithms, and in a circular movement swarm the affects on the memory spread weren't even that pronounced as in a semi static movement swarm.
+
+Overall Section \ref{sec:Simple3}'s and Section \ref{sec:Simple4}'s algorithm are the best and should be the only to be used, unless there are extreme memory and computation constraints on your agents.
+Section \ref{sec:Simple4}'s algorithm should only be used in cases were large corrilated failres could happen and instability is less of a deal.
+However this would still not be as affective as a soloution propsed in Section \ref{sec:further}.
+
+The algorithms propsed assume that data is highly important and that all agents in that area need to know that data as much as possible.
+This therefore makes them not as relevent if you were trying to adopt them to a cloud based soloution.
+When coming to a swarm soloution this is definitly no the most affect soloution that could be possibly created.
+If we ruled out hybrid based models, which would be much more affect as a storage soloution, due to knwoledge of where all duplications are and we could specifically give data prioritys on how many duplications to spread out and how many redundancys you want further away in the swarm.
+We talk about possible more effective ways to store the data in Section \ref{sec:further}.
+
+This project achieved what it set out to do, and has highlighted downsides and possible improvements that could be researched into further to improve this algorithms performance and adaptability.
 
 %%%%%%%%%%%%%%%%%%%
 
