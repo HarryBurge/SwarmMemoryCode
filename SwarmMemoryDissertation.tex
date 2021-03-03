@@ -770,12 +770,58 @@ This shows that the dynamic thresholding works as inteneded to not affect the al
 \section{Dynamic Heursitic with Migration}
 \label{sec:Simple4a}
 
+Within this section we review the results found of the algorithm described in Section \ref{sec:Simple4}.
+We did not compute threshold changes graph, this is because nothing would have changed since the last computation unless there was more than one public data to be learned.
+This is because the algorithm in our case needs at least three data points to  be even activated.
+
+The aim of this algorithm was to decrease the spread of duplications per agent.
+We can see in Figure \ref{fig:static_movement_non3, fig:static_movement_con3}, that this is the case, however at the cost of instability in the system.
+We can also see that it also affects the spread in Firgure \ref{fig:circle_movement_non3, fig:circle_movement_con3}, however by less of a degree but with roughlt the same increase to instability.
+
+In the duplication ratios sections on all dyanmic heurisitic with migration we can see the spread has been increased in size, espically in the semi-staic movement data.
+This could be an affective way of creating an artifically larger area with also keeping the duplications down.
+
+When comparing this algorithm to the prevouis algorithm not much has changed, the affect of memory spread to the instability is a cost which will need to be investiagted for your persoanl needs of the project.
+
+// Need to redo test data and ensure that we aren't losing more duplicates because of migrating to a agent already with said migrated data
+
 %%%%%%%%%%%%%%
 
 
 %%%% Conclusion %%%%
 \chapter{Conclusion}
 \label{cha:conclusion}
+
+\section{Futher Improvements}
+\label{sec:further}
+
+There are some major improvements that could eb amde to this algorithm to make it much more effective, in performance and also computationally.
+First lets focus on computationally.
+Currently at the start of each agent cycle it will message each other agent for the infomation its needs to gain perspective of its local scope.
+This is inefficent because for every agent in the vicinity each agent will have to send a packet to it every time it cycles.
+If we flipped the packet sending the other way around we would take a hit on the memory required to run the agent however would be computationally faster.
+Each agent at the start of its cycle or end will tell other agents its infomation which will be updated in tables on each indurvdual agent.
+We can then use the internal tables to calculate what needs to be done.
+This would offer overall less transmissions over the network, and would speed up the frequnecy of which we can run the agents control loop.
+
+For performance of the algorithm there are many possible changes that could be improved, ranging from better parameter adjustments either from machine learning techniques or hardcoded adjustments.
+This would give diffrent desirable affects based off what is currently happening in the network, an example of this is for stability.
+Currently we have it restrict replication however there might be more effective ways to control stability changing multiple parameters at varying scales.
+
+With our ability to solve for corrilated failures, we lack range of which a corrilated failure can happen.
+To be able to handle corrilated failures that could be much larger, larger than the average distance to the point.
+Soloutions to this problem could be after a certain range we make sure that duplications have no other duplications in their vissinity, and lock the data from suiciding.
+This wold mean that data further away would survive with minimising density.
+To get the data out their currently relys on movement as can be seen in the diffrence in dulication density when comapring static movement to circular movement.
+To solve for this we could have a directionaliy component to migration, or after a certain distance we push data away from the data point.
+
+// Possibly talk about the effectivness of how much data the network can store compared to the amount of data storage.
+
+\section{Conclusion}
+\label{sec:conc}
+
+
+
 %%%%%%%%%%%%%%%%%%%
 
 
