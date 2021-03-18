@@ -340,37 +340,31 @@ The leaders aren't needed for every single action so fit into a usually hierarch
 
 
 %%%% Approach %%%%
-\chapter{Approach and Motivation}
+\chapter{Approach Justification and Motivation}
 \label{cha:Approach and Motivation}
 
-\section{Inital Soloution Ideas}
+\section{Apprach Justification}
 \label{sec:Inital Soloution Ideas}
 
-Initially before reading much litreature the idea the authour had was to create an adaptable version of RAID, where drives could come in and out of scope and still have guarantes on redundancy.
-The design would be as follows, for each agent that has space in memory and two agents in its vicinity, we would create a parity of two data points in the other agents that were not duplicates of either eachother or data already in the primary agent.
-Then each agent would check what agents are around it and check for if any of the paritys are missing an agent that builds its parity.
-If so then recreate the lost data, else if both agents are lost then delete the parity, otherwise do nothing.
+In this section we will justify the initial approach to the problem described in Section \ref{sec:Problem}, and also the analysis of approaches undertaken. An initial solution was to use an adaptive version of RAID parities, however, a better concept solution became apparent after conducting more research into cloud based storage solutions.
 
-After reading into cloud based computing and hypothsising about the result of said algorithm it is clear that this algorithm wouldn't be good enough of a soloution and would be difficult to deal with the directionality of the data.
-This is because said algorithm doesn't take into account coordinates of the agents, and the spreading of the data relys heavily on connection losses, so within a semi-stable swarm this would not acquire enough.
+Within the adaptive RAID design, if a subject agent had two agents with different data in its locality it would create an XOR parity of both data points and record which agents they came from. If one of those agents left the subject locality then the parity would be used to reconstruct the lost data. This approach was not chosen because of five factors:
 
-This therefore leads us into replication policys, which can provide us directionality and duplication even on a stable network.
-Because of the nature of a swarm though usally it is semi stable if tlaking about iteration to iteration time scales, we can therefore look at the problem as a stable network problem but have the ability to control for failures.
-There were two algorithm types that seemed to be the best for a swarm, however one relied on hetrogenus/hybrid control with a controller telling other agents where to move/duplicate items.
-This would work effectively on a hetrogenusus swarm, but on a homogenusus swarm we would have to rely on masters only controlling there locality or masters be able to talk across the global network hoping packets from agent to agent.
+\begin{itemize} 
+\itemsep-1em 
+\item[$\bullet$] Implementing directionality would make the algorithm like a replication policy
+\item[$\bullet$] Duplication density would be similar
+\item[$\bullet$] If those two agents die/leave at the same time then the dat can’t be restored
+\item[$\bullet$] Algorithm relies on a swarm that breaks connections often to get data out far
+\item[$\bullet$] There is no duplication reduction therefore the algorithm becomes essentially just a slower duplicate to every agent policy
+\end{itemize}
 
-This is the reseaon for picking a ditriubuted control approach where each agent makes its own decisions based off its locality. 
-The benefits of this type of design are that we would have an average power loss over the swarm, because there is no hoping packets to singular points, focusses on higher parraelism.
-A downside to using this algorithm is that we can't gaurantee no data loss because in certain conditions an agent might not send off its data due to its locallity.
-Even with the significance of the drawback this was the algorithm picked due to the all round ability for the algorithm to be adaptable and the benefits of what it does do compared to other algorithms un-ability.
+Due to these drawbacks, we went in search of a different approach within the cloud storage domain. The proposed solution takes heavy inspiration from “SKUTE” \cite{Distributed Storage}. Design of a replication policy lends itself to heuristic based control, and allows us to implement duplication density and direction to the spread of data.
 
-We will model our design of "SKUTE" however we will have to change a few bits.
-We will take out migration because of added complexity, however this would be good to add in the future for handiling of swarm induced failures.
-Swarm induced failures would be filures that we couldn't account for with simple designs like an agent being in contact with no other agents therefore it can't pass on its data and leads to a vunrability.
-Going on from this problem we might get a case where agents in the locality of an agents has full memory this would lead to the same sort of disconnect as having no agents around.
-This could be mitigated for by either using a priority based system based of factors around the agent, using migration of data onto agents that have more free space on the public memory or a hybrid of the both where is an agent is maxed out and a high proirty store is coming in migrate a lower priority data out a take in the high prority data.
+A distributed/homogeneous style of control was used partially because of the average power loss of the swarm compared to a leader based control, but mainly because of the methodology of a homogeneous swarm. A hybrid approach, if not accounting for power loss, would almost certainly be better in every single way, due to its global view. The implementation would be very simple and deterministic compared to its homogeneous counterpart. We cannot guarantee data loss will not occur with both versions, however, a hybrid approach would be better equipped to handle correlated failures.
 
-// Possibly change to account for the migration addidtion
+After a lot of downsides to homogeneous control compared to a hybrid approach it would seem inappropriate to pick the homogeneous solution. This disgruntlement is okay to hold when we talk about swarms that are partially static in nature, however, when the swarm is highly volatile in terms of movement then we might end up spending more time assigning a leader rather than doing our actual task. Also the scaling of hybrid systems is harder because of the partitioning of agents to leaders. This is why in this project we will focus on distributed homogeneous replication policies.
+
 
 
 \section{Analysis of soloutions}
@@ -480,11 +474,12 @@ Migration is taken out due to the natural movements of the swarm, we don’t wan
 We then use a heuristic to decide whether to do either three of these actions. 
 In this case we have two heuristics based off these factors:
 
-\begin{description}
+\begin{itemize} 
+\itemsep-1em 
 \item[$\bullet$] Amount of agents in connection range that have a duplicated data compared to not having duplicated data
 \item[$\bullet$] Distance to datas target area
 \item[$\bullet$] Agents around average available public memory
-\end{description}
+\end{itemize}
 
 We then used a weighted sum, to calculate the heuristic value. 
 If the replication heuristic is above the replication threshold then we replicate and same for suicide, else do nothing. 
@@ -646,13 +641,14 @@ You could also use parameters as provided by Section \ref{sec:Simple3}.
 To understand and evaluate our solotuin we look at how the solotuion reacts to diffrent scenrios.
 These are as follows:
 
-\begin{description}
+\begin{itemize} 
+\itemsep-1em 
 \item[$\bullet$] Semi-Static moving swarm with non-corrilated failures, Figure \ref{fig:static_movement_non}
 \item[$\bullet$] Semi-Static moving swarm with a corrilated failure, Figure \ref{fig:static_movement_con}
 \item[$\bullet$] Circlular moving swarm with non-corrilated failures, Figure \ref{fig:circle_movement_non}
 \item[$\bullet$] Circular moving swarm with a corrilated failure, Figure \ref{fig:circle_movement_con}
 \item[$\bullet$] Changing of replication and suicide thresholds, Figure \ref{fig:Threshold_Changes}
-\end{description}
+\end{itemize}
 
 However first of all we will explain what each diagram means inside of Figure \ref{fig:static_movement_non}.
 
