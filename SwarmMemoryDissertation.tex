@@ -46,47 +46,48 @@
 \section{Introduction}
 \label{sec:Introduction}
 
-Swarms are an increasingly important area of research for society, as the world moves towards a distributed technology future. 
-The research of swarms within a technology setting can be broadly divided into two partitions, these are intelligence and mechanics. 
+Swarms are an increasingly important area of research for society, as the world moves towards a distributed technology future.
+The research of swarms within a technology setting can be broadly divided into two partitions, these are intelligence and mechanics.
 
-Swarm intelligence can be viewed as the research into highly distributed problem solving\cite{Cognitive maps mine detection, Swarm intellegiegence}. 
+Swarm intelligence can be viewed as the research into highly distributed problem solving\cite{Cognitive maps mine detection, Swarm intellegiegence}.
 This is ever more becoming relevant as computer systems start to level out in sequential performance \cite{CPU speed} and parallelism is embraced, satisfying the demand of the age of big data \cite{Avalability storage}.
 
-Swarm mechanics heads more down the robotics side and can be seen as the study of practical implementation of swarms, whether that be movement or communication within the swarm.
-This is on the rise in the industry, as society's pace increases and manual labor is automated out, whether its drone delivery to inpatient customers or mapping areas in dangerous environments \cite{Swarm robotics reviewed}.
+Swarm mechanics heads more towards the robotics side and can be seen as the study of practical implementation of a swarm, whether that be movement or communication within the swarm.
+This is on the rise in industry, as society's pace increases and manual labor is automated out. Whether its drone delivery to inpatient customers or mapping areas in dangerous environments \cite{Swarm robotics reviewed}.
 
-These two areas often are highly integrated rather than being disjoint from each other, and are rarely seen in their pure form. 
-An example of a pure form of swarm intelligence can be seen in \cite{Swarm intellegiegence} with network routing protocols. 
-This project will be focusing mainly within said grey area, but predominantly in intelligence dealing with a practical problem.
+These areas often are highly integrated rather than disjoint from each other, and are rarely seen in their pure form.
+An example of a pure form of swarm intelligence can be seen in \cite{Swarm intellegiegence} with network routing protocols.
+This project focuses predominantly on swarm intelligence to deal with a practical problem.
 
-Focusing down on distributed and local memory of swarm-like agents, that will be covered by this project. 
-Most research has gone down the route of optimization on distributed problem-solving algorithms, as compared to practical applications of storage of abstract ideas as a collective. 
-As one of the key reasons for using a swarm is redundancy, which is often assumed and boasted about, rather than proven specifically within the memory domain.
+Most research on memory within a swarm has gone down the route of optimization on distributed problem-solving algorithms, as compared to practical applications of storage of abstract ideas as a collective.
+As one of the key reasons for using a swarm is redundancy, which is often assumed and boasted about, rather than proven, specifically within the memory domain.
 
-This relative lack of research into collective memory, seems to this author to be a glaring hole in the foundations of a complex and interchangeable subject. 
-The need for more research into collective memory can be seen in how invaluable it would be to applications like mapping of a dangerous area \cite{Cognitive maps mine detection}. 
-By being able to handle the loss of agents and the collection of data on agents with limited memory, we could ensure efficient solutions that have high redundancy compared to other implementations.
+This relative lack of research into collective memory, seems to the author to be a glaring hole in the foundations of a complex and interchangeable subject.
+The need for more research into collective memory can be seen in examples, like how invaluable it would be to mapping of dangerous areas \cite{Cognitive maps mine detection}.
+By being able to handle the loss of agents combined with the redundancy of sufficient memory policy, provides a much wider scope for swarms to be used.
 
-An explanation for swarm based memory management solutions to be a less developed area of study is the existence of subjects like cloud-based and raid based storage systems. 
-The argument for having these two subjects partially-separated is due to the nature of a swarm's locality and ever-changing network style, compared to a server farm. 
-Storage of data on an ever-changing network of devices is a hard task to complete, handling loss of connection between servers, reliability to access of the data and loss of services, whether it be non-correlated or correlated failures \cite{Avalability storage}.
+An explanation for why swarm based memory management solutions are an under developed area of study is the existence of cloud-based storage research.
+The argument for these two subjects being partially-separated is the nature of a swarm's locality and ever-changing network style, compared to a typical server network.
+Reliable storage of data on an ever-changing network of devices is a hard task to complete, handling loss of connection between servers, enforced reliability of access to data or loss of services, whether from non-correlated or correlated failures \cite{Avalability storage}.
 
-Most elements of cloud storage policies at a high level of abstraction could work effectively within a swarm based environment. 
-However as explained above, key adoptions would need to be changed to create said effective policy. 
-A prime example of the type of algorithm is “SKUTE” from \cite{Distributed Storage}.
-“SKUTE” will be the main inspiration for this project's solution, too storage on a highly dynamic network.
+Most elements to cloud storage policies at a high level of abstraction could work effectively within a swarm based environment.
+However as explained above, key adaptations would need to be created for an effective policy.
+A prime example is “SKUTE” from \cite{Distributed Storage}.
+“SKUTE” will be the main inspiration for this project's solution, too storage on effectively highly dynamic network.
 
-The objective of this dissertation is to merge three areas of study into an effective/suitable storage policy for swarm-like agents in a setting with high locality and dynamic connection behaviours. 
+The objective of this dissertation is to merge three areas of study into an effective/suitable storage policy for swarm-like agents in a setting with high locality and dynamic connection behaviours.
 Then to perform multiple analyses on the created policy using a variety of simulations to gauge its capability compared to the desired abstract behaviour.
 
-To complete the objective of this report we will programmatically break down the problem described in Section \ref{sec:Problem} into solvable tasks. 
-Therefore the report will be structured as follows, firstly we’ll define a clear and concise problem, of which incompaces all disgruntlements described above. 
-Secondly, bring the reader up to date with relevant literature and explain key concepts that will be required for a complete understanding of where the proposed solution has been derived and why said solution might be a relevant stepping stone for future research. 
-This will be covered in the two sections, Section \ref{sec:Cloud} of which goes into detail about current cloud based storage technologies and Section \ref{sec:Robotics} of which will delve into more of a background behind swarms, specifically relating to the problem and possible solutions. 
-We’ll then go through the methodology of the proposed solution’s design.
-How it is supposed to act and react in different scenarios, and the reasons for why. 
+To complete this objective, we will programmatically break down the problem described in Section \ref{sec:Problem} into solvable tasks.
+Therefore the report will be structured as follows, firstly we’ll define a clear and concise problem, of which incompaces all disgruntlements described above.
+Secondly, bring the reader up to date with relevant literature and explain key concepts that will be required for a complete understanding of where and how the proposed solution has been derived and why said solution might be a relevant stepping stone for future research.
+This will be undertaken in sections, Section \ref{sec:Cloud} of which goes into detail about current cloud based storage technologies and Section \ref{sec:Robotics} of which will delve into more of a background behind swarms, specifically relating to the problem and possible solutions.
+We’ll then go through the methodology of the proposed solution’s design, how it is supposed to act and react in different scenarios, and the reasons for why.
 This leads to analysing how effective the proposed policy has kept to standards derived in the methodology section, and whether it solves the problem defined in Section \ref{sec:Problem}.
+
 %%%%%%%%%%%%%%%%%%
+
+%---------------------------------------------------------------------HERE
 
 %%%% Problem Definition %%%%
 \section{The Problem}
@@ -391,6 +392,8 @@ We will then review this data to see how well we think it performed to the expec
 
 
 %%%%%%%%%%%%%
+
+%---------------------------------------------------------------------HERE
 
 %%%% Motivations %%%%
 \section{Motivation}
