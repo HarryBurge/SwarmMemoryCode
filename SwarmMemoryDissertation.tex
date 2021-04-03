@@ -73,7 +73,7 @@ Reliable storage of data on an ever-changing network of devices is a hard task t
 Most elements to cloud storage policies at a high level of abstraction could work effectively within a swarm based environment.
 However as explained above, key adaptations would need to be created for an effective policy.
 A prime example is “SKUTE” from \cite{Distributed Storage}.
-“SKUTE” will be the main inspiration for this project's solution, too storage on effectively highly dynamic network.
+“SKUTE” will be the main inspiration for this project's solution, too storage on effectively a highly dynamic network.
 
 The objective of this dissertation is to merge three areas of study into an effective/suitable storage policy for swarm-like agents in a setting with high locality and dynamic connection behaviours.
 Then to perform multiple analyses on the created policy using a variety of simulations to gauge its capability compared to the desired abstract behaviour.
@@ -87,17 +87,14 @@ This leads to analysing how effective the proposed policy has kept to standards 
 
 %%%%%%%%%%%%%%%%%%
 
-%---------------------------------------------------------------------HERE
-
 %%%% Problem Definition %%%%
 \section{The Problem}
 \label{sec:Problem}
 
-The problem this report will cover is defined as follows. 
-We need to create a storage policy for agents of a swarm, to be able store directional abstract data as a collective, without complete duplication.
+The problem that this report will cover is to create a storage policy for agents of a swarm, to be able to store directional abstract data as a collective, without complete duplication.
 
-This problem can be split into two separate sub-problems. 
-One is the handling of data duplication throughout the swarm as to be able to control for failures of agents, and provide a mechanic for recovery from said failures. 
+The problem can be split into two separate sub-problems.
+One of them is handling data duplications throughout the swarm, as to be able to control for failure of an agent, and provide a mechanic for recovery from said failures.
 
 \begin{figure}[htb]
 \label{fig:popdensity}
@@ -108,20 +105,64 @@ One is the handling of data duplication throughout the swarm as to be able to co
 \end{center}
 \end{figure}
 
-The second is controlling where the duplicated data is within a world compared to where the data is needed in that world. 
-A visualization of this can be seen in Figure \ref{fig:popdensity}, this shows the density of duplications within an area based on distance from the desired position of that data. 
-As the reader can see the further we get from the desired point we should have less duplicates of data compared to agents without duplications of that data.
+The second is to control where data is duplicated, to give directional characteristics of the spread of said data.
+A visualization of this can be seen in Figure \ref{fig:popdensity}. Which is the density of duplications within an area based on distance from the desired position of that data.
+As the reader will see, the further we get from the desired point we should have less duplicates of that data.
 
-There are lots of examples where a problem like this could arise, a good example of where this could be applied is operating in a mine filed \cite{Cognitive maps mine detection}. 
-Near the start of the agents operation they will need to map out where potential mines might be and record their location. 
-Obviously once an agent finds a mine we would want it to spread the word of the location of said mine. 
-However due to memory restrictions the agents can only know about a minimal amount of mines, therefore agents closer to the mine should prioritize knowing its whereabouts compared to mines it may never come across. 
-Now bringing this into a more of a practical solution if agents fail individually for example running out of battery, or as a group from a mine going off. 
-We still need the swarm to not lose data, in the case of our example it would still be relevant to know where a possible crater could be.
+A real life example of where this type of problem arises, is in mine field operation \cite{Cognitive maps mine detection}.
+In our example, agents would need to map out where potential mines might be and record their location.
+Once an agent locates a mine it wants to spread the word of its location.
+However, memory restrictions in agents can only permit the knowledge of a minimal amount of mines. Therefore agents closer to the mine should be prioritized in knowing local mine locations.
 
-With this increase in complexity, the storage policy needs to be able to withstand the fluctuations and locality of the swarm. 
+In a practical solution, agents could fail individually for example running out of battery, or fail as a group from a mine going off.
+The swarm doesn't want to lose any collective data from these failures occurring.
+
+With this increase in complexity, the solution needs to be able to withstand fluctuations of the swarm.
 With reliable redundancy to handle correlated (Mine detonation) and non-correlated (Power loss) failures.
 %%%%%%%%%%%%%%%%%
+
+
+%%%% Approach motiviation and justification %%%%
+\section{Approach and Justification}
+\label{sec:Inital Soloution Ideas}
+
+An initial solution was to use an adaptive version of RAID parities. However, a better concept solution became apparent after conducting more research into cloud based storage.
+
+Within the adaptive RAID design, if a subject agent has two agents within its locality with different data, a XOR parity of both data points would be recorded alongside a record of which agents they came from. If one of those agents left the subject locality then the parity would be used to reconstruct the lost data. This approach was disregarded because of these four factors:
+
+\begin{itemize}
+\itemsep-1em
+\item[$\bullet$] Implementation of directionality would be tricky and not consistent
+\item[$\bullet$] If the two agents die/leave the locality at the same time then the parity cannot be restored
+\item[$\bullet$] The algorithm relies on a swarm that breaks connections often to spread data
+\item[$\bullet$] There is no duplication reduction, therefore over time the data point would spread to all agents
+\end{itemize}
+
+These drawbacks highlighted the need for a new approach, cloud based-storage policies. The proposed solution takes heavy inspiration from “SKUTE” \cite{Distributed Storage}. The design of a replication policy lends itself to heuristic based control, and allows us to implement duplication density and direction to the spread of data.
+
+A distributed/homogeneous style of control is used, partially because there is an average power loss over the swarm compared to a leader based control, but mainly because of the methodology of a homogeneous swarm. A hybrid approach, if not accounting for power loss, would almost certainly be better in every single way, due to its global view. A hybrid implementation would be very simple and deterministic compared to its homogeneous counterpart. Both methods could not guarantee data loss will not occur, however, a hybrid approach would be better equipped to handle correlated failures.
+
+With an extensive list of drawbacks to using a homogeneous control over a hybrid control scheme, it would be deemed inappropriate to use said homogeneous control. This disgruntlement is valid only when talking about swarms that are partially static in nature. When the swarm is highly volatile, in terms of movement, then we might spend more time assigning a leader rather than doing our actual task. Scaling of a hybrid system is harder because of the partitioning of agents to leaders. This justifies the authors choice to focus on distributed homogeneous replication policies.
+
+%%%% Motivations %%%%
+\section{Motivation}
+\label{sec:Motivation}
+
+In sections \ref{sec:Introduction} and \ref{sec:Robotics}, we have painted a clear picture as to why the study of swarms is becoming an integral part for leading us to the future.
+With sequential computation reaching its limits \cite{CPU speed}, and the world becoming increasingly data rich, the need for distributed problem solving is heavily required.
+As technology gets more efficient, the ability to make swarms become exponentially viable, especially with recent advances in nano technology/biology.
+
+Swarm robotics is limited by the technology of its time.
+The use of research is limited and far between in our day and age.
+We research this for the future where technology can support and utilize the fullest potential that swarm behaviour can offer.
+
+The main uses nowadays are within surveillance \cite{UAV, HiveMind}, delivery or military \cite{Swarm robotics reviewed}.
+However, to see the full scope of what man-made swarms could do, we look to the future.
+Whether it be space exploration \cite{Space exploration}, nano-robots in medicine or in the parallel/distributed software domain \cite{blockchainandSwarm}.
+
+It is for these reasons that I have decided to contribute my part to this extensive and breakthrough field, and will hopefully see it grow to its fullest potential.
+%%%%%%%%%%%%%
+
 
 %%%% Litreture Review %%%%
 \chapter{Litreture Review}
@@ -219,8 +260,6 @@ RAID is predominantly used internally within a storage node to provide redundanc
 The methodology is that as long as the nodes individually are redundant enough and then there is control on a higher level with our replication schemes, that is a sufficient redundancy. 
 RAID could be adapted to run over multiple different storage nodes, however the complexity compared to performance is heavily in the favour for the above methodology for storage networks. 
 We will come back to the possible uses of RAID internally and externally in Section \ref{sec:further}.
-
-// Finish rewriting
 
 
 \section{Swarm robotics}
@@ -338,81 +377,7 @@ Also, the natural power-based structure of humans fits a hybrid model in terms o
 The leaders aren't needed for every single action so fit into a usually hierarchical power structure, compared to something of a hivemind model.
 %%%%%%%%%%%%%%%%
 
-
-%%%% Approach %%%%
-\chapter{Approach Justification and Motivation}
-\label{cha:Approach and Motivation}
-
-\section{Apprach Justification}
-\label{sec:Inital Soloution Ideas}
-
-In this section we will justify the initial approach to the problem described in Section \ref{sec:Problem}, and also the analysis of approaches undertaken. An initial solution was to use an adaptive version of RAID parities, however, a better concept solution became apparent after conducting more research into cloud based storage solutions.
-
-Within the adaptive RAID design, if a subject agent had two agents with different data in its locality it would create an XOR parity of both data points and record which agents they came from. If one of those agents left the subject locality then the parity would be used to reconstruct the lost data. This approach was not chosen because of five factors:
-
-\begin{itemize} 
-\itemsep-1em 
-\item[$\bullet$] Implementing directionality would make the algorithm like a replication policy
-\item[$\bullet$] Duplication density would be similar
-\item[$\bullet$] If those two agents die/leave at the same time then the dat can’t be restored
-\item[$\bullet$] Algorithm relies on a swarm that breaks connections often to get data out far
-\item[$\bullet$] There is no duplication reduction therefore the algorithm becomes essentially just a slower duplicate to every agent policy
-\end{itemize}
-
-Due to these drawbacks, we went in search of a different approach within the cloud storage domain. The proposed solution takes heavy inspiration from “SKUTE” \cite{Distributed Storage}. Design of a replication policy lends itself to heuristic based control, and allows us to implement duplication density and direction to the spread of data.
-
-A distributed/homogeneous style of control was used partially because of the average power loss of the swarm compared to a leader based control, but mainly because of the methodology of a homogeneous swarm. A hybrid approach, if not accounting for power loss, would almost certainly be better in every single way, due to its global view. The implementation would be very simple and deterministic compared to its homogeneous counterpart. We cannot guarantee data loss will not occur with both versions, however, a hybrid approach would be better equipped to handle correlated failures.
-
-After a lot of downsides to homogeneous control compared to a hybrid approach it would seem inappropriate to pick the homogeneous solution. This disgruntlement is okay to hold when we talk about swarms that are partially static in nature, however, when the swarm is highly volatile in terms of movement then we might end up spending more time assigning a leader rather than doing our actual task. Also the scaling of hybrid systems is harder because of the partitioning of agents to leaders. This is why in this project we will focus on distributed homogeneous replication policies.
-
-
-
-\section{Analysis of soloutions}
-\label{sec:Analysis of soloutions}
-
-We will analys soloutions propsed using varying scientific methods.
-We will however not be doing p-value tests due to not having other algorithms to be able to compare it too.
-We could do tests between each algorithm propsed however the outputs are too subjective to be analysed with those types of results meaningfully.
-
-The analysis will be done by changing diffrent factors or diffrent algorithms, doing ten runs with ten thousand iterations.
-Within the ten runs we will average these results to be able to give us infomation like per data duplications globally, duplication distance to data points, number of agents and density of duplications about data point.
-This will overall give us a good anaylsis on how these algorithms perform, when changing factors like non-correlated failure rate, movement styles and correlated failures.
-It will also show us infomation on how changing certain paramters affects the bahavouir of the algorithm like total duplication.
-
-Even though this pretty much highlights all behavouirs of the algorithm we will also need to create a analysis for seeing instability with in the runs.
-This is because the data collected is at the end of the iteration of a agent and doesn't take into account which agents had what data, it only mesaures that there was for example five duplications.
-Therefore we need to see how many times that data might change agents to account for the stability of the "network".
-The stabilty is needed because excessive amounts of passing data is likely to cause errors of transmission and will increase power draw over the network.
-
-We will then review this data to see how well we think it performed to the expectations we have set out in Section \ref{sec:Problem} and show it can be adjusted to users needs.
-
-// Talk about specific things of analysis
-// Redo and talk about the specific tests
-
-
-%%%%%%%%%%%%%
-
 %---------------------------------------------------------------------HERE
-
-%%%% Motivations %%%%
-\section{Motivation}
-\label{sec:Motivation}
-
-In the previous sections we have described a quite clear picture as to why the study of swarms is becoming more of an integral part for leading us to the future. 
-With sequential computation reaching its limits \cite{CPU speed}, and the world becoming increasingly data rich, the need for distributed problem solving is heavily required. 
-As technology gets more efficient, the ability to make swarms become exponentially more viable, especially with recent advances in nano technology/biology.
-
-Swarm robotics is limited by the technology of its time. 
-The use of research is limited and far between in our day and age. 
-We research this for the possible future where technology can support and utilize the fullest potential that swarms can bring to the table.
-
-The main uses nowadays are within surveillance \cite{UAV, HiveMind}, delivery or military \cite{Swarm robotics reviewed}. 
-However, to see the full scope of what man-made swarms could do we look to the future. 
-Whether it be for space exploration \cite{Space exploration}, nano-robots in medicine or in the parallel/distributed software domain \cite{blockchainandSwarm}. 
-
-It is for these reasons that I have decided to contribute my part to this extensive and breakthrough field, and will hopefully see it grow to its fullest potential.
-%%%%%%%%%%%%%
-
 
 %%%% Methodology/Design Chapter %%%%
 \chapter{Design}
