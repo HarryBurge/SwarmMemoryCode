@@ -377,7 +377,6 @@ Also, the natural power-based structure of humans fits a hybrid model in terms o
 The leaders aren't needed for every single action so fit into a usually hierarchical power structure, compared to something of a hivemind model.
 %%%%%%%%%%%%%%%%
 
-%---------------------------------------------------------------------HERE
 
 %%%% Methodology/Design Chapter %%%%
 \chapter{Design}
@@ -387,32 +386,10 @@ The leaders aren't needed for every single action so fit into a usually hierarch
 \section{Simulation Infomation}
 \label{sec:Sim Info}
 
-This section will describe the environment of which the agents will be simulated in. 
-The simulation is a 2D representation of a flat surface where agents can move freely around. 
-Agents are randomly located on the surface within the center 75\% area. 
-Points are then selected on the surface, and at the start of simulation the closest agent to that point learns the data, that data can never be learnt again other than from passing information from agent to agent. 
-The data is directional so when stored in agents memory the coordinates of where it originated is saved as well. 
-The directionality is needed later for policy calculations.
-
-Agents are homogenous, with a small connection radius around them. 
-The world is width/height of 2, agents connection radius is 0.25. 
-We are assuming that connections between agents are perfect, and that each agent can simultaneously respond to incoming packets and send outbound packets.
-
-Agents have two partitions of memory, public and private. 
-This is mainly a symbolic partition rather than an actual necessity. 
-Private memory is data that has been learnt directly by said agent, and public memory is information that the agent has learnt from another agent.
-Both public and private memory cannot have duplicate data in themselves or across partitions. 
-This partition is symbolic because it is not required, however useful to have. 
-It allows us to not require memory management of which having the memory as one partition might require. 
-An example of this in a one partition model, if an agent's memory is full with lots of public information and tries to learn a private data point, we would have to construct a way of dealing with these collisions. 
-This is because of the priority difference between holding duplicate data compared to the gathered data, this is because the gathered data can only be learned once. 
-With this partition we don’t have to deal with this problem, however we do lose efficiency in how much information an agent can store. 
-For the purpose of our testing and implementation, this efficiency is not a priority and is overlooked.
-
-The control structure of the simulation runs 10,000 iterations. 
-Each iteration all agents are put into a parallel for loop to do its iteration, they are selected randomly in order to achieve the most real life-like simulation of individual agents that is possible for the author to use. 
-The reason for not having the agents run in all different threads is because the scheduling policy has a tendency to prioritize a few agents over all other agents therefore over a certain time period one agent might have completed 500 steps and another just 1, this is unlikely in real life implementations. 
-As a future improvement it would be good to have hardware that can support the number of agents all at the same time, compared to having to restrict the frequency because of the scheduling algorithm.
+This section describes the simulation used for collecting results.
+The simulation is a 2D representation of a flat surface where agents can move freely around.
+Agents are randomly located on the surface within a square that is 75\% of the environment's area.
+Then the closest agent to each defined datapoint will learn its location, once learned these agents cannot lose this specific datapoint.
 
 \begin{figure}[htb]
 \label{fig:Connarea}
@@ -423,54 +400,44 @@ As a future improvement it would be good to have hardware that can support the n
 \end{center}
 \end{figure}
 
-In Figure \ref{fig:Connarea} we can see an example of what the 2D simulation looks like.
-Dots are agents, and the red circle around them is their connection radius of which they can talk to other agents, these will be omitted from other images of the simulation to keep it cleaner and more understandable.
-The blue concentric circles are an example of the datas positional attribute, these will be omitted for a red circle in other images for the same reason as beforehand.
-The connection lines between the agents are just showing that data can pass between these two agents. These lines change colour based on what packets are being passed across them, this is for debug purposes and most likely won’t be seen in any images. 
-As a simple visualisation of how data is being passed between the agents, in this example the agent is blue signifying that it holds the duplicate of blue data, e.g. the data from the  concentric circle data point.
+Agents are homogenous, with a small connection radius around them.
+The world is width/height of 2 and an agents connection radius is 0.25.
+Agents are assumed to have perfect connections and each agent can simultaneously respond to incoming packets and send outbound packets.
 
+Agents can have two different types of data, one being private and other public. Private data is a record of a data point of which it has learnt directly. This data cannot be deleted and will be prioritised over public data. Public data is learnt from interactions with other agents and can be deleted. Both types of data can be passed on to other agents in the form of public data.
+
+A control loop runs for 10,000 iterations, where agents are threaded for a single step per iteration. The threading process happens in random order to provide as realistic as possible real world scenario, with available hardware to the author. Ideally running all agents at once in individual threads would be the most accurate, however, scheduling policies are likely to significantly suffocate some agents' processes, therefore giving less realistic results. Running on hardware that could support this many threads would be a good future improvement.
 
 
 \section{Static Heursitic}
 \label{sec:Simple2}
 
-This solution takes heavy inspiration from \cite{Distributed Storage}, we take the methodology of each agent controlling its own data and how it wants to distribute it. 
-We do this using the actions of Replication, Suicide and Nothing. 
-Migration is taken out due to the natural movements of the swarm, we don’t want all data to be funneled back to the point, this is to deal with correlated errors.
+This solution takes heavy inspiration from \cite{Distributed Storage}. We take the methodology of each agent controlling its own data and how it wants to distribute it, done through actions of Replication, Suicide and Nothing.
+Migration is not applied, therefore we can piggyback on natural movements of the swarm to get duplicates out further.
 
-We then use a heuristic to decide whether to do either three of these actions. 
-In this case we have two heuristics based off these factors:
+Thresholded heuristics decide whether to do either action, based off these factors:
 
-\begin{itemize} 
-\itemsep-1em 
-\item[$\bullet$] Amount of agents in connection range that have a duplicated data compared to not having duplicated data
-\item[$\bullet$] Distance to datas target area
-\item[$\bullet$] Agents around average available public memory
+\begin{itemize}
+\itemsep-1em
+\item[$\bullet$] Ratio of agents in locality that have and do not have a duplicate
+\item[$\bullet$] Distance of the data’s point
+\item[$\bullet$] Agents in locality average spare memory
 \end{itemize}
 
-We then used a weighted sum, to calculate the heuristic value. 
-If the replication heuristic is above the replication threshold then we replicate and same for suicide, else do nothing. 
-The weights of either action are set such that they sum to one, so they can be seen as what percentage of the output should this value account for. 
-The reason for this algorithm being called static is that, mappings of where duplicated should be is deterministic and doesn’t rely on any previous knowledge. 
+These values once collected are then put through a weighted sum and compared against thresholds. A pseudo code version of this can be seen in Algorithm \ref{Agent_Control_Loop2}.
+Every step an agent will check whether it has learnt any new private data, if so then duplicate that data to all agents in the locality.
+If no duplications happen, because no suitable agents are in the locality, the data will have this action performed next iteration until it succeeds.
+This quick replication provides redundancy to non-correlated failures, as fast as possible. Most of the time this action will be redundant, until the time that it isn’t.
 
-A pseudo code version of this can be seen in Algorithm \ref{Agent_Control_Loop2}. 
-In this we can see how the agents work on an individual basis. 
-Every step we check whether we have learnt any new private data, if so then duplicate that data onto all agents around. 
-If this doesn’t happen because of external factors like no other agents around, it will class that data has just been learnt in the next iteration. 
-This is done to gain as much redundancy as quickly as possible, if a correlated failure happened early and we didn’t do this, there is a high probability that all that data could be lost, so we transfer it to all agents and take the possible transfer energy cost losses.
+We now move to lines 8-10 which are the factors described above.
+For each iteration we focus on one public data point in memory, this is a basic iteration through memory. For a further improvement we could dynamically choose which data point to service, talked about more in Section \ref{further improvements}. The current implementation doesn’t scale well for large amounts of data.
 
-We then move onto the factors mentioned in the bullet points above, in lines 8-10. 
-For this iteration we focus on one data point in public memory, and in line 18 we switch to a new item in public memory. 
-This means we are sequentially going through the public data and checking if we should do an action to it, over iterations equal to size of public memory stored. 
-This is not good for scaling however for the size of data that we are using for testing it is addicaute, this will be talked about more in Section \ref{further improvements}. 
-To gain the information needed for these three factors the agent broadcasts a packet to other agents in its vicinity. 
-They will then respond by sharing whether they have a duplicated version of the data in their public memory, and how full their memory is. 
-To check whether they have duplicated data is a simple look if they have a data item with the same id in private or public memory. 
-Once collated at the originating agent we can work out the specified values as shown in the code. 
-There are improvements that can be made to the handling of broadcasting and replying to mean we aren’t using as much power draw, however we will not go into this in the project and will be explained a bit more in the Section {further improvements}.
 
-After getting the three factors we make sure they are on a scale from 0 to 1, and rearrange them to grow higher when we need to do a certain action. 
-For example duplications go up when there is a higher density of duplications therefore on the replication heuristic we want it to be the other way around hence (1-dupes).
+To gain information required an agent broadcasts a packet to agents in the locality. They will then respond with relevant information, e.g. do they have a duplicate of the data point, amount of spare memory. Once collated at the originating agent, it works out the specified values as shown in the code.
+There are improvements that can be made to the handling of broadcasting/replying and will be explained a bit more in the Section {further improvements}.
+
+After collating the values we scale them from 0 to 1, and rearrange for them to grow higher when we are more likely to want an action to be taken.
+For example a higher density of duplications leads the agent to be less likely to replicate \(1\-dupes_ratio\).
 
 \begin{figure}[htb]
 \label{fig:changing}
@@ -481,27 +448,26 @@ For example duplications go up when there is a higher density of duplications th
 \end{center}
 \end{figure}
 
-With changes to different weightings and thresholds, we get significantly different behaviours. 
-An example of this is the increase of the replication threshold means that duplications will spread out less, avoid higher duplication density areas and not spread when agents are saturated in other data. 
+Changes to weightings and thresholds applies significant behavioural changes to the swarm.
+The increase of replication threshold means that duplications will spread out less, avoid higher duplication density areas and not spread when agents are saturated in other data.
 The higher the suicide factor means there is less of a duplication density diffrence across the network.
 
-For an easier understanding of the heuristics behaviour when changing the threshold values we can look at Figure \ref{fig:changing}. 
-This is not a full representation of how the heuristic will work, this diagram shows what the duplication density would be like over a uniformly spaced swarm with exactly the same number of data in public memory. 
-The smaller red dots are data duplicates originating from the datas area which is signified by the large red circle. 
-When the replication threshold is increased in size, this can be seen as changing the range that agents can have duplicated data, as visualized with the blue circle getting smaller. 
-Suicide threshold increasing, increases the diffrence in density across distances from the data area, as visuallised from left to right being lower to higher.
+For an easier understanding of the heuristics behaviour when changing the threshold values we can look at Figure \ref{fig:changing}. This shows how the heuristic with changing threshold values would influence the spread of duplicated data from a data point on a uniformly space swarm. The smaller red dots represent agents that have a duplicate with data points of the large red circle. Replication threshold increasing in magnitude can be seen by the changing in distance, e.g. blue circle. And suicide threashold when increasing is the duplication density spread, e.g. from left to right, right being larger in magnitude.
 
-Weightings can also be changed to fit the behaviour style of the heuristic, for example if you wanted to favour just distance information you could change values accordingly. 
-Having this weighted sum and threshold lends the algorithm to being optimised with a genetic algorithm, with a fitness function dependent on the results that a user might want. 
-This would have to be done for all different applications types because the difference in weights changes the behaviour. 
-For our runs we use, b = {0.45, 0.45, 0.1} and p = {0.3, 0.7}, b was picked arbitrary based off preliminary guesses of what would be best, and p was picked to make the average values duplications ratio and distance to data be roughly equally weighted.
+\begin{equation}
+\label{eq:static_vals}
+\textbf{B}  = \begin{bmatrix}0.45 & 0.45 & 0.1\end{bmatrix}
+\textbf{P}  =  \begin{bmatrix}0.3 & 0.7 \end{bmatrix} 
+\end{equation}
 
-Originally “suicide data” in Line 16 of Algorithm \ref{Agent_Control_Loop2}, was done using Paxos \cite{Paxos}. 
-This was used to ensure that in a scenario where all of one data duplications are in a locality and could all be deleted at once, therefore having no duplications left of that data, wouldn’t occur. 
-However from preliminary testing this didn’t make much of a difference in our scenario, but should be added into any practical applications of this algorithm for more guaranteed redundancy. 
+The factors weights can be adjusted to fit different behaviour styles. For example you could favour distance from data point over current duplication density. Having the weighted sum lends the heuristic to be optimised with fitting techniques like genetic algorithms. This would be done for each individual application seeing as there is no dynamic nature to the heuristic.
+For tests we use values \ref{eq:static_vals},  none of which have any significance and are purely from tinkering to get good performing results.
 
-// Further improvements refrence
+Originally “suicide data” in Line 16 of Algorithm \ref{Agent_Control_Loop2}, was done using Paxos \cite{Paxos}.
+This ensured that a data point could not go extinct from suicide, and could only from external factors like failures.
+However from preliminary testing this didn’t make much of a difference in our scenario, but should be added into any practical applications of this algorithm for more guaranteed redundancy.
 
+%---------------------------------------------------------------------HERE
 
 \section{Dynamic Heuristic}
 \label{sec:Simple3}
