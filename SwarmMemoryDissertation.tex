@@ -455,13 +455,13 @@ The higher the suicide factor means there is less of a duplication density diffr
 For an easier understanding of the heuristics behaviour when changing the threshold values we can look at Figure \ref{fig:changing}. This shows how the heuristic with changing threshold values would influence the spread of duplicated data from a data point on a uniformly space swarm. The smaller red dots represent agents that have a duplicate with data points of the large red circle. Replication threshold increasing in magnitude can be seen by the changing in distance, e.g. blue circle. And suicide threashold when increasing is the duplication density spread, e.g. from left to right, right being larger in magnitude.
 
 \begin{equation}
-\label{eq:static_vals}
+\label{eq:static_vals2}
 \textbf{X}_{rep}  = \begin{bmatrix}1-r &  \frac{\sqrt{8}-d}{\sqrt{8}} & s \end{bmatrix}
 \textbf{X}_{sui}  =  \begin{bmatrix} r & \frac{d}{\sqrt{8}}\end{bmatrix} 
 \end{equation}
 
 \begin{equation}
-\label{eq:static_vals}
+\label{eq:static_vals1}
 \textbf{W}_{rep}  = \begin{bmatrix}0.45 & 0.45 & 0.1\end{bmatrix}
 \textbf{W}_{sui}  =  \begin{bmatrix}0.3 & 0.7 \end{bmatrix} 
 \end{equation}
@@ -475,7 +475,7 @@ h = \textbf{W} \textbf{X} ^{T}
 
 Where r is duplication ratio, d is distance to the datas target point, s is average space in agents in the locality.
 The factors weights can be adjusted to fit different behaviour styles. For example you could favour distance from data point over current duplication density. Having the weighted sum lends the heuristic to be optimised with fitting techniques like genetic algorithms. This would be done for each individual application seeing as there is no dynamic nature to the heuristic.
-For tests we use values \ref{eq:static_vals},  none of which have any significance and are purely from tinkering to get good performing results.
+For tests we use values \ref{eq:static_vals1},  none of which have any significance and are purely from tinkering to get good performing results.
 
 Originally “suicide data” in Line 16 of Algorithm \ref{Agent_Control_Loop2}, was done using Paxos \cite{Paxos}.
 This ensured that a data point could not go extinct from suicide, and could only from external factors like failures.
@@ -497,6 +497,7 @@ For replication:
 \end{equation}
 
 \begin{equation}
+\label{eq:100}
 \textbf{W}_{rep} = \begin{bmatrix}0.45 & 0.45 & 0.1 & -0.6 \end{bmatrix}
 \textbf{X}_{rep} = \begin{bmatrix} 1-r & \frac{\sqrt{8}-d}{\sqrt{8}} & s & \lambda_{rep} \end{bmatrix}
 \end{equation}
@@ -509,6 +510,7 @@ For suicide:
 \end{equation}
 
 \begin{equation}
+\label{eq:101}
 \textbf{W}_{sui} = \begin{bmatrix}0.3 & 0.7 & -0.6 \end{bmatrix}
 \textbf{X}_{sui} = \begin{bmatrix} r & \frac{d}{\sqrt{8}} & \lambda_{sui} \end{bmatrix}
 \end{equation}
@@ -520,33 +522,21 @@ $\psi$ is reduced every iteration until 0.
 Sigmoid functions were used because we can control when the heuristic should be unimpeded or impeded with a grey area in between so if a data needs to duplicate quickly it can still over power the block.
 $\alpha$ and $\beta$ can be changed on both heuristics to give different behaviours.
 
-%---------------------------------------------------------------------HERE
 
-\section{Dynamic Heursitic with Migration}
+\section{Dynamic Heuristic with Migration}
 \label{sec:Simple4}
 
-With the success of the dynamic heuristic in Section \ref{sec:Simple3}, we need to think about even more further improvements.
-One problem mentioned before is that because we are using a swarm we have inherent problems of connections between agents.
-As desribed about before if we have an agent that learns something but all agents around it are full up in memory then we are essentially locked out of the swarm.
-We could handle this using internal control of memory by assigning prioritys, and having a mangement system quite easily.
-However this could lead to loss of duplicates that might later be needed.
-Therefore we come up with a system for agents with higher data loads to pass of duplicates to agents with lower data loads.
-This is also known as Migration from "SKUTE" \cite{Distributed Storage}.
+With the success of the dynamic heuristic in Section \ref{sec:Simple3}, another speculative issue needs to be addressed. A possible issue mentioned previously is the inherent problems of connections through a swarm. This is if an agent learns about a data point it might not be able to spread that information to the rest of the swarm, either because of a physical lack of agents, or that those agents' memories are full, therefore stopping the spread of the data point. There are three possible solutions to the memory being full. Agents repeat duplication requests if full, priorities are used for data duplication or we keep the swarm at a state where information is spread equally around the swarm.
 
-This affect is likely to happen if there are massive disparitys in agents avialable memory.
-We can currently see in most runs we have a wide spread in our memory, this is not optimal for best performance of the swarm.
-The most optimal soloution is where every agent has roughly the same amount of data as every other agent, to teduce the affects possible disconnect from the wider swarm because of memory.
-As a biproduct of this proposed behavouir we get correlation with gloabl infomation as a single local agent.
+The latter being the solution explored in this project. This solution is inherently worse than the priority solution, because the swarm can become oversaturated with duplicates. A combination of the two solutions would be optimal for cases of oversaturation, however, in our tests such situations will not occur. Therefore the author focuses solely on the swarm distributing data points equally, as a proof of concept. The concept is the same as a migration from “SKUTE” \cite{Distributed Storage}.
 
-We implement this similarily to suicides where we don't want them to happen to often because of stability, however there isn't a complex heuritic for this.
-If the agent with the the most space in memory has two more than the current agent the migrate the data.
-Migrating is just when we transfer the data to the other agent then delete on our own agent.
-We don't use a complex heuristic like increasing the chance over time after a migration due to wanting this to be a definite behavoiur.
-We get a bit of a natural stability controller with the amount of leway we give agents, for example we picked two however if you really didn't want stability problems you would pick a larger leeway.
-You could also use parameters as provided by Section \ref{sec:Simple3}.
+We inherently don’t want to limit the speed at which data can be migrated, for example an agent with ten data points meets an agent with none, we want them to both walk away with five. This will inherently increase the instability of the swarm, therefore being a trade off.
+
+The migration heuristic is a and of the heuristic described in Section \ref{sec:Simple2} and whether the proposed agent's available space is significantly lower than the originating agent’s. A pseudo code example can be seen by replacing lines 11-12 of Algorithm \ref{Agent_Control_Loop2} with Algorithm \ref{Agent_Control_Loop3}.
 
 %%%%%%%%%%%%%%%%%%%%%%
 
+%---------------------------------------------------------------------HERE
 
 %%%% Analysis %%%%
 \chapter{Analysis}
@@ -794,9 +784,11 @@ This project achieved what it set out to do, and has highlighted downsides and p
 \State \Return True
 \EndIf
 \State
-\State $d \gets \text{euclidean distance to data current data point}$
-\State $r \gets \text{(local) duplicates on agents / number of agents}$
-\State $s \gets \text{(local) average space available / max public memory}$
+\State $d \gets \text{Euclidean distance to data current data point}$
+\State $r \gets \text{(local) Duplicates on agents / Number of agents}$
+\State $s \gets \text{(local) Average space available / Max public memory}$
+\State $X_{rep}, X_{sui} \gets $\text{Equation} \ref{eq:static_vals2}
+\State $W_{rep}, W_{sui} \gets $\text{Equation} \ref{eq:static_vals1}
 \State
 \If{ $h_{rep}$ (\text{Equation} \ref{eq:10}) $> \text{Threshold}_{rep}$}
 \State \text{Replicate current data point to locallity}
@@ -813,7 +805,45 @@ This project achieved what it set out to do, and has highlighted downsides and p
 \end{algorithmic}
 \end{algorithm}
 
+\begin{algorithm}
+\caption{Dynamic Heuristic Agent - Insert}
+\label{Agent_Control_Loop3}
+\begin{algorithmic}[1]
+\State $\theta \gets \text{Iterations since last suicide}$
+\State $\psi \gets \text{Internal stability}$
+\State $\lambda_{rep} \gets \text{Equation} \ref{eq:1}$
+\State $\lambda_{sui}  \gets \text{Equation} \ref{eq:2}$
+\State $X_{rep}, W_{rep} \gets $\text{Equation} \ref{eq:100}
+\State $X_{sui}, W_{sui} \gets $\text{Equation} \ref{eq:101}
+\end{algorithmic}
+\end{algorithm}
 
+\begin{algorithm}
+\caption{Dynamic Heuristic Agent With Migration - Insert}
+\label{Agent_Control_Loop3}
+\begin{algorithmic}[1]
+\State $\theta \gets \text{Iterations since last suicide}$
+\State $\psi \gets \text{Internal stability}$
+\State $\lambda_{rep} \gets \text{Equation} \ref{eq:1}$
+\State $\lambda_{sui}  \gets \text{Equation} \ref{eq:2}$
+\State $X_{rep}, W_{rep} \gets $\text{Equation} \ref{eq:100}
+\State $X_{sui}, W_{sui} \gets $\text{Equation} \ref{eq:101}
+\State
+\State $SX_{rep} \gets $\text{Equation} \ref{eq:static_vals2}
+\State $SW_{rep} \gets $\text{Equation} \ref{eq:static_vals1}
+\State
+\State $\delta \gets$ \text{Max avalibale space - Our avaliable space}
+\State
+\If{ $h_{rep}(SX_{rep},SW_{rep}) $ (\text{Equation} \ref{eq:10}) $> \text{Threshold}_{rep} \text{ and } \delta > 1$}
+\State \text{Duplicate item to target agent}
+\State
+\If{Successful}
+\State \text {Suicide current data point}
+\State \Return True
+\EndIf
+\EndIf
+\end{algorithmic}
+\end{algorithm}
 
 
 \begin{algorithm}
@@ -821,13 +851,13 @@ This project achieved what it set out to do, and has highlighted downsides and p
 \label{semistaticmove}
 \begin{algorithmic}[1]
 \Procedure{Move}{}
-\State $dirforce \gets \text{define vectors from other agents to self}$
-\State $forces \gets \text{$dirforce$ with magnitudes $($0.24 $-$ current magnitude$)$}$
+\State $dirforce \gets \text{Define vectors from other agents to self}$
+\State $forces \gets \text{$dirforce$ with magnitudes $($0.24 $-$ Current magnitude$)$}$
 \State
 \State \text{Apply small force to center of map}
 \State
-\State $face \gets \text{angle of resultant force on $forces$}$
-\State \text{point at angle $face$ and move forward by 0.0002}
+\State $face \gets \text{Angle of resultant force on $forces$}$
+\State \text{Point at angle $face$ and move forward by 0.0002}
 \State
 \State \Return True
 \EndProcedure
