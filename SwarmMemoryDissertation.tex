@@ -456,10 +456,24 @@ For an easier understanding of the heuristics behaviour when changing the thresh
 
 \begin{equation}
 \label{eq:static_vals}
-\textbf{B}  = \begin{bmatrix}0.45 & 0.45 & 0.1\end{bmatrix}
-\textbf{P}  =  \begin{bmatrix}0.3 & 0.7 \end{bmatrix} 
+\textbf{X}_{rep}  = \begin{bmatrix}1-r &  \frac{\sqrt{8}-d}{\sqrt{8}} & s \end{bmatrix}
+\textbf{X}_{sui}  =  \begin{bmatrix} r & \frac{d}{\sqrt{8}}\end{bmatrix} 
 \end{equation}
 
+\begin{equation}
+\label{eq:static_vals}
+\textbf{W}_{rep}  = \begin{bmatrix}0.45 & 0.45 & 0.1\end{bmatrix}
+\textbf{W}_{sui}  =  \begin{bmatrix}0.3 & 0.7 \end{bmatrix} 
+\end{equation}
+
+We then workout $h_{rep}$ and $h_{sui}$ using multiplication as below:
+
+\begin{equation}
+\label{eq:10}
+h = \textbf{W} \textbf{X} ^{T}
+\end{equation}
+
+Where r is duplication ratio, d is distance to the datas target point, s is average space in agents in the locality.
 The factors weights can be adjusted to fit different behaviour styles. For example you could favour distance from data point over current duplication density. Having the weighted sum lends the heuristic to be optimised with fitting techniques like genetic algorithms. This would be done for each individual application seeing as there is no dynamic nature to the heuristic.
 For tests we use values \ref{eq:static_vals},  none of which have any significance and are purely from tinkering to get good performing results.
 
@@ -482,8 +496,6 @@ For replication:
 \lambda_{rep} = \big( \frac{1}{1+ e^{- \frac{ \theta - \alpha_{rep} }{ \beta_{rep} } } } \big)
 \end{equation}
 
-We then use a classical weighted sum as before:
-
 \begin{equation}
 \textbf{W}_{rep} = \begin{bmatrix}0.45 & 0.45 & 0.1 & -0.6 \end{bmatrix}
 \textbf{X}_{rep} = \begin{bmatrix} 1-r & \frac{\sqrt{8}-d}{\sqrt{8}} & s & \lambda_{rep} \end{bmatrix}
@@ -501,13 +513,6 @@ For suicide:
 \textbf{X}_{sui} = \begin{bmatrix} r & \frac{d}{\sqrt{8}} & \lambda_{sui} \end{bmatrix}
 \end{equation}
 
-We then workout $h_{rep}$ and $h_{sui}$ using multiplication as below:
-
-\begin{equation}
-h = \textbf{W} \textbf{X} ^{T}
-\end{equation}
-
-Where r is duplication ratio, d is distance to the datas target point, s is average space in agents in the locality, this is the same as in Section \ref{sec:Simple2}.
 $\theta$ in Equation \ref{eq:1} is iterations since last suicide, once a suicide occurs on this agent $\theta=0$.
 $\psi$ in Equation \ref{eq:2} is a value based on how many agents asked the current agent to store a bit of data, this naturally increases as instability is increased.
 $\psi$ is reduced every iteration until 0.
@@ -778,35 +783,37 @@ This project achieved what it set out to do, and has highlighted downsides and p
 \chapter{Code apendix}
 
 \begin{algorithm}
-\caption{Agent's control loop}
+\caption{Static Heuristic Agent}
 \label{Agent_Control_Loop2}
 \begin{algorithmic}[1]
 \Procedure{Step}{}
 \State \text{move()}
 \State
-\If{Learned new private memory data}
-\State \text{Replicate item to all agents in connection radius}
+\If{Learned of new data point}
+\State \text{Replicate new data point to locallity}
 \State \Return True
 \EndIf
 \State
-\State $dist \gets \text{euclidean distance to data}$
-\State $dupes \gets \text{(local) duplicates on agents / number of agents}$
-\State $pub space \gets \text{(local) average space available / max public memory}$
+\State $d \gets \text{euclidean distance to data current data point}$
+\State $r \gets \text{(local) duplicates on agents / number of agents}$
+\State $s \gets \text{(local) average space available / max public memory}$
 \State
-\If{$(1-dupes) * b1 + ((\sqrt{8} - dist)/\sqrt{8}) * b2 + pub space * b3 > rep threshold$}
-\State \text{Replicate item to all agents in connection radius}
+\If{ $h_{rep}$ (\text{Equation} \ref{eq:10}) $> \text{Threshold}_{rep}$}
+\State \text{Replicate current data point to locallity}
 \EndIf
 \State
-\If{$dupes * p1 + (dist/\sqrt{8})  * p2 > sui threshold$}
-\State \text{Suicide data}
+\If{$h_{sui}$ (\text{Equation} \ref{eq:10}) $> \text{Threshold}_{sui}$}
+\State \text{Suicide current data point}
 \EndIf
 \State
-\State \text{Iterate to next public memory data}
+\State \text{Iterate to next public data point}
 \State
 \State \Return True
 \EndProcedure
 \end{algorithmic}
 \end{algorithm}
+
+
 
 
 \begin{algorithm}
