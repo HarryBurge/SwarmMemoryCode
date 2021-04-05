@@ -467,66 +467,55 @@ Originally “suicide data” in Line 16 of Algorithm \ref{Agent_Control_Loop2},
 This ensured that a data point could not go extinct from suicide, and could only from external factors like failures.
 However from preliminary testing this didn’t make much of a difference in our scenario, but should be added into any practical applications of this algorithm for more guaranteed redundancy.
 
-%---------------------------------------------------------------------HERE
-
 \section{Dynamic Heuristic}
 \label{sec:Simple3}
 
-To deal with instability of the static heurisitic, Algorithm \ref{Agent_Control_Loop2}, described in Section \ref{sec:Simple2a}.
-We need to do something to control when to replicate and suicide based of local infomation.
-The overall goal is to be able to reduce instability of the algorithm, whilst also taking into account practical limitiations of a real implementation.
-We could learn a lot about instability of the system if we polled agents around the selected agent, however doing that poll will be an increase in either amount of times we need to message and recieve infomation or the size of said infomation.
-Currently we only contact other agents around once, asking for their poisition, whehter they have a certain id in memory and how much free space in memory they have.
-To implement an accurate representation of global instability locally would also require all agents to have a table holding all data id's that has been held by the agent and how many times it has been changed over n iterations.
-We would then have to pass this infomation between agents which would then lead to loss of performance in practical soloutions.
+To control instability of the static heuristic, as described in Section \ref{sec:Simple2a}, we need to enforce a behavior such that when instability increases, factors that contribute to instability are reduced. To keep with an efficient style of homogeneous control, rather than polling agents in the locality for wider information therefore increasing network congestion, computation time and used memory. We instead keep a local track of information on the agents to give a rough guess of local/global behaviour. 
 
-We therefore use a diffrent completely design to keep track of instability.
-First of all we want to restrict suicides for a small time period after a suicide has been completed, this is to slow down the rate at which we might lose data.
-This is not nesicarliry because of instability however helps to solve the rate of which instability happens, e.g. means less agents change per iteration and smooths changes to help with predictrability of the second part of the algorithm.
-This is where we restrict replication tending with instabilty.
-Instability occurs between three scenrios, either threshold parameters have been set incorrectly, an agent has failed or natural agent movement has broken its connection.
-We therefore restrict a agent from replicating its data if instability happens to try smooth out said instability.
+Firstly, to control instability of the swarm, it wants to reduce the chance of suicides happening after one has been executed. This in and of itself will not solve instability, however, slows its affects down. The previous heuristic tries to seek a global optimum where it becomes static. In an unstable state the optimum keeps changing at the fringe. Therefore restricting our suicides leads to the possibility of replicating to a key agent outside the usual bubble which could lead to a static optimum. However, this only solves instability at the fringe and not inside. This is why we restrict the chances of replications based on local instability. Local instability is tracked per agent with a variable that as a request comes in to duplicate data from another agent, a constant is added to the variable, every iteration we lose some of the variable's magnitude. This gives the agent a partial picture as to how the locality is behaving. The combination of both feedback mechanisms should decrease instability and smoothen the effects over time.
 
-We do this using sigmoid functions with the above factors as inputs, this gives the threashold a dynamic ability to change based of the behavouir we give the sigmoid function.
-For replication it is:
+To achieve these behaviours we modify the current heuristic as to use sigmoid functions based on the inputs described abstractly above, which are used to modulate the thresholds as to give them a dynamic coping mechanism with instability.
+
+For replication:
 \begin{equation}
 \label{eq:1}
-\lambda_{rep}  = \big( \frac{1}{1+ e^{- \frac{ \theta -  \alpha }{ \beta } } } \big)
+\lambda_{rep} = \big( \frac{1}{1+ e^{- \frac{ \theta - \alpha_{rep} }{ \beta_{rep} } } } \big)
 \end{equation}
 
 We then use a classical weighted sum as before:
 
 \begin{equation}
-\textbf{W}_{rep}  = \begin{bmatrix}0.45 & 0.45 & 0.1 & -0.6 \end{bmatrix}
-\textbf{X}_{rep}  =  \begin{bmatrix} 1-r & \frac{\sqrt{8}-d}{\sqrt{8}} & s & \lambda_{rep}  \end{bmatrix} 
+\textbf{W}_{rep} = \begin{bmatrix}0.45 & 0.45 & 0.1 & -0.6 \end{bmatrix}
+\textbf{X}_{rep} = \begin{bmatrix} 1-r & \frac{\sqrt{8}-d}{\sqrt{8}} & s & \lambda_{rep} \end{bmatrix}
 \end{equation}
 
-For suicide we use similily the same version of a weigthed function however it has less parameters and the sigmoid is flipped:
+For suicide:
 
 \begin{equation}
 \label{eq:2}
- \lambda_{sui}  = - \big( \frac{1}{1+ e^{- \frac{\psi -  \alpha }{ \beta } } } \big) + 1
+\lambda_{sui} = - \big( \frac{1}{1+ e^{- \frac{\psi - \alpha_{sui} }{ \beta_{sui} } } } \big) + 1
 \end{equation}
 
 \begin{equation}
-\textbf{W}_{sui}  = \begin{bmatrix}0.3 & 0.7 & -0.6 \end{bmatrix}
-\textbf{X}_{sui}  =  \begin{bmatrix} r & \frac{d}{\sqrt{8}} & \lambda_{sui}  \end{bmatrix} 
+\textbf{W}_{sui} = \begin{bmatrix}0.3 & 0.7 & -0.6 \end{bmatrix}
+\textbf{X}_{sui} = \begin{bmatrix} r & \frac{d}{\sqrt{8}} & \lambda_{sui} \end{bmatrix}
 \end{equation}
 
 We then workout $h_{rep}$ and $h_{sui}$ using multiplication as below:
 
 \begin{equation}
- h  = \textbf{W}  \textbf{X} ^{T} 
+h = \textbf{W} \textbf{X} ^{T}
 \end{equation}
 
-Where r is duplication ratio, d is distance to the datas target point, s is average space in agents in the locallity, this is the same as in Section \ref{sec:Simple2}.
+Where r is duplication ratio, d is distance to the datas target point, s is average space in agents in the locality, this is the same as in Section \ref{sec:Simple2}.
 $\theta$ in Equation \ref{eq:1} is iterations since last suicide, once a suicide occurs on this agent $\theta=0$.
-$\psi$ in Equation \ref{eq:2} is a value based off how many agents asked the current agent to store a bit of data, this naturally increases as instability is increased.
+$\psi$ in Equation \ref{eq:2} is a value based on how many agents asked the current agent to store a bit of data, this naturally increases as instability is increased.
 $\psi$ is reduced every iteration until 0.
 
-Sigmoid functions where used because we can control when the heuristic should be unimpedded or impredded with a grey area inbetween so if a data needs to duplicate quickly it can still over power the block.
-$\alpha$ and $\beta$ can be chnaged on both heuristics to give diffrent behavouirs.
+Sigmoid functions were used because we can control when the heuristic should be unimpeded or impeded with a grey area in between so if a data needs to duplicate quickly it can still over power the block.
+$\alpha$ and $\beta$ can be changed on both heuristics to give different behaviours.
 
+%---------------------------------------------------------------------HERE
 
 \section{Dynamic Heursitic with Migration}
 \label{sec:Simple4}
