@@ -536,15 +536,26 @@ The migration heuristic is a and of the heuristic described in Section \ref{sec:
 
 %%%%%%%%%%%%%%%%%%%%%%
 
-%---------------------------------------------------------------------HERE
-
 %%%% Analysis %%%%
 \chapter{Analysis}
 \label{cha:Analysis}
 
+To understand and evaluate the proposed solutions we need to see how they react to different scenarios. The scenarios are designed as to test functionality of the proposed solution. These are:
 
-\section{Static Heursitic}
-\label{sec:Simple2a}
+\begin{itemize}
+\itemsep-1em
+\item[$\bullet$] Semi-Static moving swarm with non-correlated failures, Figure \ref{fig:static_movement_non}
+\item[$\bullet$] Semi-Static moving swarm with a correlated failure, Figure \ref{fig:static_movement_con}
+\item[$\bullet$] Circular moving swarm with non-correlated failures, Figure \ref{fig:circle_movement_non}
+\item[$\bullet$] Circular moving swarm with a correlated failure, Figure \ref{fig:circle_movement_con}
+\item[$\bullet$] Changing of replication and suicide thresholds, Figure \ref{fig:Threshold_Changes}
+\end{itemize}
+
+Semi-static movement, as described in Algorithm \ref{Agent_Control_Loop2}, is used to test the ability of the solution on mostly stable networks, therefore allowing us to see the solutions inherent stability. In the opposite case we have circular movement which adds physical instability. This allows comparison of stability with internal and external factors.
+
+Correlated and non-correlated failures should be self explanatory as of the problem, defined in Section \ref{sec:Problem}. Changing of replication and suicide threasholds allows insight into internal stability and behavourial control of the soloution.
+
+All tests will be of 5 simulations, for 10,000 iterations. Data will also have a gaussian filter applied as to make the graphs readable, kernel of size 50. 
 
 \begin{figure}[htb]
 \label{fig:static_movement_non}
@@ -555,94 +566,50 @@ The migration heuristic is a and of the heuristic described in Section \ref{sec:
 \end{center}
 \end{figure}
 
-To understand and evaluate our solotuin we look at how the solotuion reacts to diffrent scenrios.
-These are as follows:
+"Duplicated Data”, is the amount of duplicates that are in the swarm of a specific data point, represented by the individual line. The green area is standard deviation around the mean of all data points.
 
-\begin{itemize} 
-\itemsep-1em 
-\item[$\bullet$] Semi-Static moving swarm with non-corrilated failures, Figure \ref{fig:static_movement_non}
-\item[$\bullet$] Semi-Static moving swarm with a corrilated failure, Figure \ref{fig:static_movement_con}
-\item[$\bullet$] Circlular moving swarm with non-corrilated failures, Figure \ref{fig:circle_movement_non}
-\item[$\bullet$] Circular moving swarm with a corrilated failure, Figure \ref{fig:circle_movement_con}
-\item[$\bullet$] Changing of replication and suicide thresholds, Figure \ref{fig:Threshold_Changes}
-\end{itemize}
 
-However first of all we will explain what each diagram means inside of Figure \ref{fig:static_movement_non}.
 
-"Number of agents with duplicated data", as the name explains it shows how many agents had that data at that iteration.
-Each of the lines show a diffrent datas mean duplicates over five simulations.
-The green coloured area is the standard deviation from the mean over all duplicated data.
-The reseaon for having all the indurvidual lines is incase one of our data duplicates had significantly lower results we could see.
-This could happen if in the runs the data was completly lost all the other data points would scew the mean to look like nothing bad had happend.
-
-"Number of agents", also as the name implies is the number of active agents over all five runs.
+"Number of agents", as the name implies is the number of active agents over all five runs.
 The purple line is mean over all runs and the green area is the standard deviation from the mean.
-This is displayed to see the effects of agent lose.
 
-"Distance from desired point", this is what is the average distance that a data duplicate is from its desired point.
-The lines and green area are the same as before, and the yellow area shows the mean maximum and mean minmum distances from the desired point.
-This is shown to see how much of a fault tolerance we could have in a correlated failure.
-If the distance maxs out at 0.5 and we have a correlated failure that destorys all agents in a 0.6 raduis then we will lose that data from the swarm.
+“Data Distance”, is the distance from a duplicate to its respective point. The lines and green area are the same as before, and the yellow area is the range of results, e.g. Max and min.
 
-"Duplicate to no duplicate or vice-versa", this shows the stability of the system, indicating when an agent has changed from either having a peice of data to not or from not having a piece of data to having said data.
-Everytime this happens we count it as one point and this is averaged over five runs.
+“Instability”, is how many agents changed from having a duplicate to not or vice versa, per data point.
 
-All data has been guassian filtered of a range of 50 iterations.
-This is to keep data readable, if we had a system that wasn't stable the mean would change drastically over each iteration, 10,000 times.
-We are only really intreseted in the trend and stability will show us the behavouir that we lose by using the filter.
+“Pub-Mem Spread”, is the amount of duplicates per agent.
 
-And lastly we have duplication density visualliser on the right.
-We take a 20 by 20 grid and at each iteration get how many duplicates of data there where of a specific data point in that grid section.
-We also take note of the complete number of agents in that grid on that iteration.
-We then can cumulate this and average out over five runs to see how the data duplication density changes from distance around the point of datas origin.
-The reseaon for doing the ratio rather than just a summation is because of this example, if a gridpoint has 100 agents in it and 10 duplicates of data the summation would say that there is more data there, howerver a gridpoint with 20 agents and 10 duplicates has a much higher density of duplicates.
-This therefore gives us a better depiction of what is going on.
-
-Firstly we need to see whether the algorithm runs as expected from the design.
-In Figure \ref{fig:changing}, we can see how the algorithms duplication density is meant to change across the network, not accounting agents density or space in memory.
-Running the tests on a semi-static movement swarm changing the suicide and replication threshold values as in the Firgure \ref{fig:changing} we get roughly the correct behavouir, as can be shown in Figure \ref{fig:Threshold_Changes}.
-At very extreme values of replication threshold we can see because we have such little reduis of agents that can have the data the suicide threshold doesn't affect density changes as when we have a lower replication threshold.
-When replication threshold is low enough we get a larger spread so the density of the data can be seen much clearer.
-We can also deduce that suicide threshold is inversily corrilated with the stability of the network.
-
-In the bttom left corner of Figure \ref{fig:Threshold_Changes}, we can see it has a nice spread however its is very unstable with on average 13 agents changing from either having a duplicate to no or vice-versa.
-This could be solved using a new factor in the heuristic that takes into account stability.
-Within the threshold domain we can see that it performed as expected however will need to be improved, this will be covered in Section \ref{sec:Simple3}.
-
-Now moving onto the most pressing topic of the algorithm is how it performs with correlated and non-correlated failures in two completly diffrent swarm enviroments.
-Starting with non-correlated failures, in Figure \ref{fig:static_movement_non}, we can see in a semi-stable movement swarm that even as agents fail indurvivdually the number of duplicates of data fights the downwards trend.
-Even though over the swarm we lost on average 2/5 of our agents the data our duplicated data has a diffrent gradient of loss, this shows good redundancy against non-correlated failures.
-We can also observe that distances and the density spreads are correctly working.
-In the stability graph we can see that it is very unstable at the start and becomes stable over time however this is indicative of a semi-stable movement swarm rather than of the algorithm as can be seen in Figure \ref{fig:circle_movement_non}
-
-In  a circular movement network we get a lot of connections broken at each iteration and in a repeating fashion, this can be seen in the stability graph with an osicilating pattern.
-Something obeserved is that in circular moving swarms we were getting larger spreads over distance of duplicated data, as can be seen in the diffrenses in the duplication densitys of both figures.
-This can be explained by the behavouir of the swarms movement.
-Agents that have the data will move with it so therefore will change distances from the data area, and contribute to the data looking more spread out on a average over time desnity graph.
-I beilieve it to be this becuase in the regions comparitivly semi-static has an effect of a hill, whereas the circular movement is like a pancake.
-Another observed behavouir is the duplications spreading across the network is faster in the semi-static movement model, I beileve this to be inhernet diffrences in the swarms networking rather than the algorithms effectiveness.
-The behavouir of a circular moving network is indicative of having gaps in connections from one side of the plane to the other comapred to the semi-static swarm because they are usally linked well, so infomation is spread unimpeeded.
-
-Moving onto correlated failures testing.
-The failures happened at the 3000th iteration and happened at the centre with a raduis of 0.25, so the same range as an agent can talk to.
-In Figure \ref{fig:static_movement_con}, we can see that number of agents drops at the 3000 mark, this is smoothed out, however in the real simulation it happened instantanoulsy.
-
-Puple/liliac is the centre data on this graph as can be implied from the corrilated failure affecting the average distance the most.
-We can see that other data points were affected by the correlated failure but was an inverse affect of moving the average close because data was lost further away from them.
-Data duplicates handled very well and recorverd strongly and stablity was only changed slightly except for on lime.
-I beileve the stability of lime is an outlier, however not a really bad one because the scale of stability is very insuggnificant.
-Lime was kept in the graph for transparancy of results.
-
-We can see that the diffrence between Figure \ref{fig:static_movement_con} and Figure \ref{fig:circle_movement_con} are nearly exactly the same as diffrences between Figure \ref{fig:static_movement_non} and Figure \ref{fig:circle_movement_non}.
-With Figure \ref{fig:circle_movement_con} we can see that there it is less affected by the correlated failure, mainly because of the amount of agents that were actually lost.
-In the duplication density graphs we can see the lasting affects of the correlated failure on the distrubutions of the corner data points.
-
-My beilef is that this algorithm works more effectivly on a swarm that is higher natural instability and irregular movements, compared to a regularly organised swarm that doens't change much iteration to iteration.
-This is my beleif because of the distance spreads of data, and the handling of both corrilated and non-corrilated failures.
-Because of the identified instability that was found from the changing of the static thresholds we will focus now on creating a more stable enviroment to the swarm, using a dynamic models comapre to static, in Section \ref{sec:Simple3}.
+Lastly, there is duplication density spread per data point. This allows the visualization of how density in duplication changes across the physical distance of the swarm. Where the yellower colours signify more duplications to the number of agents than in a blue area. The red dot signifies the data’s point of interest.
 
 
-/// Talk about static movement because it isn't talked about
+\section{Static Heursitic}
+\label{sec:Simple2a}
+
+Firstly, we check whether the solution in Section \ref{sec:Simple2} works as intended with different threshold values, as in Figure \ref{fig:changing}. Looking at Figure \ref{fig:Threshold_Changes}, the reader will see that partially correct behaviour is observed. Tests were performed with semi-static movement at $\text{Threshold}_{rep} = \begin{bmatrix} 0.7 & 0.9 \end{bmatrix}$ and $\text{Threshold}_{sui} = \begin{bmatrix} 0.4 & 0.5 \end{bmatrix}$. These values are extreme and thus will highlight defects in the proposed solution.
+
+It is observed that values of higher replication thresholds causes the effectiveness of the suicide threashold to decrease. This is because the effective duplicate area has too few agents inside to make an effective skimming strategy to duplications. 
+
+It is also observed that a too high replication threshold and a too low suicide threshold causes massive instability at the fringe of the normal replication boundary. This is because the solution doesn’t have a stable mapping, therefore switches between multiple optimum.
+
+Both these observations show a flaw in the proposed design in the fact that the threshold values need to be perfectly chosen in order for the solution to be anywhere near effective in a real world scenario. This flaw will try to be combated in Section \ref{sec:Simple3}.
+
+Now moving onto performance under ideal threshold conditions, Figures \ref{fig:static_movement_non} and \ref{fig:circle_movement_non}. We start by looking at non-correlated failures on both movement type swarms. The reader will see that the gradient of data duplications and loss of agents are fairly correlated, this is a good sign to show that the proposed heuristic is adapting to the environment as it changes, after the initial expansion phase. As expected the expansion phase takes longer in the circular movement swarm, as of the broken connection nature of the movement. Within the static movement swarm the number of duplications per data point seems to be preset compared to the circular movement. This signifies that the heuristic is relying upon external factors to balance the loads.
+
+The external factor argument can also be brought up in both positional sections where the circular movement has further reach, as expected from the less cohesive nature of movement e.g. Less chained connections.
+
+Stability in the circular network is very erratic and periodic in nature. The periodic nature of instability can be explained by the circular motion of the agents, all the agents that start facing outwards will all converge back into the swarm in a periodic manner, thus creating a periodic gain in instability. However even with this accounted for, the heuristic didn’t perform adequately as we would like the solution to be able to handle these external factors. We would also like for the magnitude of the stability to be decreased. 
+
+In “Pub-Mem Spread” we can see there is a large disparity between agents levels of used memory. This is not effective when thinking about scaling of the swarm and leaves us a vulnerability. This is that if too much data is in a single area then the learned data might be cut off from the rest of the swarm, this will try to be solved in Section \ref{sec:Simple4}.
+
+Moving to correlated failures, Figures \ref{fig:static_movement_con} and \ref{fig:circle_movement_con}. A correlated failure happens in the middle of the swarm at the 3000th iteration with a failure radius of 0.25 (Same as an agent's connection range). 
+
+As the reader will see we are still suffering from the same problems as described before. A positive observation is made about the recovery of the duplication values, after the correlated failure. An interesting observation is the lime green data point in Figure \ref{fig:circle_movement_con}, where it seems to be struggling to get more duplicates. From repeated tests this seems to be an outlier, however, is shown for transparency. The author believes it might have been to do with random placements of agents, therefore meaning less agents being close to the data duplicate point, therefore minimizing its replication heuristic.
+
+Another interesting observation in Figure \ref{fig:static_movement_con} “Data Distance” purple data point, is its reduction before the spike at the failure. This is expected, at the initial expansion phase the data will spread across the swarm quicker than the swarm moves to the center, therefore will slowly bring its data points closer to itself over time, this is exaggerated because the expansion has more directions to move. The opposite can be seen in other data points.
+
+%---------------------------------------------------------------------HERE
+
+
 
 \section{Dynamic Heuristic}
 \label{sec:Simple3a}
