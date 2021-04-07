@@ -607,45 +607,23 @@ As the reader will see we are still suffering from the same problems as describe
 
 Another interesting observation in Figure \ref{fig:static_movement_con} “Data Distance” purple data point, is its reduction before the spike at the failure. This is expected, at the initial expansion phase the data will spread across the swarm quicker than the swarm moves to the center, therefore will slowly bring its data points closer to itself over time, this is exaggerated because the expansion has more directions to move. The opposite can be seen in other data points.
 
-%---------------------------------------------------------------------HERE
-
-
-
 \section{Dynamic Heuristic}
 \label{sec:Simple3a}
 
-We go about the same approach as in Section \ref{sec:Simple2a}, however we are focusing on how the new approach has affected the stability of the algorithm.
-We also need to llok at how the new heurisitc might have been affteced with the chnage to the heurisitc, even though it was designed to make a minimal impact when the prevouis heursitic is running smoothly.
+Following the same approach as in Section \ref{sec:Simple2a}, with the values $\alpha_{rep}$ = 15, $\beta_{rep}$ = 2, $\alpha_{sui}$ = 150, $\beta_{rep}$ = 3. $\psi+=50$ every time a duplication request is made to this agent and $\psi--$ every iteration till 0.
+These are in accordance with the equations in Section \ref{sec:Simple3}.
 
-For all tests ran we use $\alpha_{rep}$ = 15, $\beta_{rep}$ = 2, $\alpha_{sui}$ = 150, $\beta_{rep}$ = 3, $\theta$ is 50*(number of times successfully replicated other data onto self).
-These are in accordance to the equations in Section \ref{sec:Simple3}.
+Testing the threshold value changes, we can see that the spread is the same, however, the instability has been reduced significantly in magnitude. The aim of this heuristic was to try and solve the instability problem rather than just reduce it. As can be seen, the curves are nearly identical. Therefore suggesting that our solution might not behave in the predicted way. We look into this further with more results with good valued thresholds.
 
-First we want to test the distribution like we did last time with the Static Heuristic, Section \ref{sec:Simple2a}.
-Within this test we saw how the thresholds being incorrect can lead to massive instability.
-With the results in Figure \ref{fig:Threshold_Changes2} we can see that instability has been massivley reduced compared to with the same threasholds as shown in Figure \ref{fig:Threshold_Changes}.
-Although this is indicitive of showing that we have more stability, the graph has the same shape as in Figure \ref{fig:Threshold_Changes}.
-This means we could just be slowing down the rate of stability rather than solving it.
-There is the possibility that we have more or less duplications creating the stability comparitivly so we will need to look further into the data.
-This could also be because of the suicide rate being at a reduced rate, if this is the case then we should see that there will be a suggnificant increase in duplications comparitivly to the static heuristic.
+From Figures \ref{fig:circle_movement_con2} and \ref{fig:circle_movement_non2} compared against Section /ref{sec:Simple2a} we can see that the heuristic has significantly improved the stability of the external factors, and stopped its periodic nature. However, the change has induced instability when comparing Figure \ref{fig:static_movement_non2} to its former self. This indicates that the solution should only be used in cases where high external instability exists therefore the internal instability increase is worth it.
 
-Comparing Figure \ref{fig:circle_movement_con} and Figure \ref{fig:circle_movement_con2} we can see that we have managed to stabilize for the random flucuations of the circular movement, this is also true for Figure \ref{fig:circle_movement_non2}.
-However the fears of having more duplications is true in these two results where the number of duplicates doesn't seem to level off as much as in the static heuristic, this could be a problem and will have to be examined in the other results.
-Overall in this test it performed like it should have.
+An alarming observation is made in Figure \ref{fig:circle_movement_con2} where the increase in duplicates do not seem to slow down. This could lead to over saturation of duplications. The logical explanation for this behaviour is due to the movement of the swarm, as Figure \ref{fig:static_movement_con2} doesn’t share the same behaviour. This is most likely caused by agents breaking apart from the swarm, therefore leading to less suicides of duplicates.
 
-When comparing Figure \ref{fig:circle_movement_non} and Figure \ref{fig:circle_movement_non2}, we can also see that the stability has been made more consistent, however the deviation is reduced as number of duplications reduces.
-This is to be expected, however wasn't visible in the past circluar movement tests, this could be due to randomness or the algorithm.
+When comparing all the results of the dynamic heuristic versus the static heuristic, we see a new tendency in the duplication density spread per data point section. The tendency is to have higher duplication densities to the side of the map. This is most prominent in the circular motion swarms. These results are misleading into believing that there are a lot of duplications in that area. On closer inspection of the results data it was visible that these highly dense areas were caused by a few agents with duplicates, due to the minimal size in agents the density will appear large in size even though there is only one or two duplicates there.  
 
-With both circular movements the duplicates density graphs show data having a tendancy to hug the sides of the plane.
-This can be counted as partially onmouless because within viewing of the simulation some agents with the duplications of the data were hanging on the outer ages without connections therefore never suiciding making the duplication denisity in that area seem high.
+An interesting observation about static-movement of non-correlated failures is that the duplicates tend to have varying levels of duplicates for different data points, compared to any other test. Mentioned in Section \ref{sec:Simple2a}, the cause rather than being an outlier or suffocation from other duplicates, it is now believed to be inherent with the movement of the swarm. As the agents gather around the middle they averagly get further away from there data points, in tern making it less likely to replicate and more likely to suicide. This can also explain the neatly spread out duplicate lines in static-movement correlated failure tests.
 
-There is not much to say about Figure \ref{fig:static_movement_con2}, it looks pretty much exactly the same as Figure \ref{fig:static_movement_con}, except for duplications being lower and that stability converges nicely.
-These are all plossibly down to randomness in the simulation.
-
-Compairing Figure \ref{fig:circle_movement_non} and Figure \ref{fig:circle_movement_non2} we can see that stability has been increased, however it doesn't look like it due to the y-axis bounds being larger in Figure \ref{fig:circle_movement_non}.
-
-Overall all test points the new dynamic algorithm has performed the same if not better in all of them.
-This shows that the dynamic thresholding works as inteneded to not affect the algorithm when things are running smoothly, and then step on the breaks when we are put in a bit less of a stable state.
-
+%---------------------------------------------------------------------HERE
 
 \section{Dynamic Heursitic with Migration}
 \label{sec:Simple4a}
