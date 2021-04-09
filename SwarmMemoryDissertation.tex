@@ -628,20 +628,13 @@ An interesting observation about static-movement of non-correlated failures is t
 \section{Dynamic Heursitic with Migration}
 \label{sec:Simple4a}
 
-Within this section we review the results found of the algorithm described in Section \ref{sec:Simple4}.
-We did not compute threshold changes graph, this is because nothing would have changed since the last computation unless there was more than one public data to be learned.
-This is because the algorithm in our case needs at least three data points to  be even activated.
+The new method proposed in Section \ref{sec:simple4} was created to promote positive load sharing between the agents. Figures \ref{fig:static_movement_non3} and \ref{fig:static_movement_con3} both show this positive affect at the cost of instability. This internal instability is created by the movement of migrating data points, so is to be expected. We can also see that the method is trying to do the same in the circular movement swarms. However, it lacks actual performance with still the same costs to internal instability. From further investigation the cause was found to be the disconnected nature of movement in the swarm, agents have their own subsection of the swarm where they are roughly equal globally they are not. The semi-static movement handles this better because they are all drawn to the middle, if this was not the case then we would see similar results, due to the sub swarm nature of the movement.
 
-The aim of this algorithm was to decrease the spread of duplications per agent.
-We can see in Figure \ref{fig:static_movement_non3, fig:static_movement_con3}, that this is the case, however at the cost of instability in the system.
-We can also see that it also affects the spread in Firgure \ref{fig:circle_movement_non3, fig:circle_movement_con3}, however by less of a degree but with roughlt the same increase to instability.
+In the density duplication spread section we can see that the new method significantly spreads data further than before, especially in semi-static movement cases. This shows that the new method is more torrent to larger correlated failures than previously proposed methods. This characteristic is more inline with the best conceivable solution to the problem defined in Section \ref{sec:Problem}. However, the increase in instability is an unwelcome sight.
 
-In the duplication ratios sections on all dyanmic heurisitic with migration we can see the spread has been increased in size, espically in the semi-staic movement data.
-This could be an affective way of creating an artifically larger area with also keeping the duplications down.
+Figure \ref{fig:circle_movement_con3} continues the uptrend mentioned in Section \ref{sec:simple3a}. This shows that this behaviour is most likely not coincidental and is as mentioned previously.
 
-When comparing this algorithm to the prevouis algorithm not much has changed, the affect of memory spread to the instability is a cost which will need to be investiagted for your persoanl needs of the project.
-
-// Need to redo test data and ensure that we aren't losing more duplicates because of migrating to a agent already with said migrated data
+The changes made to convert the dynamic heuristic to using migrations were intended to be a mild improvement without any significant side effects. However, even though the behaviors are similar, the use cases for each differ dramatically. This will be talked about in Section \ref{sec:conc}.
 
 %%%%%%%%%%%%%%
 
@@ -710,6 +703,8 @@ If we ruled out hybrid based models, which would be much more affect as a storag
 We talk about possible more effective ways to store the data in Section \ref{sec:further}.
 
 This project achieved what it set out to do, and has highlighted downsides and possible improvements that could be researched into further to improve this algorithms performance and adaptability.
+
+//Talk about diffrent use cases
 
 %%%%%%%%%%%%%%%%%%%
 
