@@ -404,15 +404,23 @@ Agents are homogenous, with a small connection radius around them.
 The world is width/height of 2 and an agents connection radius is 0.25.
 Agents are assumed to have perfect connections and each agent can simultaneously respond to incoming packets and send outbound packets.
 
-Agents can have two different types of data, one being private and other public. Private data is a record of a data point of which it has learnt directly. This data cannot be deleted and will be prioritised over public data. Public data is learnt from interactions with other agents and can be deleted. Both types of data can be passed on to other agents in the form of public data.
+Agents can have two different types of data, one being private and other public. 
+Private data is a record of a data point of which it has learnt directly. 
+This data cannot be deleted and will be prioritised over public data. 
+Public data is learnt from interactions with other agents and can be deleted. 
+Both types of data can be passed on to other agents in the form of public data.
 
-A control loop runs for 10,000 iterations, where agents are threaded for a single step per iteration. The threading process happens in random order to provide as realistic as possible real world scenario, with available hardware to the author. Ideally running all agents at once in individual threads would be the most accurate, however, scheduling policies are likely to significantly suffocate some agents' processes, therefore giving less realistic results. Running on hardware that could support this many threads would be a good future improvement.
+A control loop runs for 10,000 iterations, where agents are threaded for a single step per iteration. 
+The threading process happens in random order to provide as realistic as possible real world scenario, with available hardware to the author. 
+Ideally running all agents at once in individual threads would be the most accurate, however, scheduling policies are likely to significantly suffocate some agents' processes, therefore giving less realistic results. 
+Running on hardware that could support this many threads would be a good future improvement.
 
 
 \section{Static Heursitic}
 \label{sec:Simple2}
 
-This solution takes heavy inspiration from \cite{Distributed Storage}. We take the methodology of each agent controlling its own data and how it wants to distribute it, done through actions of Replication, Suicide and Nothing.
+This solution takes heavy inspiration from \cite{Distributed Storage}. 
+We take the methodology of each agent controlling its own data and how it wants to distribute it, done through actions of Replication, Suicide and Nothing.
 Migration is not applied, therefore we can piggyback on natural movements of the swarm to get duplicates out further.
 
 Thresholded heuristics decide whether to do either action, based off these factors:
@@ -424,17 +432,23 @@ Thresholded heuristics decide whether to do either action, based off these facto
 \item[$\bullet$] Agents in locality average spare memory
 \end{itemize}
 
-These values once collected are then put through a weighted sum and compared against thresholds. A pseudo code version of this can be seen in Algorithm \ref{Agent_Control_Loop2}.
+These values once collected are then put through a weighted sum and compared against thresholds. 
+A pseudo code version of this can be seen in Algorithm \ref{Agent_Control_Loop2}.
 Every step an agent will check whether it has learnt any new private data, if so then duplicate that data to all agents in the locality.
 If no duplications happen, because no suitable agents are in the locality, the data will have this action performed next iteration until it succeeds.
-This quick replication provides redundancy to non-correlated failures, as fast as possible. Most of the time this action will be redundant, until the time that it isn’t.
+This quick replication provides redundancy to non-correlated failures, as fast as possible. 
+Most of the time this action will be redundant, until the time that it isn’t.
 
 We now move to lines 8-10 which are the factors described above.
-For each iteration we focus on one public data point in memory, this is a basic iteration through memory. For a further improvement we could dynamically choose which data point to service, talked about more in Section \ref{further improvements}. The current implementation doesn’t scale well for large amounts of data.
+For each iteration we focus on one public data point in memory, this is a basic iteration through memory. 
+For a further improvement we could dynamically choose which data point to service, talked about more in Section \ref{further improvements}. 
+The current implementation doesn’t scale well for large amounts of data.
 
 
-To gain information required an agent broadcasts a packet to agents in the locality. They will then respond with relevant information, e.g. do they have a duplicate of the data point, amount of spare memory. Once collated at the originating agent, it works out the specified values as shown in the code.
-There are improvements that can be made to the handling of broadcasting/replying and will be explained a bit more in the Section {further improvements}.
+To gain information required an agent broadcasts a packet to agents in the locality. 
+They will then respond with relevant information, e.g. do they have a duplicate of the data point, amount of spare memory. 
+Once collated at the originating agent, it works out the specified values as shown in the code.
+There are improvements that can be made to the handling of broadcasting/replying and will be explained a bit more in the Section \ref{further improvements}.
 
 After collating the values we scale them from 0 to 1, and rearrange for them to grow higher when we are more likely to want an action to be taken.
 For example a higher density of duplications leads the agent to be less likely to replicate \(1\-dupes_ratio\).
@@ -452,7 +466,11 @@ Changes to weightings and thresholds applies significant behavioural changes to 
 The increase of replication threshold means that duplications will spread out less, avoid higher duplication density areas and not spread when agents are saturated in other data.
 The higher the suicide factor means there is less of a duplication density diffrence across the network.
 
-For an easier understanding of the heuristics behaviour when changing the threshold values we can look at Figure \ref{fig:changing}. This shows how the heuristic with changing threshold values would influence the spread of duplicated data from a data point on a uniformly space swarm. The smaller red dots represent agents that have a duplicate with data points of the large red circle. Replication threshold increasing in magnitude can be seen by the changing in distance, e.g. blue circle. And suicide threashold when increasing is the duplication density spread, e.g. from left to right, right being larger in magnitude.
+For an easier understanding of the heuristics behaviour when changing the threshold values we can look at Figure \ref{fig:changing}. 
+This shows how the heuristic with changing threshold values would influence the spread of duplicated data from a data point on a uniformly space swarm. 
+The smaller red dots represent agents that have a duplicate with data points of the large red circle. 
+Replication threshold increasing in magnitude can be seen by the changing in distance, e.g. blue circle. 
+And suicide threashold when increasing is the duplication density spread, e.g. from left to right, right being larger in magnitude.
 
 \begin{equation}
 \label{eq:static_vals2}
@@ -474,7 +492,10 @@ h = \textbf{W} \textbf{X} ^{T}
 \end{equation}
 
 Where r is duplication ratio, d is distance to the datas target point, s is average space in agents in the locality.
-The factors weights can be adjusted to fit different behaviour styles. For example you could favour distance from data point over current duplication density. Having the weighted sum lends the heuristic to be optimised with fitting techniques like genetic algorithms. This would be done for each individual application seeing as there is no dynamic nature to the heuristic.
+The factors weights can be adjusted to fit different behaviour styles. 
+For example you could favour distance from data point over current duplication density. 
+Having the weighted sum lends the heuristic to be optimised with fitting techniques like genetic algorithms. 
+This would be done for each individual application seeing as there is no dynamic nature to the heuristic.
 For tests we use values \ref{eq:static_vals1},  none of which have any significance and are purely from tinkering to get good performing results.
 
 Originally “suicide data” in Line 16 of Algorithm \ref{Agent_Control_Loop2}, was done using Paxos \cite{Paxos}.
@@ -484,9 +505,20 @@ However from preliminary testing this didn’t make much of a difference in our 
 \section{Dynamic Heuristic}
 \label{sec:Simple3}
 
-To control instability of the static heuristic, as described in Section \ref{sec:Simple2a}, we need to enforce a behavior such that when instability increases, factors that contribute to instability are reduced. To keep with an efficient style of homogeneous control, rather than polling agents in the locality for wider information therefore increasing network congestion, computation time and used memory. We instead keep a local track of information on the agents to give a rough guess of local/global behaviour. 
+To control instability of the static heuristic, as described in Section \ref{sec:Simple2a}, we need to enforce a behavior such that when instability increases, factors that contribute to instability are reduced. 
+To keep with an efficient style of homogeneous control, rather than polling agents in the locality for wider information therefore increasing network congestion, computation time and used memory. 
+We instead keep a local track of information on the agents to give a rough guess of local/global behaviour. 
 
-Firstly, to control instability of the swarm, it wants to reduce the chance of suicides happening after one has been executed. This in and of itself will not solve instability, however, slows its affects down. The previous heuristic tries to seek a global optimum where it becomes static. In an unstable state the optimum keeps changing at the fringe. Therefore restricting our suicides leads to the possibility of replicating to a key agent outside the usual bubble which could lead to a static optimum. However, this only solves instability at the fringe and not inside. This is why we restrict the chances of replications based on local instability. Local instability is tracked per agent with a variable that as a request comes in to duplicate data from another agent, a constant is added to the variable, every iteration we lose some of the variable's magnitude. This gives the agent a partial picture as to how the locality is behaving. The combination of both feedback mechanisms should decrease instability and smoothen the effects over time.
+Firstly, to control instability of the swarm, it wants to reduce the chance of suicides happening after one has been executed. 
+This in and of itself will not solve instability, however, slows its affects down. 
+The previous heuristic tries to seek a global optimum where it becomes static. 
+In an unstable state the optimum keeps changing at the fringe. 
+Therefore restricting our suicides leads to the possibility of replicating to a key agent outside the usual bubble which could lead to a static optimum. 
+However, this only solves instability at the fringe and not inside. 
+This is why we restrict the chances of replications based on local instability. 
+Local instability is tracked per agent with a variable that as a request comes in to duplicate data from another agent, a constant is added to the variable, every iteration we lose some of the variable's magnitude. 
+This gives the agent a partial picture as to how the locality is behaving. 
+The combination of both feedback mechanisms should decrease instability and smoothen the effects over time.
 
 To achieve these behaviours we modify the current heuristic as to use sigmoid functions based on the inputs described abstractly above, which are used to modulate the thresholds as to give them a dynamic coping mechanism with instability.
 
@@ -526,13 +558,23 @@ $\alpha$ and $\beta$ can be changed on both heuristics to give different behavio
 \section{Dynamic Heuristic with Migration}
 \label{sec:Simple4}
 
-With the success of the dynamic heuristic in Section \ref{sec:Simple3}, another speculative issue needs to be addressed. A possible issue mentioned previously is the inherent problems of connections through a swarm. This is if an agent learns about a data point it might not be able to spread that information to the rest of the swarm, either because of a physical lack of agents, or that those agents' memories are full, therefore stopping the spread of the data point. There are three possible solutions to the memory being full. Agents repeat duplication requests if full, priorities are used for data duplication or we keep the swarm at a state where information is spread equally around the swarm.
+With the success of the dynamic heuristic in Section \ref{sec:Simple3}, another speculative issue needs to be addressed. 
+A possible issue mentioned previously is the inherent problems of connections through a swarm. 
+This is if an agent learns about a data point it might not be able to spread that information to the rest of the swarm, either because of a physical lack of agents, or that those agents' memories are full, therefore stopping the spread of the data point. 
+There are three possible solutions to the memory being full. 
+Agents repeat duplication requests if full, priorities are used for data duplication or we keep the swarm at a state where information is spread equally around the swarm.
 
-The latter being the solution explored in this project. This solution is inherently worse than the priority solution, because the swarm can become oversaturated with duplicates. A combination of the two solutions would be optimal for cases of oversaturation, however, in our tests such situations will not occur. Therefore the author focuses solely on the swarm distributing data points equally, as a proof of concept. The concept is the same as a migration from “SKUTE” \cite{Distributed Storage}.
+The latter being the solution explored in this project. 
+This solution is inherently worse than the priority solution, because the swarm can become oversaturated with duplicates. 
+A combination of the two solutions would be optimal for cases of oversaturation, however, in our tests such situations will not occur. 
+Therefore the author focuses solely on the swarm distributing data points equally, as a proof of concept. 
+The concept is the same as a migration from “SKUTE” \cite{Distributed Storage}.
 
-We inherently don’t want to limit the speed at which data can be migrated, for example an agent with ten data points meets an agent with none, we want them to both walk away with five. This will inherently increase the instability of the swarm, therefore being a trade off.
+We inherently don’t want to limit the speed at which data can be migrated, for example an agent with ten data points meets an agent with none, we want them to both walk away with five. 
+This will inherently increase the instability of the swarm, therefore being a trade off.
 
-The migration heuristic is a and of the heuristic described in Section \ref{sec:Simple2} and whether the proposed agent's available space is significantly lower than the originating agent’s. A pseudo code example can be seen by replacing lines 11-12 of Algorithm \ref{Agent_Control_Loop2} with Algorithm \ref{Agent_Control_Loop3}.
+The migration heuristic is a and of the heuristic described in Section \ref{sec:Simple2} and whether the proposed agent's available space is significantly lower than the originating agent’s. 
+A pseudo code example can be seen by replacing lines 11-12 of Algorithm \ref{Agent_Control_Loop2} with Algorithm \ref{Agent_Control_Loop3}.
 
 %%%%%%%%%%%%%%%%%%%%%%
 
@@ -540,7 +582,9 @@ The migration heuristic is a and of the heuristic described in Section \ref{sec:
 \chapter{Analysis}
 \label{cha:Analysis}
 
-To understand and evaluate the proposed solutions we need to see how they react to different scenarios. The scenarios are designed as to test functionality of the proposed solution. These are:
+To understand and evaluate the proposed solutions we need to see how they react to different scenarios. 
+The scenarios are designed as to test functionality of the proposed solution. 
+These are:
 
 \begin{itemize}
 \itemsep-1em
@@ -551,11 +595,15 @@ To understand and evaluate the proposed solutions we need to see how they react 
 \item[$\bullet$] Changing of replication and suicide thresholds, Figure \ref{fig:Threshold_Changes}
 \end{itemize}
 
-Semi-static movement, as described in Algorithm \ref{Agent_Control_Loop2}, is used to test the ability of the solution on mostly stable networks, therefore allowing us to see the solutions inherent stability. In the opposite case we have circular movement which adds physical instability. This allows comparison of stability with internal and external factors.
+Semi-static movement, as described in Algorithm \ref{Agent_Control_Loop2}, is used to test the ability of the solution on mostly stable networks, therefore allowing us to see the solutions inherent stability. 
+In the opposite case we have circular movement which adds physical instability. 
+This allows comparison of stability with internal and external factors.
 
-Correlated and non-correlated failures should be self explanatory as of the problem, defined in Section \ref{sec:Problem}. Changing of replication and suicide threasholds allows insight into internal stability and behavourial control of the soloution.
+Correlated and non-correlated failures should be self explanatory as of the problem, defined in Section \ref{sec:Problem}. 
+Changing of replication and suicide threasholds allows insight into internal stability and behavourial control of the soloution.
 
-All tests will be of 5 simulations, for 10,000 iterations. Data will also have a gaussian filter applied as to make the graphs readable, kernel of size 50. 
+All tests will be of 5 simulations, for 10,000 iterations. 
+Data will also have a gaussian filter applied as to make the graphs readable, kernel of size 50. 
 
 \begin{figure}[htb]
 \label{fig:static_movement_non}
@@ -566,78 +614,132 @@ All tests will be of 5 simulations, for 10,000 iterations. Data will also have a
 \end{center}
 \end{figure}
 
-"Duplicated Data”, is the amount of duplicates that are in the swarm of a specific data point, represented by the individual line. The green area is standard deviation around the mean of all data points.
-
-
+"Duplicated Data”, is the amount of duplicates that are in the swarm of a specific data point, represented by the individual line. 
+The green area is standard deviation around the mean of all data points.
 
 "Number of agents", as the name implies is the number of active agents over all five runs.
 The purple line is mean over all runs and the green area is the standard deviation from the mean.
 
-“Data Distance”, is the distance from a duplicate to its respective point. The lines and green area are the same as before, and the yellow area is the range of results, e.g. Max and min.
+“Data Distance”, is the distance from a duplicate to its respective point. 
+The lines and green area are the same as before, and the yellow area is the range of results, e.g. Max and min.
 
 “Instability”, is how many agents changed from having a duplicate to not or vice versa, per data point.
 
 “Pub-Mem Spread”, is the amount of duplicates per agent.
 
-Lastly, there is duplication density spread per data point. This allows the visualization of how density in duplication changes across the physical distance of the swarm. Where the yellower colours signify more duplications to the number of agents than in a blue area. The red dot signifies the data’s point of interest.
+Lastly, there is duplication density spread per data point. 
+This allows the visualization of how density in duplication changes across the physical distance of the swarm. 
+Where the yellower colours signify more duplications to the number of agents than in a blue area. 
+The red dot signifies the data’s point of interest.
 
 
 \section{Static Heursitic}
 \label{sec:Simple2a}
 
-Firstly, we check whether the solution in Section \ref{sec:Simple2} works as intended with different threshold values, as in Figure \ref{fig:changing}. Looking at Figure \ref{fig:Threshold_Changes}, the reader will see that partially correct behaviour is observed. Tests were performed with semi-static movement at $\text{Threshold}_{rep} = \begin{bmatrix} 0.7 & 0.9 \end{bmatrix}$ and $\text{Threshold}_{sui} = \begin{bmatrix} 0.4 & 0.5 \end{bmatrix}$. These values are extreme and thus will highlight defects in the proposed solution.
+Firstly, we check whether the solution in Section \ref{sec:Simple2} works as intended with different threshold values, as in Figure \ref{fig:changing}. 
+Looking at Figure \ref{fig:Threshold_Changes}, the reader will see that partially correct behaviour is observed. 
+Tests were performed with semi-static movement at $\text{Threshold}_{rep} = \begin{bmatrix} 0.7 & 0.9 \end{bmatrix}$ and $\text{Threshold}_{sui} = \begin{bmatrix} 0.4 & 0.5 \end{bmatrix}$. 
+These values are extreme and thus will highlight defects in the proposed solution.
 
-It is observed that values of higher replication thresholds causes the effectiveness of the suicide threashold to decrease. This is because the effective duplicate area has too few agents inside to make an effective skimming strategy to duplications. 
+It is observed that values of higher replication thresholds causes the effectiveness of the suicide threashold to decrease. 
+This is because the effective duplicate area has too few agents inside to make an effective skimming strategy to duplications. 
 
-It is also observed that a too high replication threshold and a too low suicide threshold causes massive instability at the fringe of the normal replication boundary. This is because the solution doesn’t have a stable mapping, therefore switches between multiple optimum.
+It is also observed that a too high replication threshold and a too low suicide threshold causes massive instability at the fringe of the normal replication boundary. 
+This is because the solution doesn’t have a stable mapping, therefore switches between multiple optimum.
 
-Both these observations show a flaw in the proposed design in the fact that the threshold values need to be perfectly chosen in order for the solution to be anywhere near effective in a real world scenario. This flaw will try to be combated in Section \ref{sec:Simple3}.
+Both these observations show a flaw in the proposed design in the fact that the threshold values need to be perfectly chosen in order for the solution to be anywhere near effective in a real world scenario. 
+This flaw will try to be combated in Section \ref{sec:Simple3}.
 
-Now moving onto performance under ideal threshold conditions, Figures \ref{fig:static_movement_non} and \ref{fig:circle_movement_non}. We start by looking at non-correlated failures on both movement type swarms. The reader will see that the gradient of data duplications and loss of agents are fairly correlated, this is a good sign to show that the proposed heuristic is adapting to the environment as it changes, after the initial expansion phase. As expected the expansion phase takes longer in the circular movement swarm, as of the broken connection nature of the movement. Within the static movement swarm the number of duplications per data point seems to be preset compared to the circular movement. This signifies that the heuristic is relying upon external factors to balance the loads.
+Now moving onto performance under ideal threshold conditions, Figures \ref{fig:static_movement_non} and \ref{fig:circle_movement_non}. 
+We start by looking at non-correlated failures on both movement type swarms. 
+The reader will see that the gradient of data duplications and loss of agents are fairly correlated, this is a good sign to show that the proposed heuristic is adapting to the environment as it changes, after the initial expansion phase. 
+As expected the expansion phase takes longer in the circular movement swarm, as of the broken connection nature of the movement. 
+Within the static movement swarm the number of duplications per data point seems to be preset compared to the circular movement. 
+This signifies that the heuristic is relying upon external factors to balance the loads.
 
 The external factor argument can also be brought up in both positional sections where the circular movement has further reach, as expected from the less cohesive nature of movement e.g. Less chained connections.
 
-Stability in the circular network is very erratic and periodic in nature. The periodic nature of instability can be explained by the circular motion of the agents, all the agents that start facing outwards will all converge back into the swarm in a periodic manner, thus creating a periodic gain in instability. However even with this accounted for, the heuristic didn’t perform adequately as we would like the solution to be able to handle these external factors. We would also like for the magnitude of the stability to be decreased. 
+Stability in the circular network is very erratic and periodic in nature. 
+The periodic nature of instability can be explained by the circular motion of the agents, all the agents that start facing outwards will all converge back into the swarm in a periodic manner, thus creating a periodic gain in instability. 
+However even with this accounted for, the heuristic didn’t perform adequately as we would like the solution to be able to handle these external factors. 
+We would also like for the magnitude of the stability to be decreased. 
 
-In “Pub-Mem Spread” we can see there is a large disparity between agents levels of used memory. This is not effective when thinking about scaling of the swarm and leaves us a vulnerability. This is that if too much data is in a single area then the learned data might be cut off from the rest of the swarm, this will try to be solved in Section \ref{sec:Simple4}.
+In “Pub-Mem Spread” we can see there is a large disparity between agents levels of used memory. 
+This is not effective when thinking about scaling of the swarm and leaves us a vulnerability. 
+This is that if too much data is in a single area then the learned data might be cut off from the rest of the swarm, this will try to be solved in Section \ref{sec:Simple4}.
 
-Moving to correlated failures, Figures \ref{fig:static_movement_con} and \ref{fig:circle_movement_con}. A correlated failure happens in the middle of the swarm at the 3000th iteration with a failure radius of 0.25 (Same as an agent's connection range). 
+Moving to correlated failures, Figures \ref{fig:static_movement_con} and \ref{fig:circle_movement_con}. 
+A correlated failure happens in the middle of the swarm at the 3000th iteration with a failure radius of 0.25 (Same as an agent's connection range). 
 
-As the reader will see we are still suffering from the same problems as described before. A positive observation is made about the recovery of the duplication values, after the correlated failure. An interesting observation is the lime green data point in Figure \ref{fig:circle_movement_con}, where it seems to be struggling to get more duplicates. From repeated tests this seems to be an outlier, however, is shown for transparency. The author believes it might have been to do with random placements of agents, therefore meaning less agents being close to the data duplicate point, therefore minimizing its replication heuristic.
+As the reader will see we are still suffering from the same problems as described before. 
+A positive observation is made about the recovery of the duplication values, after the correlated failure. 
+An interesting observation is the lime green data point in Figure \ref{fig:circle_movement_con}, where it seems to be struggling to get more duplicates. 
+From repeated tests this seems to be an outlier, however, is shown for transparency. 
+The author believes it might have been to do with random placements of agents, therefore meaning less agents being close to the data duplicate point, therefore minimizing its replication heuristic.
 
-Another interesting observation in Figure \ref{fig:static_movement_con} “Data Distance” purple data point, is its reduction before the spike at the failure. This is expected, at the initial expansion phase the data will spread across the swarm quicker than the swarm moves to the center, therefore will slowly bring its data points closer to itself over time, this is exaggerated because the expansion has more directions to move. The opposite can be seen in other data points.
+Another interesting observation in Figure \ref{fig:static_movement_con} “Data Distance” purple data point, is its reduction before the spike at the failure. 
+This is expected, at the initial expansion phase the data will spread across the swarm quicker than the swarm moves to the center, therefore will slowly bring its data points closer to itself over time, this is exaggerated because the expansion has more directions to move. 
+The opposite can be seen in other data points.
 
 \section{Dynamic Heuristic}
 \label{sec:Simple3a}
 
-Following the same approach as in Section \ref{sec:Simple2a}, with the values $\alpha_{rep}$ = 15, $\beta_{rep}$ = 2, $\alpha_{sui}$ = 150, $\beta_{rep}$ = 3. $\psi+=50$ every time a duplication request is made to this agent and $\psi--$ every iteration till 0.
+Following the same approach as in Section \ref{sec:Simple2a}, with the values $\alpha_{rep}$ = 15, $\beta_{rep}$ = 2, $\alpha_{sui}$ = 150, $\beta_{rep}$ = 3. 
+$\psi+=50$ every time a duplication request is made to this agent and $\psi--$ every iteration till 0.
 These are in accordance with the equations in Section \ref{sec:Simple3}.
 
-Testing the threshold value changes, we can see that the spread is the same, however, the instability has been reduced significantly in magnitude. The aim of this heuristic was to try and solve the instability problem rather than just reduce it. As can be seen, the curves are nearly identical. Therefore suggesting that our solution might not behave in the predicted way. We look into this further with more results with good valued thresholds.
+Testing the threshold value changes, we can see that the spread is the same, however, the instability has been reduced significantly in magnitude. 
+The aim of this heuristic was to try and solve the instability problem rather than just reduce it. 
+As can be seen, the curves are nearly identical. 
+Therefore suggesting that our solution might not behave in the predicted way. 
+We look into this further with more results with good valued thresholds.
 
-From Figures \ref{fig:circle_movement_con2} and \ref{fig:circle_movement_non2} compared against Section /ref{sec:Simple2a} we can see that the heuristic has significantly improved the stability of the external factors, and stopped its periodic nature. However, the change has induced instability when comparing Figure \ref{fig:static_movement_non2} to its former self. This indicates that the solution should only be used in cases where high external instability exists therefore the internal instability increase is worth it.
+From Figures \ref{fig:circle_movement_con2} and \ref{fig:circle_movement_non2} compared against Section \ref{sec:Simple2a} we can see that the heuristic has significantly improved the stability of the external factors, and stopped its periodic nature. 
+However, the change has induced instability when comparing Figure \ref{fig:static_movement_non2} to its former self. 
+This indicates that the solution should only be used in cases where high external instability exists therefore the internal instability increase is worth it.
 
-An alarming observation is made in Figure \ref{fig:circle_movement_con2} where the increase in duplicates do not seem to slow down. This could lead to over saturation of duplications. The logical explanation for this behaviour is due to the movement of the swarm, as Figure \ref{fig:static_movement_con2} doesn’t share the same behaviour. This is most likely caused by agents breaking apart from the swarm, therefore leading to less suicides of duplicates.
+An alarming observation is made in Figure \ref{fig:circle_movement_con2} where the increase in duplicates do not seem to slow down. 
+This could lead to over saturation of duplications. 
+The logical explanation for this behaviour is due to the movement of the swarm, as Figure \ref{fig:static_movement_con2} doesn’t share the same behaviour. 
+This is most likely caused by agents breaking apart from the swarm, therefore leading to less suicides of duplicates.
 
-When comparing all the results of the dynamic heuristic versus the static heuristic, we see a new tendency in the duplication density spread per data point section. The tendency is to have higher duplication densities to the side of the map. This is most prominent in the circular motion swarms. These results are misleading into believing that there are a lot of duplications in that area. On closer inspection of the results data it was visible that these highly dense areas were caused by a few agents with duplicates, due to the minimal size in agents the density will appear large in size even though there is only one or two duplicates there.  
+When comparing all the results of the dynamic heuristic versus the static heuristic, we see a new tendency in the duplication density spread per data point section. 
+The tendency is to have higher duplication densities to the side of the map. 
+This is most prominent in the circular motion swarms. 
+These results are misleading into believing that there are a lot of duplications in that area. 
+On closer inspection of the results data it was visible that these highly dense areas were caused by a few agents with duplicates, due to the minimal size in agents the density will appear large in size even though there is only one or two duplicates there.  
 
-An interesting observation about static-movement of non-correlated failures is that the duplicates tend to have varying levels of duplicates for different data points, compared to any other test. Mentioned in Section \ref{sec:Simple2a}, the cause rather than being an outlier or suffocation from other duplicates, it is now believed to be inherent with the movement of the swarm. As the agents gather around the middle they averagly get further away from there data points, in tern making it less likely to replicate and more likely to suicide. This can also explain the neatly spread out duplicate lines in static-movement correlated failure tests.
-
-%---------------------------------------------------------------------HERE
+An interesting observation about static-movement of non-correlated failures is that the duplicates tend to have varying levels of duplicates for different data points, compared to any other test. 
+Mentioned in Section \ref{sec:Simple2a}, the cause rather than being an outlier or suffocation from other duplicates, it is now believed to be inherent with the movement of the swarm. 
+As the agents gather around the middle they averagly get further away from there data points, in turn making it less likely to replicate and more likely to suicide. 
+This can also explain the neatly spread out duplicate lines in static-movement correlated failure tests.
 
 \section{Dynamic Heursitic with Migration}
 \label{sec:Simple4a}
 
-The new method proposed in Section \ref{sec:simple4} was created to promote positive load sharing between the agents. Figures \ref{fig:static_movement_non3} and \ref{fig:static_movement_con3} both show this positive affect at the cost of instability. This internal instability is created by the movement of migrating data points, so is to be expected. We can also see that the method is trying to do the same in the circular movement swarms. However, it lacks actual performance with still the same costs to internal instability. From further investigation the cause was found to be the disconnected nature of movement in the swarm, agents have their own subsection of the swarm where they are roughly equal globally they are not. The semi-static movement handles this better because they are all drawn to the middle, if this was not the case then we would see similar results, due to the sub swarm nature of the movement.
+The new method proposed in Section \ref{sec:simple4} was created to promote positive load sharing between the agents. 
+Figures \ref{fig:static_movement_non3} and \ref{fig:static_movement_con3} both show this positive affect at the cost of instability. 
+This internal instability is created by the movement of migrating data points, so is to be expected. 
+We can also see that the method is trying to do the same in the circular movement swarms. 
+However, it lacks actual performance with still the same costs to internal instability. 
+From further investigation the cause was found to be the disconnected nature of movement in the swarm, agents have their own subsection of the swarm where they are roughly equal globally they are not. 
+The semi-static movement handles this better because they are all drawn to the middle, if this was not the case then we would see similar results, due to the sub swarm nature of the movement.
 
-In the density duplication spread section we can see that the new method significantly spreads data further than before, especially in semi-static movement cases. This shows that the new method is more torrent to larger correlated failures than previously proposed methods. This characteristic is more inline with the best conceivable solution to the problem defined in Section \ref{sec:Problem}. However, the increase in instability is an unwelcome sight.
+In the density duplication spread section we can see that the new method significantly spreads data further than before, especially in semi-static movement cases. 
+This shows that the new method is more torrent to larger correlated failures than previously proposed methods. 
+This characteristic is more inline with the best conceivable solution to the problem defined in Section \ref{sec:Problem}. 
+However, the increase in instability is an unwelcome sight.
 
-Figure \ref{fig:circle_movement_con3} continues the uptrend mentioned in Section \ref{sec:simple3a}. This shows that this behaviour is most likely not coincidental and is as mentioned previously.
+Figure \ref{fig:circle_movement_con3} continues the uptrend mentioned in Section \ref{sec:simple3a}. 
+This shows that this behaviour is most likely not coincidental and is as mentioned previously.
 
-The changes made to convert the dynamic heuristic to using migrations were intended to be a mild improvement without any significant side effects. However, even though the behaviors are similar, the use cases for each differ dramatically. This will be talked about in Section \ref{sec:conc}.
+The changes made to convert the dynamic heuristic to using migrations were intended to be a mild improvement without any significant side effects. 
+However, even though the behaviors are similar, the use cases for each differ dramatically. 
+This will be talked about in Section \ref{sec:conc}.
 
 %%%%%%%%%%%%%%
 
+%---------------------------------------------------------------------HERE
 
 %%%% Conclusion %%%%
 \chapter{Conclusion}
