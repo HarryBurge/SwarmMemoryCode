@@ -171,95 +171,90 @@ It is for these reasons that I have decided to contribute my part to this extens
 \section{Cloud/Backup storage policys/schemes}
 \label{sec:Cloud}
 
-Like most things in computer science, cloud storage started off relatively simple (In nowadays terms). 
-As the years have progressed so has the demand and use of the cloud, varying from everyday people storing files to large businesses storing harvested data. 
-This led to the need for much sophisticated storage solutions, which can handle the increasing file size and frequency of use. 
-A component that increased this complexity was the Legal Services Act. 2007 \cite{LSA}. 
-This enforces that cloud storage suppliers must provide reliable and fast data collection for users. 
-Not only that but to also provide near guaranteed longevity of stored data.
-In this section we will focus on cloud-based storage policies and some background terminology needed for this report.
+Like most things in computer science, cloud storage started off relatively simple (In nowadays terms).
+As the years have progressed so has the demand for the cloud, varying from everyday people storing files to large businesses storing harvested data.
+An increase to complexity of solutions came from the Legal Services Act. 2007 \cite{LSA}.
+This enforced cloud storage suppliers, to provide reliable, fast and redundant data storage and collection for all users.
+In this section we focus on cloud-based storage policies and some background terminology needed for this report.
 
-Firstly the reader will need to understand the difference between correlated and non-correlated failures. 
-A non-correlated failure is when a device fails independently and with no relation to other failures with the system as a whole. 
-An example of this within cloud based computing, a server node can shut down due to a software failure, therefore we lose connection and access to the node’s data, typically this is completely independent of other servers in the rack. 
-A correlated failure as the name suggests, is when a device fails with other devices with relation linking why they have failed. 
-A typical example of this in cloud computing would be mass restarts because of a power surge from a storm. 
-The power surge event is what links the failures together, therefore making it correlated. 
-To be correlated doesn't mean they need to be geographically close together, however within our swarm solution will mean geographically close failures. 
+Firstly the reader needs to understand the difference between correlated and non-correlated failures.
+A non-correlated failure is when a device fails independently and with no relation to other failures with the system as a whole.
+For example, a server node can shut down from a software failure, therefore connection is lost, typically this is completely independent of other servers in the rack.
+The opposite, correlated failure, is when a device fails with other devices with a relation linking the failure.
+A typical example is on-mass restarts from a power surge in a data-center.
+The power surge event is what links the failures together.
+To be correlated doesn't require close geographical location, however, when mentioned later on it should be regarded as such.
 
-To control for these two types of failures there are many different solutions providing different features. 
-Locally what is typically used is a RAID system for local failures within a node, and then a replication policy \cite{Avalability storage} for internode duplication. 
-These in tandem provide stable node storage and redundancy for when a possible node failure acquires.
+To control for these two types of failures there are multiple defensive strategies.
+Focusing on strategies that are reactionary rather than preventative.
+For local redundancy, typically RAID is used to ensure safety in a storage failure.
+Then a replication policy \cite{Avalability storage} is used for internode redundancy.
+Working in tandem provides extreme redundancy against both types of failures.
 
-The most common forms of replication policies will take a piece of data, decide whether the data needs to be duplicated and if so will completely copy the data onto another storage device. 
-This provides a backup in case of failure on either one of those devices. 
-A simplistic approach would be a random replication policy, where data is randomly chosen to be duplicated, typically duplicated within the same datacenter, so on a neighboring rack. 
-This is an efficient design policy for handling non-correlated errors, however, lacks the robustness against correlated errors, and without a tracking of global duplications can lead to over used storage. 
-We can mitigate for correlated errors by allowing for duplications to happen over data centers, however, this leads to downsides which will be explained below. 
+A replication policy selects a piece of data and decides whether it needs to be replicated, and if so where too. 
+This duplication of data onto another storage device means that if one fails then we still have a full replica to access. 
+A simplistic approach would be a random replication policy, where data is randomly chosen to be duplicated.
+This is an alright policy for handling failures, however, without tracking of global duplications it can lead to over used storage.
+It also doesn’t take into account the popularity of certain items.
 An algorithm like random replication, is substantial for long-term storage where popularity of data and distance to users are averagely the same for all data items.
 
-Two key concepts of availability and popularity are not taken into account when using a random replication policy. 
-When cloud based storage transitioned from a semi-local backup system to a worldwide daily driver. 
-Random replication can’t withstand the variability of how users interact with files nowadays. 
-An example of why these concepts are needed in today's age, are videos. 
-If a video is hosted in one country and replicated within said country then international viewers might have delays to their streaming. 
-If we then tried to compensate for that by hosting it in multiple countries, those other countries might not view the video as much. 
-This therefore means we are wasting storage space of which we could use for other more popular videos. 
+Cloud based storage transitioned from a semi-local backup system to a worldwide daily driver.
+Random replication couldn’t withstand the variability of how users interact with files nowadays.
+An example, If a video is hosted in one country and replicated within said country then international viewers might have delays to their streaming.
+If we then tried to compensate for that by hosting it in multiple countries, those other countries might not view the video as much.
+This therefore means we are wasting storage space of which we could use for other more popular videos.
 This therefore leaves us trying to maximise for both situations, and a new replication policy is required.
 
-We will be looking into two different algorithm concepts, of which try to handle the maximisation problem. 
-Both withstand non-correlated failures well because of the nature of replication, so we will only be looking into the other effects. 
-The algorithms have been abstracted from papers on handling "Distributed key-value store" \cite{Key-Value}, where you have key-value pairs on multiple devices on a network where duplication only leads to more fault tolerance of the data stored.
+These new algorithms extracted from papers handling "Distributed key-value store" \cite{Key-Value}, where you have key-value pairs on multiple devices on a network where duplication only leads to more fault tolerance of the data stored. 
+The first approach uses a privileged level of control where the master uses global knowledge to make decisions about whether and how to duplicate items \cite{Avalability storage, Patent}.
+The same principles can be seen within schema changes \cite{Scheme changes}.
+Due to the nature of a privileged user, control of the policy is deterministic and easy to control.
+This leads to higher guarantees for failures unless on the master node, however this can be handled dynamically by assigning another master, touched upon in Section \ref{sec:Robotics}.
+Availability and popularity are handled by the policy heuristic controlled by the master node.
 
-The first approach uses a privileged level of control where it uses its global knowledge to make decisions about whether and how to duplicate items \cite{Avalability storage, Patent}. 
-This doesn’t have to just be data replication, but the same principles can be seen within schema changes \cite{Scheme changes}. 
-Due to the nature of having a privileged user, the control of the policy is a lot easier to make specific behaviours be exhibited and to be understood. 
-This means we have higher guarantees for correlated failures unless on the master node, however this can be handled dynamically by assigning another master, touched upon in Section \ref{sec:Robotics}. 
-Availability and popularity are handled by the policy coded onto the master node.
-
-Having an approach that uses a master, doesn’t work effectively for a swarm. 
-This is because the change from a server network to a swarm is quite a drastic change. 
-Servers running over network generally have complete connectivity e.g. Global scope. 
-Also servers have a constant power supply compared to the average swarm agent. 
-When restricting the masters scope we have to rely on messages over other agents which will first of all reduce processing capability and power loss will be more significant to agents closer to the master, possible leading to a cut off from command \cite{Swarm robotics reviewed}. 
+Having this master approach doesn’t work effectively for a swarm.
+This is because the change from a server network to a swarm is quite a drastic change.
+Servers running over a network generally have complete connectivity e.g. Global scope.
+Also servers have a constant power supply compared to the average swarm agent.
+When restricting the masters scope we have to rely on messages bouncing from agent to agent. 
+Which will first of all reduce processing capability, power loss will be more significant to agents closer to the master, possibly leading to a cut off from command \cite{Swarm robotics reviewed}.
 It also doesn’t fit into the ideology of a swarm, this will be talked about in Section \ref{sec:Robotics}.
 
-The second approach doesn’t rely on a privileged member and can be adapted for locality. 
-We follow a distributed control approach where each node (In the case described below its each key-value pair) has its own controller. 
-Following the approach used with “SKUTE” as proposed in \cite{Distributed Storage}, it can make four decisions per data item. 
+The second approach doesn’t rely on a privileged member and can be adapted for locality.
+Each node (In the case described below its each key-value pair) has its own controller for when and how to replicate, following a distributed control structure.
+Following the approach used with “SKUTE” as proposed in \cite{Distributed Storage}, it can make four decisions per data item.
 These decisions are; Migration, Suicide, Replication, and Nothing.
 
-Migration is the move to a lower cost or more redundant servers. 
-Suicide is the removal of itself, this is usally be because of to many duplicates. 
-Replication is when the data decides that it needs to be duplicated and sent to another node and Nothing is as the name indicates.
+Migration transfers itself from the origin to a lower cost or more redundant server.
+Suicide is the removal of itself, this will usally be because of too many duplicates.
+Replication is when it decides it needs to be duplicated onto another server.
+Nothing is as the name indicates.
 
-Because of the highly distributed nature of said approach, when coming to suicide we need to handle the edge case where the only two nodes with duplicates make the decision to suicide at the same time, therefore leaving us with no replications. 
-This is where a consensus algorithm comes into play. 
-Paxos \cite{Paxos} is an example of how both nodes couldn’t suicide at the same time, therefore leading to the ideal case in this example of only one duplicate. 
+The highly distributed nature lends itself to failures of parallelism. 
+For example, two data points might want to suicide and will do so, if we ran them sequentially it could possible be that if one suicided the other would not have. 
+If they were the only two left of the duplicated data then the policy would’ve failed.
+This is where a consensus algorithm comes into play.
+Paxos \cite{Paxos} is an example of how both nodes couldn’t suicide at the same time. 
+This essitially creates a part-time leader agent to control a suicide action.
 
-Within the domain of server storage networks an approach like “SKUTE” is less commonly used because it adds complexity which is not needed within a global and consistently powered network. 
-Most data warehouses would prefer to have one server running as a controller and other servers running at full capacity compared to all servers at a slightly lower capacity due to extra self computation. 
-However this approach allows for greater redundancy because of having no single point of failure.
+Within the server storage  domain an approach like “SKUTE” is less commonly used because it adds complexity which is not needed within a global scope and consistently powered network.
+Most data warehouses would prefer to have one server running as a controller and other servers running at full capacity compared to all servers at a slightly lower capacity due to extra self computation.
+However this approach allows for greater hypothetical redundancy because of having no single point of control.
 
-An approach like this is highly adaptable towards a homogeneous swarm. 
-However with heterogeneous swarms the previous algorithm may work a lot better. 
-Differences between the swarm types will be explained in Section \ref{sec:Robotics}. 
+Moving towards local redundancy and optimisation is the stagnated study of RAID.
+This is where we change orderings of multiple storage discs to gain redundancy and/or performance increases.
+This grouping of disks is called a RAID array and can be structured in a multitude of ways.
+Common structures are labelled as RAID levels and give different attributes based on what functionality you are pursuing \cite{RAID Levels}.
 
-Moving towards local redundancy and optimisation is the stagnated study of RAID. 
-This is where we change orderings of multiple storage discs to gain redundancy and/or performance increases. 
-This grouping of disks is called a RAID array and can be structured in a multitude of ways. 
-Common structures are labelled as RAID levels and give different attributes based on what functionality you are pursuing \cite{RAID Levels}. 
+One of the key components of multiple RAID levels is the use of parities \cite{Raid parity}.
+This is where a function (Simplistically an XOR) is done on two or more sets of data to create one or more parities.
+This function has a property thus that if a tolerant amount of disks are lost the data that was lost can be reconstructed.
+In the case of data A, data B and A XOR B, if data B is lost then can be reconstructed using data A and A XOR B.
+With different levels and functions more than one disk can fail and still retain data, however if disc failures go over that then the data is lost.
+RAID is predominantly used internally within a storage node to provide redundancy against disk failures and increase speed of writes that are typically on hard disks.
 
-One of the key components of multiple RAID levels is the use of parities \cite{Raid parity}. 
-This is where a function (typically an XOR) is done on two or more sets of data to create one or more parities. 
-The function has a property thus that if a tolerant amount of disks are lost the data that was lost can be reconstructed. 
-In the case of data A, data B and A XOR B, if data B is lost then can be reconstructed using data A and A XOR B. 
-With different levels and functions more than one disk can fail and still retain data however if failures go over that then all data is lost. 
-RAID is predominantly used internally within a storage node to provide redundancy against disk failures and increase speed of writes that are typically on hard disks, because of cost and possible reads after failure of heads. 
+The methodology is that as long as the nodes individually are redundant enough and there is control on a higher level with our replication schemes, then that is sufficiently redundant.
 
-The methodology is that as long as the nodes individually are redundant enough and then there is control on a higher level with our replication schemes, that is a sufficient redundancy. 
-RAID could be adapted to run over multiple different storage nodes, however the complexity compared to performance is heavily in the favour for the above methodology for storage networks. 
-We will come back to the possible uses of RAID internally and externally in Section \ref{sec:further}.
 
 
 \section{Swarm robotics}
