@@ -260,29 +260,20 @@ The methodology is that as long as the nodes individually are redundant enough a
 \section{Swarm robotics}
 \label{sec:Robotics}
 
-As explained in the introduction, the study of swarms are split into two subsections, mechanics and intelligence. 
-Both explained broadly in the Section \ref{sec:Introduction}. 
+As explained broadly in the Section \ref{sec:Introduction}, the study of swarms are split into two subsections, mechanics and intelligence.
 
-Continuing on the discussion about swarm intelligence. 
-Typically swarm intelligence focuses on solving abstract problems, like the traveling salesman problem, in a local distributed manner compared to a global manner. 
-From the papers read by the author, it seems that predominantly the topics undertaken are testing distributed solvers compared to already researched solutions to see how they measure up. 
-An example of this within the TSP domain is a genetic algorithm versus AS-TSP \cite{Swarm intellegiegence}. 
-These algorithms provide benefits and drawbacks compared to their counterparts.
+The concept of swarm intelligence is creating a solver to a problem using a distributed algorithm that can rely on natural parallelism, doesn't rely on global knowledge and is adaptable on the fly, compared to their counterparts.
+From papers read by the author, predominantly the topics undertaken are testing distributed solvers and comparing them to already researched global scope solutions.
+An example of this within the TSP domain is a genetic algorithm versus AS-TSP \cite{Swarm intellegiegence}.
+Another good example of where these algorithms excel is the networking domain, because of the high parallelism and need for adaptability \cite{Swarm intellegiegence}.
 
-The concept of swarm intelligence is creating a solver to a problem using a distributed algorithm that can rely on natural parallelism, doesn't rely on global knowledge and is adaptable on the fly, compared to their counterparts. 
-A good example of where these algorithms excel is the networking domain, because of the high parallelism and need for adaptability \cite{Swarm intellegiegence}.
-
-The other subsection can be broadly known as swarm mechanics. 
-This encompasses all of which swarm intelligence doesn’t cover. 
-Swarm mechanics focuses on problems that are less abstract and are usually in the domain of physical implementation \cite{Cognitive maps mine detection, Probabalitic automata foraging robots}. 
-Swarm robotics can be seen as the same as swarm mechanics, however, it doesn’t have a broad enough scope/name to fit everything that can be researched in this author's opinion.
-
-Two arguments to justify the naming of swarm mechanics are as follows; within this domain we focus on the emergent behaviour of a swarm compared to the solution it might give. 
+The other subsection can be broadly known as swarm mechanics.
+Swarm mechanics focuses on problems that are less abstract and are usually in the domain of physical implementation \cite{Cognitive maps mine detection, Probabalitic automata foraging robots}.
+Swarm robotics is a subset of swarm mechanics, and is justified thusly; within this domain we focus on the emergent behaviour of a swarm compared to the solution it might give.
 The second is that swarm robotics doesn’t encompass the study of swarm behaviour in nature \cite{Swarm intellegiegence, Ant communication}.
 
-Delving deeper into swarm robotics we have three different methodologies, heterogeneous, homogeneous and hybrid \cite{Swarm robotics reviewed}. 
-These can be adopted in multiple ways, however, we will focus upon the adoption of these methodologies on decision making and physical attributes of agents. 
-Firstly we will talk about the physical adoptions.
+Delving deeper into swarm mechanics we have three different methodologies, heterogeneous, homogeneous and hybrid \cite{Swarm robotics reviewed}.
+These can be adopted in multiple ways, however, we focus upon the adoption of these methodologies in decision making and physical attributes of agents.
 
 \begin{figure}[htb]
 \begin{center}
@@ -292,84 +283,74 @@ Firstly we will talk about the physical adoptions.
 \caption{Example of a hetrogenus ant colony. https://www.pinterest.co.uk/pin/777363585651532845/}
 \end{figure}
 
-A heterogeneous swarm is defined by having differences between agents of the same swarm, as in Figure \ref{fig:anthero}, whether physical or mental \cite{Swarm robotics reviewed, Swarm intellegiegence}. 
-These occur commonly in nature and are less studied \cite{Swarm intellegiegence}, because differences in agents are a rarely needed property in research-based problems. 
-For real-world solutions, heterogeneous swarms can be of great use, allowing other agents to pick up the slack of the swarm, or complete tasks that other swarm members cannot complete. 
-A good example as described in \cite{Swarm robotics reviewed} with a mother ship being a navy boat and a swarm of quadcopters. 
-The boat picks up for the slack of the swarm by being able to transport them longer distances than the swarm could normally cope with.
+A heterogeneous swarm is defined by differences between agents of the same swarm, as in Figure \ref{fig:anthero}, whether physically or mentally \cite{Swarm robotics reviewed, Swarm intellegiegence}.
+These occur commonly in nature and are a less researched sub-field of swarms \cite{Swarm intellegiegence}.
+For real-world solutions, heterogeneous swarms can be of great use, allowing certain agents to pick up slack of the swarm, or complete tasks that other swarm members cannot complete.
+A good example described in \cite{Swarm robotics reviewed} with a mother ship being a navy boat and a swarm of quadcopters.
+The boat picks up for the slack of the swarm by being able to transport them longer distances than the swarm could normally cope with and carry more complex hardware.
 
-The argument against heterogeneous swarms is that there is a tendency to over rely on the differences of agents. 
-Running with the example from \cite{Swarm robotics reviewed}, the agents rely on the naval boat to be able travel longer distances and have to have a recharge point. 
-Without the boat the swarm fails after some time. 
-The decision to have a heterogeneous swarm in this case is valid because if the naval ship is lost, then something has already gone horrendously wrong.
+The argument against heterogeneous swarms is there is a tendency to over rely on the differences of agents.
+Running with the example from \cite{Swarm robotics reviewed}, the agents rely on the naval boat to be able travel longer distances and have a recharge point.
+Without the boat the swarm fails after some time.
+The decision to use a heterogeneous swarm in this case is valid because if the naval ship is lost, then something has already gone horrendously wrong.
 
-To have physical differences in agents, is to breed efficiency. 
-However this can only hold true if the vulnerability of losing too many agents of the same type, that’s work is key to the survival of the swarm, is mitigated. 
-This vulnerability can be controlled for in multiple ways. 
-Common rules are found in nature's swarms and can be extracted from them. 
-These are; jobs need to be either interchangeable between all types of agents however some agents are more efficient at that job \cite{Ant communication} or the jobs that are specific need to be non-essential for the colony's survival. 
+To have physical differences in agents, is to breed efficiency.
+However this can only hold true if the vulnerability of losing too much of a key class is mitigated.
+Common rules for mitigation are found in nature's swarms.
+These are; jobs need to be either interchangeable between all types of agents however some agents are more efficient at that job \cite{Ant communication} or the jobs that are specific need to be non-essential for the colony's survival.
+These swarms are under research because human implementations currently don’t have the adaptability of biology, therefore this vulnerability has to be taken into account.
+Some ant species, like Leaf-Cutter Ants, even have subcategories within a category of type.
+Leaf-Cutters have workers that will specialise in certain tasks like fungus farming.
+The best example of showing the interchangeability of these roles is when major ants do worker jobs when there is a significant loss of workers \cite{Swarm intellegiegence}.
 
-Ants typically fit into this category where ants have different types, as shown in Figure \ref{fig:anthero}. 
-Some ant species, like Leaf-Cutter Ants, even have subcategories within a category of type. 
-Leaf-Cutters have workers that will specialise in certain tasks like fungus farming. 
-The best example of showing the interchangeability of these roles is when major ants do worker jobs when there is a significant loss of workers \cite{Swarm intellegiegence}. 
-This leads us more towards a hybrid approach which is explained later on in this section.
+Homogeneous swarms are defined by each agent being the same.
+This is found less often in nature, except for at the microbial level.
+Biology's natural adaptability compared to current standards of robotics, semi-heterogeneous swarms are exploited better \cite{Swarm robotics reviewed, Swarm intellegiegence}.
+Therefore we maximise for the floors of our current technology. 
+Technically homogenous swarms provide the best platform, but that is getting into speculative futuristic technologies of self replication, advanced intelligence and nano size.
 
-Because practical implementations of what humans can achieve currently in their robots, they don’t have the adaptability that biology can provide, without making agents too complex.
+Homogeneous swarms benefit from maximum redundancy, if any agent fails there are still an entire swarm's worth of agents to take its place.
+With the benefit of redundancy we acquire some possible losses in efficiency which could have been exploited with agents with task specific hardware.
+Either the agent is too simplistic therefore loses efficiency in their tasks, or are too complex to the point that all agents have the ability for every specialism and may never need said hardware.
+There is a thin line between the two, where either we lose practical power of the swarm or we have to invest more into the swarm than it actually needs.
 
-Homogeneous swarms are defined by each agent being the same. 
-This is found less often in nature, except for at the microbial level, and is commonly found in man-made agents. 
-Because of biology's natural adaptability compared to current standards of robotics, semi-heterogeneous swarms are exploited better \cite{Swarm robotics reviewed, Swarm intellegiegence}. 
-Therefore we maximise for the floors of our current technology, however with a sufficiently complex agent homogeneous swarms are the most optimal, but that is getting into speculative futuristic technologies of self replication, advanced intelligence and nano size.
+Within the practical implementation of swarms, everything gets a bit messy.
+Usually there is not a clear cut framework that a practical swarm uses.
+This is where engineering and research have a disconnect, and hybrid swarms come into their own.
 
-Homogeneous swarms benefit from maximum redundancy, this is because if any agent goes down there are still an entire swarm's worth of agents to take its place. 
-With this benefit of redundancy we acquire some possible losses in efficiency which could have been exploited with agents with specific hardware. 
-The design for homogeneous agents is a complex one, either the agent is too simplistic therefore loses efficiency in their tasks. 
-Or they are too over engineered to the point that all agents have the ability for every specialism and may never need said hardware. 
-There is a thin line between the two, where either we lose practical power of the swarm or we have to invest more into the swarm than it actually needs. 
-An example to show this dynamic is if we have agents that need to mine and farm, they all have hands so can do the task at a suboptimal speed. 
-We then as an improvement give them picks and hoes instead of arms. 
-This gives us an increase in mining and planting speed, but why would the miners need a hoe.
-
-Within the practical implementation of swarms, everything gets a bit messy. 
-Usually there is not a clear cut framework or design that a swarm is designed to be like. 
-They are designed to be as efficient as we can make them to be in any type of problem faced, this is where research and engineering have a bit of a disconnect. 
-This is where hybrid approaches come into their own.
-
-A hybrid approach tries to exploit the benefits of both heterogeneous and homogeneous designs without the downsides. 
-Carrying on from our example of farmer and miner swarms, a hybrid approach to the physicality of an agent would go something like as follows. 
-Each agent would have exactly the same body and could wield either a pickaxe or a hoe, but the key point is that a miner could become a farmer if it was required. 
-The reader might wonder why physical hybrid approaches aren’t regarded as the best of all approaches. 
-This is because when bringing a theoretical solution into the real-world we gain massive complexities. 
-How can we guarantee job type distribution? 
-What about the complexity of changing between job type hardware? 
-These are all questions that are needed to be explored by the person creating the hybrid swarm. 
+A hybrid approach tries to exploit the benefits of both heterogeneous and homogeneous designs without the downsides.
+Using a farmer and miner agent example, a hybrid approach to physicality would be that each agent has exactly the same body and could wield either a pickaxe or a hoe, but the key point is that a miner could become a farmer if it was required.
+The reader might wonder why physical hybrid approaches aren’t regarded as the best of all the approaches.
+This is because when bringing a theoretical solution into the real-world we gain massive complexities.
+How can we guarantee job type distribution?
+What about the complexity of changing between job type hardware?
+These are all questions that are needed to be explored, by the creator.
 Usually it is easier to go for the simpler solution and deal with the possible loss of either efficiency or adaptability.
 
-Moving on to the control/decision making of a swarm following these approaches. 
-Homogeneous control follows the purest form of swarm robotics, where each agent has control of its own decision making based on what other agents in its locality are doing, sometimes labbelled distributed intelligence. 
-This therefore creates an emergent/structured behaviour of the swarm even though each agent is acting of its own fruition and can usually only see locally. 
+Homogeneous control is where each agent controls its own decisions based on its locality, sometimes labbelled distributed intelligence.
+This therefore creates an emergent/structured global behaviour of the swarm even though each agent is acting of its own fruition.
 A simple example of this is \cite{Boids}.
 
-Heterogeneous control is also very simple in nature, where certain agents control other agents' decision making. 
-This can be handled in multiple ways, two promoniante ways are hivemind control \cite{HiveMind} and royalty/hierarchical control. 
-Hivemind is where one agent controls the entire swarms decision making e.g. The hivemind controller will say the swarm needs to move to the left and then the agents handle that the way it decides. 
-In a hierarchical approach it follows the same style as hive mind however deals with scalability better. 
-Where we somehow have a power structure of certain agents being sub leaders of leaders. 
-This control structure leaves itself vulnerable in the same way as its physical implementation, however, also has the fear of bad actors and power loss distributions over the swarm. 
-These still can affect homogeneous swarms however is less of a threat than on a heterogeneous controlled swarm.
+Heterogeneous control is where certain agents control other agents' decision making.
+This can be handled in different ways, two promoniante ways are hivemind control \cite{HiveMind} and royalty/hierarchical control.
+Hivemind is where one agent controls the entire swarms decision making e.g. The master controller will give abstract ideas as commands and the agents will execute them with their own decision making.
+A hierarchical approach follows the same style as hive mind, however deals with scalability better.
+Where we have a power structure of certain agents being sub leaders of leaders.
+Both control structures leave themselves vulnerable in its physical implementation due to bad actors and power loss distributions over the swarm.
 
-Hybrid approaches to control of a swarm are just heterogeneous control policies that can adapt to changes of leaders and are usually designed for homogenous/hybrid swarms. 
-The choice of leader(s) is usually done through a consensus algorithm \cite{Paxos} rather than based on any form of physical or mental difference. 
-This allows for homogenous style bots to act in heterogeneous fashion. 
+Hybrid control of a swarm is a heterogeneous policy that can adapt to changes of leaders and are usually designed for physically homogeneous/hybrid swarms.
+The choice of leader(s) is done through a consensus algorithm \cite{Paxos} rather than based on any form of physical or mental difference.
+This allows for homogenous style agents to act in heterogeneous fashion.
 This can create more deterministic behaviours compared to emergent behaviors of homogeneous control, and can also help with the power loss distribution problem by re-electing leaders in different locations to help distribute where messages are relayed.
 
-Humans themselves are a great example of a fully hybrid based swarm both in design and communication. 
-Though humans have variations in characteristics they can be seen as pretty homogeneous in terms of the tasks that they can perform, obviously removing edge case actions like child birth. 
-Tools and knowledge can be spread between humans to make the swarm more efficient and an agent can specialize in a certain area. 
-However, if some agents are lost other agents can replace them by using the same tools and knowledge from the remaining agents of that specialism. 
-Also, the natural power-based structure of humans fits a hybrid model in terms of electorship of some kind, and not of genetics (Except with royalty, however, this is more of a label rather than a genetic difference). 
+Humans themselves are a great example of a fully hybrid based swarm both in design and communication.
+Though humans have variations in characteristics they can be seen as pretty homogeneous in terms of the tasks that they can perform, obviously removing edge case actions like child birth.
+Tools and knowledge can be spread between humans to make the swarm more efficient and an agent can specialize in a certain area.
+However, if some agents are lost other agents can replace them by using the same tools and knowledge from the remaining agents of that specialism.
+Also, the natural power-based structure of humans fits a hybrid model in terms of electorship of some kind, and not of genetics (Except with royalty, however, this is more of a label rather than a genetic difference).
 The leaders aren't needed for every single action so fit into a usually hierarchical power structure, compared to something of a hivemind model.
+
+
 %%%%%%%%%%%%%%%%
 
 
