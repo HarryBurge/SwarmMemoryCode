@@ -26,7 +26,6 @@
 \pagenumbering{roman}
 \maketitle
 \listoffigures
-\listoftables
 
 \bibliographystyle{ieeetr}
 %\renewcommand*{\lstlistlistingname}{List of Listings}
@@ -581,7 +580,7 @@ This network was picked due to its small size and relatively quick simulation sp
 fitness =  \frac{\sum_{i=0}^{z}{\big(max( \overline{d_{i}}) - min( \overline{d_{i}})\big)^{2} - \frac{\big(  \overline{q}_{i} - \frac{N_{i}}{4} \big)^{2}}{100} } - \overline{ \varpi_{i} } - std(  \overline{\gamma_{i}} )}{z}
 \end{equation}
 
-Where $z$ is the number of iterations ran for. $\overline{d}$ is each agent’s average distance to their duplicated data’s data points. $\overline{q}$ is the average duplications over all data points, and $N$ is global current active agents. $\overline{ \varpi }$ is the mean instability over all data points. $\overline{\gamma}$ is the spread of agents used in memory space.
+Where $z$ is the number of iterations ran for. $\overline{d}$ is each agent’s average distance to their duplicated data’s data points. $\overline{q}$ is the average duplications over all data points, and $N$ is global current active agents. $\overline{ \varpi }$ is the mean instability over all data points. $\overline{\gamma}$ is the spread of agent's used memory space.
 
 Square terms were used to emphasize a property that we wanted the algorithm to focus on the most e.g. maximum spread of data and each data point to be duplicated in a fourth of the swarms population. The fitness function would have to be changed for different characteristics you would want for the swarm.
 
@@ -754,8 +753,6 @@ This will be talked about in Section \ref{sec:conc}.
 
 %%%%%%%%%%%%%%
 
-%---------------------------------------------------------------------HERE
-
 %%%% Conclusion %%%%
 \chapter{Conclusion}
 \label{cha:conclusion}
@@ -763,27 +760,32 @@ This will be talked about in Section \ref{sec:conc}.
 \section{Futher Improvements}
 \label{sec:further}
 
-There are some major improvements that could eb amde to this algorithm to make it much more effective, in performance and also computationally.
-First lets focus on computationally.
-Currently at the start of each agent cycle it will message each other agent for the infomation its needs to gain perspective of its local scope.
-This is inefficent because for every agent in the vicinity each agent will have to send a packet to it every time it cycles.
-If we flipped the packet sending the other way around we would take a hit on the memory required to run the agent however would be computationally faster.
-Each agent at the start of its cycle or end will tell other agents its infomation which will be updated in tables on each indurvdual agent.
-We can then use the internal tables to calculate what needs to be done.
-This would offer overall less transmissions over the network, and would speed up the frequnecy of which we can run the agents control loop.
+There are a bunch of improvements that could be made in order to improve the performance of the suggested designs. 
+Either computationally or methodologically.
+Looking at methodology there are two design changes that could drastically improve characteristics of the algorithms. 
+One is to allow for message hopping between agents in order to increase symbolic locality size, this would in turn give agents wider knowledge of the global swarm, however, would increase computation time and power draw per agent. 
+The second is moving to a hybrid control which would allow for a more deterministic policy, however, gaining the downsides both of message hoping and problems described in Section \ref{swarm robotics}.
 
-For performance of the algorithm there are many possible changes that could be improved, ranging from better parameter adjustments either from machine learning techniques or hardcoded adjustments.
-This would give diffrent desirable affects based off what is currently happening in the network, an example of this is for stability.
-Currently we have it restrict replication however there might be more effective ways to control stability changing multiple parameters at varying scales.
+Keeping with the same methodology we can reduce power consumption from messaging, however, could lead to erroneous results. 
+Rather than each agent asking a question and awaiting a response from the locality, therefore meaning that each agent has to respond to every agent in it’s locality. 
+Instead at the start of step per agent, they broadcast their relevant information. 
+Agent’s in the locality then update their internal tables of the agents in the locality, therefore computation time is decreased because we have less IO time. 
+Tables would need to release an agent's information if they haven’t broadcast in a while in order to detect that they are out of the locality. 
+This therefore leads to a problem of possible executing off old information either from the agent running slower or out of locality.
 
-With our ability to solve for corrilated failures, we lack range of which a corrilated failure can happen.
-To be able to handle corrilated failures that could be much larger, larger than the average distance to the point.
-Soloutions to this problem could be after a certain range we make sure that duplications have no other duplications in their vissinity, and lock the data from suiciding.
-This wold mean that data further away would survive with minimising density.
-To get the data out their currently relys on movement as can be seen in the diffrence in dulication density when comapring static movement to circular movement.
-To solve for this we could have a directionaliy component to migration, or after a certain distance we push data away from the data point.
+With current proposed solutions we lack control for larger correlated failures. 
+The handcrafted heuristics only sum together certain values and do a comparison on the output value, rather than making different decisions based on the values of each characteristic like the neural network can. 
+This means that we get a linear behaviour, therefore not having cases that could help with increasing max distance of duplicate data. 
+The nonlinear nature of the neural network will improve the chances of being able to change heuristic behaviour when certain values cross certain thresholds. 
+This behaviour would be trivial to implement in a hybrid network, e.g. make sure at least two duplicates are as far away from their data point as possible. 
+We would also have a higher guarantee that the data wouldn’t be lost because of the global view of the hybrid approach.
 
-// Possibly talk about the effectivness of how much data the network can store compared to the amount of data storage.
+Currently the effective storage of the swarm is far less than the amount of memory the swarm has as a whole. 
+A priority system could be used in order to insure a larger practical collective memory size compared to the smaller size current proposed heuristics provide. 
+To make the priority system even more effective if an agent needs to lose data in order to learn a higher priority piece of data, said data could be migrated to other agents in its vicinity to make room for the higher priority data. 
+Running along the same line as a priority system, a scheduler would be an effective way to handle the scalability of storage size per agent.
+
+%---------------------------------------------------------------------HERE
 
 \section{Conclusion}
 \label{sec:conc}
