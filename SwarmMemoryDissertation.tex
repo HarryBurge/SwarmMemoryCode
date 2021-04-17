@@ -33,6 +33,29 @@
 
 %%%% Executive Summary %%%%
 \begin{summary}
+The aim of the report was to propose and test a solution for directional memory storage policies within a swarm environment, and to improve the authors knowledge on the research of swarms. The proposed solution is to provide redundancy for correlated and non-correlated failures, without pure duplication of data throughout the swarm. Directionality of the policy is defined as having a higher density of duplications nearer to the point that the information is needed.
+
+The study of swarms is becoming an integral part for leading us to the future.
+With sequential computation reaching its limits \cite{CPU speed}, and the world becoming increasingly data rich, the need for distributed problem solving is heavily required.
+As technology gets more efficient, the ability to make swarms become exponentially viable, especially with recent advances in nano technology/biology.
+
+Swarm robotics is limited by the technology of its time.
+The use of research is limited and far between in our day and age.
+We research this for the future where technology can support and utilize the fullest potential that swarm behaviour can offer.
+
+The main uses nowadays are within surveillance \cite{UAV, HiveMind}, delivery or military \cite{Swarm robotics reviewed}.
+However, to see the full scope of what man-made swarms could do, we look to the future.
+Whether it be space exploration \cite{Space exploration}, nano-robots in medicine or in the parallel/distributed software domain \cite{blockchainandSwarm}.
+
+As for the specific aim of the report, the mapping of a storage policy onto a swarm to this author's knowledge hasn’t been researched other than partially in \cite{Cognitive maps mine detection}. Otherwise a heavy use of local memory or pheromones are used heavily, in order to gain different behavioural characteristics or performance boosts.
+
+A simulated homogeneous swarm is used to provide results on two different designs of policies. The first design style is a handcrafted heuristic, this report covers the design from conception to working implementations. The second design style is using a multi-agent interaction approach using neural networks and a genetic algorithm.
+
+// State results found
+
+The report in and of itself does not have any legal, social, ethical, professional, or commercial issues. However, the field of swarms and distributed problem solving is riddled with them. Specifically, swarms have the high potential to be abused in surveillance, breaching people's privacy. Within the military domain, is it ethical to have systems that not only have the choice over human life, but are also so redundant that the opponent doesn’t have any chance? Socially is it acceptable to have self piloting drones flying around delivering packets at all times of day and night? Environmentally a swarm solution will nearly always use more energy and cost more CO2 to produce swarms of any significant size, when compared to a single robot solution. In terms of security allowing multiple more access points to a network also increases risk, especially if each agent/node has accessible data.
+
+Overall even with the ability to abuse swarms and the threats that they impose, the author believes that the good that they can provide to society significantly outweighs the negatives, especially taking into account future technologies and space exploration.
 
 \end{summary}
 %%%%%%%%%%%%%%%%%
@@ -142,26 +165,6 @@ These drawbacks highlighted the need for a new approach, cloud based-storage pol
 A distributed/homogeneous style of control is used, partially because there is an average power loss over the swarm compared to a leader based control, but mainly because of the methodology of a homogeneous swarm. A hybrid approach, if not accounting for power loss, would almost certainly be better in every single way, due to its global view. A hybrid implementation would be very simple and deterministic compared to its homogeneous counterpart. Both methods could not guarantee data loss will not occur, however, a hybrid approach would be better equipped to handle correlated failures.
 
 With an extensive list of drawbacks to using a homogeneous control over a hybrid control scheme, it would be deemed inappropriate to use said homogeneous control. This disgruntlement is valid only when talking about swarms that are partially static in nature. When the swarm is highly volatile, in terms of movement, then we might spend more time assigning a leader rather than doing our actual task. Scaling of a hybrid system is harder because of the partitioning of agents to leaders. This justifies the authors choice to focus on distributed homogeneous replication policies.
-
-%%%% Motivations %%%%
-\section{Motivation}
-\label{sec:Motivation}
-
-In sections \ref{sec:Introduction} and \ref{sec:Robotics}, we have painted a clear picture as to why the study of swarms is becoming an integral part for leading us to the future.
-With sequential computation reaching its limits \cite{CPU speed}, and the world becoming increasingly data rich, the need for distributed problem solving is heavily required.
-As technology gets more efficient, the ability to make swarms become exponentially viable, especially with recent advances in nano technology/biology.
-
-Swarm robotics is limited by the technology of its time.
-The use of research is limited and far between in our day and age.
-We research this for the future where technology can support and utilize the fullest potential that swarm behaviour can offer.
-
-The main uses nowadays are within surveillance \cite{UAV, HiveMind}, delivery or military \cite{Swarm robotics reviewed}.
-However, to see the full scope of what man-made swarms could do, we look to the future.
-Whether it be space exploration \cite{Space exploration}, nano-robots in medicine or in the parallel/distributed software domain \cite{blockchainandSwarm}.
-
-It is for these reasons that I have decided to contribute my part to this extensive and breakthrough field, and will hopefully see it grow to its fullest potential.
-%%%%%%%%%%%%%
-
 
 %%%% Litreture Review %%%%
 \chapter{Litreture Review}
