@@ -1,7 +1,7 @@
 \documentclass{UoYCSproject}
 \author{Harry Burge}
 \title{Swarm Memory}
-\date{Version 1.0, 2020-November}
+\date{2021-April}
 \supervisor{Simon O'Keefe}
 \MEng
 
@@ -17,7 +17,7 @@
 \dedication{}
 
 \acknowledgements{
- 
+ // TODO
 }
 
 % More definitions & declarations in example.ldf
@@ -567,7 +567,7 @@ We now take a multi-agent approach to the design of a heuristic as to be able to
 \begin{center}
 \centering
 \includegraphics[height=5cm]{"./ExplanationImgs/NN.png"}
-\caption{Neural network design - thresholded argmax output}
+\caption{Neural network design - Thresholded argmax output}
 \end{center}
 \end{figure}
 
@@ -587,9 +587,7 @@ Where $z$ is the number of iterations ran for. $\overline{d}$ is each agent’s 
 
 Square terms were used to emphasize a property that we wanted the algorithm to focus on the most e.g. maximum spread of data and each data point to be duplicated in a fourth of the swarms population. The fitness function would have to be changed for different characteristics you would want for the swarm.
 
-The genetic algorithm is run for 150 iterations with a population size of 40 with a mating rate of 36, therefore 4 completely random agents are created per iteration. Mating selection is made by a probability distribution over the magnitudes of fitness min max normalized.
-
-// Change 150 to correct number when done
+The genetic algorithm is run for 287 iterations with a population size of 40 with a mating rate of 36, therefore 4 completely random agents are created per iteration. Mating selection is made by a probability distribution over the magnitudes of fitness min max normalized.
 
 
 
@@ -627,7 +625,7 @@ Data will also have a gaussian filter applied as to make the graphs readable, ke
 \begin{center}
 \centering
 \includegraphics[width=\linewidth]{"./Static_Heuristic/Static_Movement_non.png"}
-\caption{Static Heuristic on semi\-static movement swarm, with non\_correlated failures}
+\caption{Static Heuristic on semi\-static movement swarm, with non\-correlated failures}
 \end{center}
 \end{figure}
 
@@ -754,6 +752,51 @@ The changes made to convert the dynamic heuristic to using migrations were inten
 However, even though the behaviors are similar, the use cases for each differ dramatically. 
 This will be talked about in Section \ref{sec:conc}.
 
+\section{Neural Network Heuristic}
+\label{sec:simple5a}
+
+% <------------------------------------------------------------------------------------------------------------------------------------ Here
+// Needs to be re-written
+
+The results of the genetic algorithm described in Section \ref{sec:simple5} are disappointing. 
+Initially the fitness on average was increasing and from running two separate tests seemed to have an improvement in action based performance. 
+However, after a lot more generations it became apparent that the solution was not improving quickly/effectively. 
+
+\begin{figure}[htb]
+\label{fig:FitnessGA}
+\begin{center}
+\centering
+\includegraphics[height=5cm]{"./GA_max_fitness_0.03_gradient.png"}
+\caption{Genetic Algorithm fitness over generation}
+\end{center}
+\end{figure}
+
+Figure \ref{fig:FitnessGA} shows an improvement with a gradient of 0.03. 
+However, this is max fitness of said generation. 
+These results indicate that there is a problem with either the design of the solution or implementation of the genetic algorithm. 
+We therefore run a test as shown in Figure \ref{fig:Failed_GA} to find out some more information. 
+Due to time restraints on training and poor performance the genetic algorithm was not trained for different types of movements or failures.
+
+We can see that the results are not promising, other than nearer the end from about the 8000 iterations mark, where our duplicated data fits quite well to the fitness values target of a quarter of the population. 
+Also the minimum to maximum data distances shows that our fitness function is working correctly.
+
+A factor that could have led to the failure of the genetic algorithms learning is low population size, restricted by training time and hardware. 
+Another limitation could be the mating selection allowing for worse agents to reproduce. 
+A possibly better solution would have been to have a top number of agents be able to reproduce a certain number of times and have a larger mutated percentage of the population.
+Running along these lines, the mutated agents relied on tensor flows clone feature which assigns biases to zeros and uses “glorot\_uniform” for weights. 
+These values could have been too small in the weights and/or lose expressive power from not allowing biases. 
+I believe one of the biggest contributions to the slow learning rate to be that we have large variations in the simulation environment, meaning that an agent that was good last round might perform significantly worse in the next. 
+The author believed that this would have been averaged out due to if a model performs well averagely it would be tested on multiple different simulations. 
+However, it didn’t act as expected and made the genetic algorithm essentially a random search with slight improvement. 
+An improvement on this design would be to have ran the model for multiple simulations in order to get a good indication of average performance or too have trained on only certain simulations and then introduce random simulations in order for the agent to learn a partially overfitted strategy then unlearn slightly to fit other scenarios. 
+The first was not chosen because of computation time and second because of preliminary tests showing good results from the used design.
+
+The model in and of itself could have been flawed in that it was too non-descriptive of the environment and not pushed towards the behaviour we wanted. 
+The design was to allow for much larger breadths of behaviour and could have led to too much variation therefore making training take longer. 
+Changing of the design could be to reuse functions from previous sections, therefore making the genetic algorithm essentially become a slightly more expressive value optimiser. 
+Another interesting proposition is have the neural network produce the dynamic thresholds as to have correct hand crafted behavior but to allow for better edge case performance.
+
+
 %%%%%%%%%%%%%%
 
 %%%% Conclusion %%%%
@@ -793,40 +836,39 @@ Running along the same line as a priority system, a scheduler would be an effect
 \section{Conclusion}
 \label{sec:conc}
 
-The algorithms proposed, can be seen to atleast solve the problem provided in Section \ref{sec:Problem}.
-How effective they are compared to other theoretical soloutions is a diffrent topic.
-With the first algorithm proposed in Section \ref{sec:Simple2}, we saw that it worked effectively for a simulation based of this problem.
-We had good results when coiming to spread, less so in a semi-static swarm, and also duplications were handled correctly.
-However when abstracting this algorithm to a real world soloution, floors became apprant in the algorithm which relyed to much on perfect communication, well picked threshold values and smaller sized corrilated failures.
+Handcrafted algorithms proposed in Sections \ref{sec:simple2, sec:simple3, sec:simple4} solve the problem proposed in Section \ref{sec:Problem}, with varying degrees of effectiveness and behaviour. 
+When comparing them to a theoretical hybrid solution, we see obvious flaws, partially due to the nature of a fully homogeneous approach. 
+In a real world application these approaches would not be as viable as the alternative, unless under very specific circumstances. 
+These circumstances include, tight power consumption limits, large population swarms and high natural instability in connections. 
+The method proposed in Section \ref{sec:simple5} was a fail, for reasons described in Section \ref{sec:simple5a}.
 
-Due to the thought expriment of abstracting this idea to real world soloution, some things within the heurstic needed to be changed.
-This was the instability of the system in certain scenrios, for example a more contrived situation was when the suicide threshold is to low.
-This would mean that agents would suicide to often and then other agents would replicate again, theerefore leading to useless transistions of data which was not needed.
+The method proposed in Section \ref{sec:Simple2}, shows to be effective at combating the problem, however, it lacks multiple characteristics needed for real world applications. 
+We saw promising results with duplication spread in more volatile movement swarms with both correlated and non-correlated failures being handled appropriately. 
+Behaviour is semi-static movement was not desirable, had an over reliance on correct threshold values and didn’t have tolerance for large correlated failures.
 
-To cmbat this we create some dynamic threshold changes so that we can slow down the instability using diffrent parameters.
-We directly put a time based slow on suicides and for replication we slowed it by the amount of local instability.
-This gave us the best of both worlds with fast growth of duplication and a slower release of the data.
-Overall this significantly improved the algortihms perfomance, espically when coming to a circular movement swarm.
-We can see that even though we slowed down the stability issues we didn't end up actually solving the issues, this could be seen with the fact that stability graphs had roughly the same shape but at lower magnitudes.
-This was touched upon in Section \ref{sec:further}, on ways that this could be improved.
+An updated version of the method was proposed in Section \ref{sec:Simple3} in order to combat some of these downfalls. 
+The main target of change was instability of the system, this is where agents would keep replicating and suiciding data at the fringes of the heuristic boundary, occurring with a badly picked suicide threashold value. 
+To combat this effect we used dynamic thresholds in order to slow the instability. 
+This was done by using a time based slow on suicides and a local instability slow on replications. 
+The combination of which would give us fast growth but a slow release of duplicated data, therefore hopefully finding stable solutions. 
+These additions significantly improved characteristics of stability especially in naturally volatile swarms, e.g. Circular movement. 
+We can see that instability issues were not solved by this method, but reduced in magnitude. 
+The nature of the method ment that we increased internal instability but could significantly reduce external instability, so it would be more effective in different swarm scenarios. 
+However, always out performed the previous proposed method from Section \ref{sec:Simple2}.
 
-The third algorithm proposed in Section \ref{sec:Simple4} is the most controversial of the bunch.
-This is because it sets out to do what it was propsed to do however we gaina natural boost to the instability due to movement of the data duplications from, agent to agent.
-We could see that this algorithm was affective for larger distance corrilated failures, however amount of duplications seemed to be affected more than prevouis algorithms, and in a circular movement swarm the affects on the memory spread weren't even that pronounced as in a semi static movement swarm.
+The additions proposed in Section \ref{sec:Simple4} are the most controversial in terms of use case. 
+This is because the method completes the objective of spreading memory load over the swarm at the cost of higher instability. 
+As a byproduct of the migration action, the method has more tolerance towards larger correlated failures. 
+However, the amount of duplications seems to be affected more by loss of agents and memory spread is less affected in volatile swarms.
 
-Overall Section \ref{sec:Simple3}'s and Section \ref{sec:Simple4}'s algorithm are the best and should be the only to be used, unless there are extreme memory and computation constraints on your agents.
-Section \ref{sec:Simple4}'s algorithm should only be used in cases were large corrilated failres could happen and instability is less of a deal.
-However this would still not be as affective as a soloution propsed in Section \ref{sec:further}.
+The proposed solutions assume that all data is highly important and that all agents near a data point should know its data. 
+This makes these solutions harder to adapt to other situations where this feature is less needed. 
+An example of this situation is large sensor swarm networks, where it might be good to have a duplication density change over the network but close to the data point it's not necessary for all sensor agents to know the information. 
+A future example of this kind of use is moonquake detection, agents close to the moonquake epicenter wouldn’t need to know there was one coming because they wouldn’t have time to react, but agents within the damage radius that have time could strap themselves to the ground in order to not acquire damage. 
 
-The algorithms propsed assume that data is highly important and that all agents in that area need to know that data as much as possible.
-This therefore makes them not as relevent if you were trying to adopt them to a cloud based soloution.
-When coming to a swarm soloution this is definitly no the most affect soloution that could be possibly created.
-If we ruled out hybrid based models, which would be much more affect as a storage soloution, due to knwoledge of where all duplications are and we could specifically give data prioritys on how many duplications to spread out and how many redundancys you want further away in the swarm.
-We talk about possible more effective ways to store the data in Section \ref{sec:further}.
+The project achieved two handcrafted solutions to the problem proposed, both with different use cases. 
+If improvements were made from the suggestions made in Section \ref{sec:further} then I believe that these solutions could be very successful both in adaptability and performance, even when compared to a theoretical hybrid approach.
 
-This project achieved what it set out to do, and has highlighted downsides and possible improvements that could be researched into further to improve this algorithms performance and adaptability.
-
-//Talk about diffrent use cases
 
 %%%%%%%%%%%%%%%%%%%
 
@@ -954,7 +996,7 @@ This project achieved what it set out to do, and has highlighted downsides and p
 \begin{center}
 \centering
 \includegraphics[height=7cm]{"./Static_Heuristic/Circle_movement_non.png"}
-\caption{Static Heuristic on circular movement swarm, with non\_correlated failures}
+\caption{Static Heuristic on circular movement swarm, with non\-correlated failures}
 \end{center}
 \end{figure}
 
@@ -983,7 +1025,7 @@ This project achieved what it set out to do, and has highlighted downsides and p
 \begin{center}
 \centering
 \includegraphics[height=7cm]{"./Dynamic_Heuristic/Static_Move_non.png"}
-\caption{Dynamic Heuristic on semi\-static movement swarm, with non\_correlated failures}
+\caption{Dynamic Heuristic on semi\-static movement swarm, with non\-correlated failures}
 \end{center}
 \end{figure}
 
@@ -1001,7 +1043,7 @@ This project achieved what it set out to do, and has highlighted downsides and p
 \begin{center}
 \centering
 \includegraphics[height=7cm]{"./Dynamic_Heuristic/Cicrle_Move_non.png"}
-\caption{Dynamic Heuristic on circular movement swarm, with non\_correlated failures}
+\caption{Dynamic Heuristic on circular movement swarm, with non\-correlated failures}
 \end{center}
 \end{figure}
 
@@ -1021,7 +1063,7 @@ This project achieved what it set out to do, and has highlighted downsides and p
 \begin{center}
 \centering
 \includegraphics[height=7cm]{"./Dynamic_Migration/Static_Move_non.png"}
-\caption{Dynamic Heuristic with Migration on semi\-static movement swarm, with non\_correlated failures}
+\caption{Dynamic Heuristic with Migration on semi\-static movement swarm, with non\-correlated failures}
 \end{center}
 \end{figure}
 
@@ -1039,7 +1081,7 @@ This project achieved what it set out to do, and has highlighted downsides and p
 \begin{center}
 \centering
 \includegraphics[height=7cm]{"./Dynamic_Migration/Circle_Move_non2.png"}
-\caption{Dynamic Heuristic with Migration on circular movement swarm, with non\_correlated failures}
+\caption{Dynamic Heuristic with Migration on circular movement swarm, with non\-correlated failures}
 \end{center}
 \end{figure}
 
@@ -1049,6 +1091,17 @@ This project achieved what it set out to do, and has highlighted downsides and p
 \centering
 \includegraphics[height=7cm]{"./Dynamic_Migration/Circle_Move_con.png"}
 \caption{Dynamic Heuristic with Migration on circular movement swarm, with correlated failures}
+\end{center}
+\end{figure}
+
+%%%%
+
+\begin{figure}[htb]
+\label{fig:Failed_GA}
+\begin{center}
+\centering
+\includegraphics[height=7cm]{"./Failed_GA.png"}
+\caption{Discouraging results from Neural Network Heuristic, semi\-staic movement and non\-correlated failures}
 \end{center}
 \end{figure}
 
