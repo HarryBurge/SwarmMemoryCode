@@ -35,29 +35,27 @@
 \begin{summary}
 The aim of the report was to propose and test a solution for directional memory storage policies within a swarm environment, and to improve the authors knowledge on the research of swarms. The proposed solution is to provide redundancy for correlated and non-correlated failures, without pure duplication of data throughout the swarm. Directionality of the policy is defined as having a higher density of duplications nearer to the point that the information is needed.
 
-The study of swarms is becoming an integral part for leading us to the future.
-With sequential computation reaching its limits \cite{CPU speed}, and the world becoming increasingly data rich, the need for distributed problem solving is heavily required.
-As technology gets more efficient, the ability to make swarms become exponentially viable, especially with recent advances in nano technology/biology.
+A simulated homogeneous swarm is used to provide results on two different designs of policies. Each swarm agent has the ability to perform four actions, Replication, Suicide, Migration or Nothing. These actions can be performed on data stored in their memory in order to gain redundancy from failures. Replication, duplicates data to other agents. Suicde, deletes the data. Migration passes the data onto another agent and nothing is as the name suggests. 
 
-Swarm robotics is limited by the technology of its time.
-The use of research is limited and far between in our day and age.
-We research this for the future where technology can support and utilize the fullest potential that swarm behaviour can offer.
+A design is a way that we control an agent's actions in order to get the emergent characteristics of the global swarm. This emergent behaviour will be reviewed using five different global factors. Amount of duplications per data point, distance between a duplication and its desired location, instability of the system, agents memory usage and a visualisation of duplications ratio over the 2D plane. Performance will be based on not too many or too little duplications with a roughly even distribution per data point, having a large range in distance with the mean being as close to minimum as possible and for instability to be of lowest magnitude. These factors are tested on both circular motion and semi-static motion in order to see how behaviour changes over different swarm environments e.g. lots of volatility in connections or stable connections. Within each movement style correlated and non-correlated failures are tested to see the effectiveness and characteristics of the proposed method.
 
-The main uses nowadays are within surveillance \cite{UAV, HiveMind}, delivery or military \cite{Swarm robotics reviewed}.
-However, to see the full scope of what man-made swarms could do, we look to the future.
-Whether it be space exploration \cite{Space exploration}, nano-robots in medicine or in the parallel/distributed software domain \cite{blockchainandSwarm}.
+The first version of the first design style used a weighted sum with a threshold for both suicide and replication. The input factors are, duplications ratio in the locality of the data selected, distance to the desired data point of selected data and average spare memory left on agents in the locality. This version performed adequately in most factors, however, left for much improvement in stability, even distribution of memory load and handling of a volatile connectioned swarm.
 
-As for the specific aim of the report, the mapping of a storage policy onto a swarm to this author's knowledge hasn’t been researched other than partially in \cite{Cognitive maps mine detection}. Otherwise a heavy use of local memory or pheromones are used heavily, in order to gain different behavioural characteristics or performance boosts.
+The second version of the first design style carried on from the previous by changing the static thresholds to be dynamic, in order to counteract the stability problem of the previous version. To measure instability on a local scale, each agent as a duplication request came in would increase a instability variable, this would be reduced over time. Output of sigmoid functions where then added to the weighted sum, with inputs being time from last suicide for the sucide threashold and instability for replication threashold. The version achieved its target by significantly reducing the magnitude of instability without changing much behaviour of the previous version. We also saw the nature of the instability change in circular motion to being a roughly constant instability compared to the periodic nature of the static heuristic. However, there was still the issue of duplication load over the swarm.
 
-A simulated homogeneous swarm is used to provide results on two different designs of policies. The first design style is a handcrafted heuristic, this report covers the design from conception to working implementations. The second design style is using a multi-agent interaction approach using neural networks and a genetic algorithm.
+The third version of the first design style implemented migration for the first time. Migration was controlled by if we would statically replicate this item and the agent in the locality with the most available space is higher than the current agents available space, then migrate the data. As expected this increased the instability due to more movement of data. The spread of workload was significantly better in semi-static swarms compared to the circular counter parts. Therefore leading to different use cases for both the second and third versions.
 
-// State results found
+%The third version should be used in situations where swarms are relatively stable or instability is less of an issue due to stuff like power consumption. The second version should be used in situations where either the swarm is naturally highly unstable, size of memory is heavily restricted or power consumption is a major factor. The first version is overall less effective than the second or third, so should not be used.
 
-The report in and of itself does not have any legal, social, ethical, professional, or commercial issues. However, the field of swarms and distributed problem solving is riddled with them. Specifically, swarms have the high potential to be abused in surveillance, breaching people's privacy. Within the military domain, is it ethical to have systems that not only have the choice over human life, but are also so redundant that the opponent doesn’t have any chance? Socially is it acceptable to have self piloting drones flying around delivering packets at all times of day and night? Environmentally a swarm solution will nearly always use more energy and cost more CO2 to produce swarms of any significant size, when compared to a single robot solution. In terms of security allowing multiple more access points to a network also increases risk, especially if each agent/node has accessible data.
+After reviewing the first design style even though performance as defined was good, it still lacked effectiveness when compared to a theoretical best solution. This is because the algorithm doesn’t take into account many edge cases or complex behavioural changes based on multiple thresholds. This therefore leads to using the computational power of neural networks in order to solve for these complex behavioral characteristics. A genetic algorithm was used to train said neural network, using a global fitness function after a simulation was run with each agent using the same model. Unfortunately the learning rate was very slow due to selected hyperparameters and poor judgement on fitness function evaluation being on only one simulation run. This therefore led to a non-testable version due to the extremely poor performance.
 
-Overall even with the ability to abuse swarms and the threats that they impose, the author believes that the good that they can provide to society significantly outweighs the negatives, especially taking into account future technologies and space exploration.
+%Overall the project was a partial success, with good results coming from the handcrafted designs but a failure from the learning results from the multi-agent interaction design.
+
+The field of swarms are riddled ethical and moral issues. Specifically, swarms have the high potential to be abused in surveillance, breaching people's privacy. Within the military domain, is it ethical to have systems that not only have the choice over human life, but are also so redundant that the opponent doesn’t have any chance? Socially is it acceptable to have self piloting drones flying around delivering packages at all times of day and night? Environmentally, a swarm solution will nearly always use more energy and cost more CO2 to produce in any significant size, when compared to a single robot solution. In terms of security, allowing multiple more access points to a network also increases risk, especially if each agent/node has locally stored accessible data. 
+%Even with the ability to abuse swarms and the threats that they impose, the author believes that the good that they can provide to society significantly outweighs the negatives, especially taking into account future technologies and space exploration.
 
 \end{summary}
+
 %%%%%%%%%%%%%%%%%
 
 
@@ -65,8 +63,63 @@ Overall even with the ability to abuse swarms and the threats that they impose, 
 \chapter{Introductury Material}
 \label{cha:Introductury Material}
 
+%%%% Problem Definition %%%%
+\section{The Problem}
+\label{sec:Problem}
+
+The problem this report will try and solve is the creation of a directional memory storage policy for agents in a swarm, without complete duplication. 
+This can be split into two separate sub-problems.
+The first is the handling of data duplications throughout the swarm to control for the failure of agents, and provide a mechanism for recovery.
+
+\begin{figure}[htb]
+\label{fig:popdensity}
+\begin{center}
+\centering
+\includegraphics[width=\linewidth]{"./ExplanationImgs/Memory_Pop_Density.png"}
+\caption{Data duplication density based off distance to datas desired location}
+\end{center}
+\end{figure}
+
+The second is to apply the directionality characteristics to the above method.
+A visualization can be seen in Figure \ref{fig:popdensity}, where density of duplications decreases as distance from a desired location is increased. 
+Each piece of data should have its own desired location.
+
+A real life example of where this type of problem arises, is in mine field operation \cite{Cognitive maps mine detection}.
+Agents need to map out potential mines and record their location.
+Once an agent locates a mine it wants to spread the mine’s location.
+However, memory restrictions in agents can only permit the knowledge of a minimal amount of mines. 
+Therefore agents closer to the mine should be prioritized in knowing that mine’s location.
+Agents further away from the mine do not need to know about its location as they will need knowledge of other closer mines.
+
+Complexity is increased when taking into account a practical implementation of this problem. 
+Firstly the policy has to withstand fluctuations of a swarm, which is a hard task in and of itself.
+But secondly handle correlated (Mine detonation) and non-correlated (Individual power loss) failures, with minimal loss of data.
+
+
+
+%%%%%%%%%%%%%%%%%
+
 \section{Introduction}
 \label{sec:Introduction}
+
+The objective of this report is to solve the problem defined in Section \ref{sec:Problem}, with an effective and reliable policy which can withstand the high locality and dynamic behaviour of a swarm. 
+Analyses will then be performed on generated policies as to gauge their real world capabilities and effectiveness.
+
+Two design styles will be undertaken, with an emphasis on the first.
+This design will be handcrafted and will give us an indication of how effective a policy of this type can be.
+The second will use a multi-agent interaction approach using a neural network. 
+This will then be compared against the handcrafted policy.
+Policies will be rated based on a few key characteristics, ability to handle both types of failures, over or under saturation of duplication and stability of the policy.
+
+To complete this objective, we will programmatically break down the problem described in Section \ref{sec:Problem} into solvable tasks.
+Therefore the report will be structured as follows, firstly we bring the reader up to date with relevant literature and explain key concepts that will be required for a complete understanding of how the proposed solutions have been derived.
+This will be undertaken in sections, Section \ref{sec:Cloud} of which goes into detail about current cloud based storage technologies and Section \ref{sec:Robotics} of which will delve into more of a background behind swarms, specifically relating to the problem and possible solutions.
+We’ll then go through the methodology of the proposed solutions’ designs, how it is supposed to act and react in different scenarios, and the reasons for why.
+This then leads to analysing how effective the proposed policies have kept to standards derived in the methodology section, and whether they effectively solve the problem defined in Section \ref{sec:Problem}.
+
+
+\section{Background and Motivation}
+\label{sec:Motivation}
 
 Swarms are an increasingly important area of research for society, as the world moves towards a distributed technology future.
 The research of swarms within a technology setting can be broadly divided into two partitions, these are intelligence and mechanics.
@@ -90,81 +143,24 @@ By being able to handle the loss of agents combined with the redundancy of suffi
 
 An explanation for why swarm based memory management solutions are an under developed area of study is the existence of cloud-based storage research.
 The argument for these two subjects being partially-separated is the nature of a swarm's locality and ever-changing network style, compared to a typical server network.
-Reliable storage of data on an ever-changing network of devices is a hard task to complete, handling loss of connection between servers, enforced reliability of access to data or loss of services, whether from non-correlated or correlated failures \cite{Avalability storage}.
+
 
 Most elements to cloud storage policies at a high level of abstraction could work effectively within a swarm based environment.
-However as explained above, key adaptations would need to be created for an effective policy.
+However as mentioned above, key adaptations would need to be created for an effective policy.
 A prime example is “SKUTE” from \cite{Distributed Storage}.
-“SKUTE” will be the main inspiration for this project's solution, too storage on effectively a highly dynamic network.
+“SKUTE” will be the main inspiration for this project's solution, too storage on an effectively a highly dynamic network.
 
-The objective of this dissertation is to merge three areas of study into an effective/suitable storage policy for swarm-like agents in a setting with high locality and dynamic connection behaviours.
-Then to perform multiple analyses on the created policy using a variety of simulations to gauge its capability compared to the desired abstract behaviour.
+The main use cases nowadays for swarms are within surveillance \cite{UAV, HiveMind}, delivery or the military \cite{Swarm robotics reviewed}.
+However, to see the full scope of what man-made swarms could do, we look to the future.
+Whether it be space exploration \cite{Space exploration}, nano-robots in medicine or in the parallel/distributed software domain \cite{blockchainandSwarm}.
 
-To complete this objective, we will programmatically break down the problem described in Section \ref{sec:Problem} into solvable tasks.
-Therefore the report will be structured as follows, firstly we’ll define a clear and concise problem, of which incompaces all disgruntlements described above.
-Secondly, bring the reader up to date with relevant literature and explain key concepts that will be required for a complete understanding of where and how the proposed solution has been derived and why said solution might be a relevant stepping stone for future research.
-This will be undertaken in sections, Section \ref{sec:Cloud} of which goes into detail about current cloud based storage technologies and Section \ref{sec:Robotics} of which will delve into more of a background behind swarms, specifically relating to the problem and possible solutions.
-We’ll then go through the methodology of the proposed solution’s design, how it is supposed to act and react in different scenarios, and the reasons for why.
-This leads to analysing how effective the proposed policy has kept to standards derived in the methodology section, and whether it solves the problem defined in Section \ref{sec:Problem}.
+Swarm robotics is limited by the technology of its time.
+The use of research is limited and far between in our day and age.
+Research is conducted for the future when technology can support and utilize the fullest potential that swarms could offer.
+
 
 %%%%%%%%%%%%%%%%%%
 
-%%%% Problem Definition %%%%
-\section{The Problem}
-\label{sec:Problem}
-
-The problem that this report will cover is to create a storage policy for agents of a swarm, to be able to store directional abstract data as a collective, without complete duplication.
-
-The problem can be split into two separate sub-problems.
-One of them is handling data duplications throughout the swarm, as to be able to control for failure of an agent, and provide a mechanic for recovery from said failures.
-
-\begin{figure}[htb]
-\label{fig:popdensity}
-\begin{center}
-\centering
-\includegraphics[width=\linewidth]{"./ExplanationImgs/Memory_Pop_Density.png"}
-\caption{Data duplication density based off distance to datas desired location}
-\end{center}
-\end{figure}
-
-The second is to control where data is duplicated, to give directional characteristics of the spread of said data.
-A visualization of this can be seen in Figure \ref{fig:popdensity}. Which is the density of duplications within an area based on distance from the desired position of that data.
-As the reader will see, the further we get from the desired point we should have less duplicates of that data.
-
-A real life example of where this type of problem arises, is in mine field operation \cite{Cognitive maps mine detection}.
-In our example, agents would need to map out where potential mines might be and record their location.
-Once an agent locates a mine it wants to spread the word of its location.
-However, memory restrictions in agents can only permit the knowledge of a minimal amount of mines. Therefore agents closer to the mine should be prioritized in knowing local mine locations.
-
-In a practical solution, agents could fail individually for example running out of battery, or fail as a group from a mine going off.
-The swarm doesn't want to lose any collective data from these failures occurring.
-
-With this increase in complexity, the solution needs to be able to withstand fluctuations of the swarm.
-With reliable redundancy to handle correlated (Mine detonation) and non-correlated (Power loss) failures.
-%%%%%%%%%%%%%%%%%
-
-
-%%%% Approach motiviation and justification %%%%
-\section{Approach and Justification}
-\label{sec:Inital Soloution Ideas}
-
-An initial solution was to use an adaptive version of RAID parities. However, a better concept solution became apparent after conducting more research into cloud based storage.
-
-Within the adaptive RAID design, if a subject agent has two agents within its locality with different data, a XOR parity of both data points would be recorded alongside a record of which agents they came from. If one of those agents left the subject locality then the parity would be used to reconstruct the lost data. This approach was disregarded because of these four factors:
-
-\begin{itemize}
-\itemsep-1em
-\item[$\bullet$] Implementation of directionality would be tricky and not consistent
-\item[$\bullet$] If the two agents die/leave the locality at the same time then the parity cannot be restored
-\item[$\bullet$] The algorithm relies on a swarm that breaks connections often to spread data
-\item[$\bullet$] There is no duplication reduction, therefore over time the data point would spread to all agents
-\end{itemize}
-
-These drawbacks highlighted the need for a new approach, cloud based-storage policies. The proposed solution takes heavy inspiration from “SKUTE” \cite{Distributed Storage}. The design of a replication policy lends itself to heuristic based control, and allows us to implement duplication density and direction to the spread of data.
-
-A distributed/homogeneous style of control is used, partially because there is an average power loss over the swarm compared to a leader based control, but mainly because of the methodology of a homogeneous swarm. A hybrid approach, if not accounting for power loss, would almost certainly be better in every single way, due to its global view. A hybrid implementation would be very simple and deterministic compared to its homogeneous counterpart. Both methods could not guarantee data loss will not occur, however, a hybrid approach would be better equipped to handle correlated failures.
-
-With an extensive list of drawbacks to using a homogeneous control over a hybrid control scheme, it would be deemed inappropriate to use said homogeneous control. This disgruntlement is valid only when talking about swarms that are partially static in nature. When the swarm is highly volatile, in terms of movement, then we might spend more time assigning a leader rather than doing our actual task. Scaling of a hybrid system is harder because of the partitioning of agents to leaders. This justifies the authors choice to focus on distributed homogeneous replication policies.
 
 %%%% Litreture Review %%%%
 \chapter{Litreture Review}
@@ -246,7 +242,7 @@ However this approach allows for greater hypothetical redundancy because of havi
 Moving towards local redundancy and optimisation is the stagnated study of RAID.
 This is where we change orderings of multiple storage discs to gain redundancy and/or performance increases.
 This grouping of disks is called a RAID array and can be structured in a multitude of ways.
-Common structures are labelled as RAID levels and give different attributes based on what functionality you are pursuing \cite{RAID Levels}.
+Common structures are labelled as RAID levels and give different attributes based on what functionality you are pursuing \cite{RAID levels}.
 
 One of the key components of multiple RAID levels is the use of parities \cite{Raid parity}.
 This is where a function (Simplistically an XOR) is done on two or more sets of data to create one or more parities.
@@ -345,16 +341,27 @@ The choice of leader(s) is done through a consensus algorithm \cite{Paxos} rathe
 This allows for homogenous style agents to act in heterogeneous fashion.
 This can create more deterministic behaviours compared to emergent behaviors of homogeneous control, and can also help with the power loss distribution problem by re-electing leaders in different locations to help distribute where messages are relayed.
 
-%Humans themselves are a great example of a fully hybrid based swarm both in design and communication.
-%Though humans have variations in characteristics they can be seen as pretty homogeneous in terms of the tasks that they can perform, obviously removing edge case actions like child birth.
-%Tools and knowledge can be spread between humans to make the swarm more efficient and an agent can specialize in a certain area.
-%However, if some agents are lost other agents can replace them by using the same tools and knowledge from the remaining agents of that specialism.
-%Also, the natural power-based structure of humans fits a hybrid model in terms of electorship of some kind, and not of genetics (Except with royalty, however, this is more of a label rather than a genetic difference).
-%The leaders aren't needed for every single action so fit into a usually hierarchical power structure, compared to something of a hivemind model.
+%%%% Approach motiviation and justification %%%%
+\section{Approach and Justification}
+\label{sec:Inital Soloution Ideas}
 
+An initial solution was to use an adaptive version of RAID parities. However, a better concept solution became apparent after conducting more research into cloud based storage.
 
+Within the adaptive RAID design, if a subject agent has two agents within its locality with different data, a XOR parity of both data points would be recorded alongside a record of which agents they came from. If one of those agents left the subject locality then the parity would be used to reconstruct the lost data. This approach was disregarded because of these four factors:
 
+\begin{itemize}
+\itemsep-1em
+\item[$\bullet$] Implementation of directionality would be tricky and not consistent
+\item[$\bullet$] If the two agents die/leave the locality at the same time then the parity cannot be restored
+\item[$\bullet$] The algorithm relies on a swarm that breaks connections often to spread data
+\item[$\bullet$] There is no duplication reduction, therefore over time the data point would spread to all agents
+\end{itemize}
 
+These drawbacks highlighted the need for a new approach, cloud based-storage policies. The proposed solution takes heavy inspiration from “SKUTE” \cite{Distributed Storage}. The design of a replication policy lends itself to heuristic based control, and allows us to implement duplication density and direction to the spread of data.
+
+A distributed/homogeneous style of control is used, partially because there is an average power loss over the swarm compared to a leader based control, but mainly because of the methodology of a homogeneous swarm. A hybrid approach, if not accounting for power loss, would almost certainly be better in every single way, due to its global view. A hybrid implementation would be very simple and deterministic compared to its homogeneous counterpart. Both methods could not guarantee data loss will not occur, however, a hybrid approach would be better equipped to handle correlated failures.
+
+With an extensive list of drawbacks to using a homogeneous control over a hybrid control scheme, it would be deemed inappropriate to use said homogeneous control. This disgruntlement is valid only when talking about swarms that are partially static in nature. When the swarm is highly volatile, in terms of movement, then we might spend more time assigning a leader rather than doing our actual task. Scaling of a hybrid system is harder because of the partitioning of agents to leaders. This justifies the authors choice to focus on distributed homogeneous replication policies.
 %%%%%%%%%%%%%%%%
 
 
@@ -362,38 +369,32 @@ This can create more deterministic behaviours compared to emergent behaviors of 
 \chapter{Design}
 \label{cha:Design}
 
+\section{Experiments}
+\label{sec:expriments}
 
-\section{Simulation Infomation}
-\label{sec:Sim Info}
+To understand and evaluate the proposed solutions we need to see how they react to different scenarios.
+The scenarios are designed as to test functionality of the proposed solution.
+These are:
 
-This section describes the simulation used for collecting results.
-The simulation is a 2D representation of a flat surface where agents can move freely around.
-Agents are randomly located on the surface within a square that is 75\% of the environment's area.
-Then the closest agent to each defined datapoint will learn its location, once learned these agents cannot lose this specific datapoint.
+\begin{itemize}
+\itemsep-1em
+\item[$\bullet$] Semi-Static moving swarm with non-correlated failures, Figure \ref{fig:static_movement_non}
+\item[$\bullet$] Semi-Static moving swarm with a correlated failure, Figure \ref{fig:static_movement_con}
+\item[$\bullet$] Circular moving swarm with non-correlated failures, Figure \ref{fig:circle_movement_non}
+\item[$\bullet$] Circular moving swarm with a correlated failure, Figure \ref{fig:circle_movement_con}
+\item[$\bullet$] Changing of replication and suicide thresholds, Figure \ref{fig:Threshold_Changes}
+\end{itemize}
 
-%\begin{figure}[htb]
-%\label{fig:Connarea}
-%\begin{center}
-%\centering
-%\includegraphics[width=\linewidth]{"./ExplanationImgs/Connarea.png"}
-%\caption{Example of simulation looks when running}
-%\end{center}
-%\end{figure}
+Semi-static movement, as described in Algorithm \ref{Agent_Control_Loop2}, is used to test the ability of the solution on mostly stable networks, therefore allowing us to see the solutions inherent stability.
+In the opposite case we have circular movement which adds physical instability.
+This allows comparison of stability with internal and external factors.
+Correlated and non-correlated failures should be self explanatory as of the problem, defined in Section \ref{sec:Problem}.
 
-Agents are homogenous, with a small connection radius around them.
-The world is width/height of 2 and an agents connection radius is 0.25.
-Agents are assumed to have perfect connections and each agent can simultaneously respond to incoming packets and send outbound packets.
-
-Agents can have two different types of data, one being private and other public. 
-Private data is a record of a data point of which it has learnt directly. 
-This data cannot be deleted and will be prioritised over public data. 
-Public data is learnt from interactions with other agents and can be deleted. 
-Both types of data can be passed on to other agents in the form of public data.
-
-A control loop runs for 10,000 iterations, where agents are threaded for a single step per iteration. 
-The threading process happens in random order to provide as realistic as possible real world scenario, with available hardware to the author. 
-Ideally running all agents at once in individual threads would be the most accurate, however, scheduling policies are likely to significantly suffocate some agents' processes, therefore giving less realistic results. 
-Running on hardware that could support this many threads would be a good future improvement.
+The proposed solutions will be simulated and critiqued based on five factors.
+Amount of duplications, this will allow us to see whether the policy over or under staurates duplications and how they are affected by loss of agents. 
+Distance from desired point, will show acceptable ranges for correlated failures therefore the larger the range the better.
+Instability, as most swarms will be battery powered we need to reduce the amount of communications between agents to have a practical solution.
+Storage load across the swarm, this will allow us to see how effective our policy is at distributing load over the agents so as to not oversaturate an agent causing possible exclusion of agents to the swarm.
 
 
 \section{Static Heursitic}
@@ -419,19 +420,18 @@ If no duplications happen, because no suitable agents are in the locality, the d
 This quick replication provides redundancy to non-correlated failures, as fast as possible. 
 Most of the time this action will be redundant, until the time that it isn’t.
 
-We now move to lines 8-10 which are the factors described above.
 For each iteration we focus on one public data point in memory, this is a basic iteration through memory. 
-For a further improvement we could dynamically choose which data point to service, talked about more in Section \ref{further improvements}. 
+For a further improvement we could dynamically choose which data point to service, talked about more in Section \ref{sec:further}. 
 The current implementation doesn’t scale well for large amounts of data.
 
 
 To gain information required an agent broadcasts a packet to agents in the locality. 
 They will then respond with relevant information, e.g. do they have a duplicate of the data point, amount of spare memory. 
 Once collated at the originating agent, it works out the specified values as shown in the code.
-There are improvements that can be made to the handling of broadcasting/replying and will be explained a bit more in the Section \ref{further improvements}.
+There are improvements that can be made to the handling of broadcasting/replying and will be explained a bit more in the Section \ref{sec:further}.
 
 After collating the values we scale them from 0 to 1, and rearrange for them to grow higher when we are more likely to want an action to be taken.
-For example a higher density of duplications leads the agent to be less likely to replicate \(1\-dupes_ratio\).
+For example a higher density of duplications leads the agent to be less likely to replicate $1-dupes\_ratio$.
 
 \begin{figure}[htb]
 \label{fig:changing}
@@ -553,14 +553,14 @@ The concept is the same as a migration from “SKUTE” \cite{Distributed Storag
 We inherently don’t want to limit the speed at which data can be migrated, for example an agent with ten data points meets an agent with none, we want them to both walk away with five. 
 This will inherently increase the instability of the swarm, therefore being a trade off.
 
-The migration heuristic is a and of the heuristic described in Section \ref{sec:Simple2} and whether the proposed agent's available space is significantly lower than the originating agent’s. 
+The migration heuristic is a \textbf{AND} of the heuristic described in Section \ref{sec:Simple2} and whether the proposed agent's available space is significantly lower than the originating agent’s. 
 A pseudo code example can be seen by replacing lines 11-12 of Algorithm \ref{Agent_Control_Loop2} with Algorithm \ref{Agent_Control_Loop3}.
 
 
 \section{Neural Network Heuristic}
 \label{sec:Simple5}
 
-We now take a multi-agent approach to the design of a heuristic as to be able to compare results of the handcrafted heuristics and a machine learned heuristic. The design is as follows; for each run of a simulation a single neural network model is used on all agents.
+Results from the handcrafted heuristics show them to be adequate for solving the problem defined, however, they are not close to a theoretically best solution. The problem we face with handcrafted designs is that they are not as expressive and can’t handle mainy different edge cases when compared to the highly expressive nature of a neural network. For example if we are far enough away from the datas desired location we don’t want them to ever suicde unless there is another duplication in the locality. Currently the handcrafted heuristic would have to add extra conditions to satisfy that behaviour, whereas the neural network automatically can produce that behaviour. It would also mean that poorly picked thresholds for different implementations would not be as big of an issue, as long as training is undertaken properly. The design is as follows; for each run of a simulation a single neural network model is used on all agents.
 
 \begin{figure}[htb]
 \label{fig:Neural network}
@@ -572,7 +572,7 @@ We now take a multi-agent approach to the design of a heuristic as to be able to
 \end{figure}
 
 \begin{equation}
-input = \begin{bmatrix}  \frac{\psi_{app}}{\psi_{tot}} & \frac{n}{50}  & r & \frac{s_{self}}{s_{loc}} &  \frac{d}{\sqrt{8}}  &  \frac{\theta_{sui}}{1000} & \frac{\theta_{rep}}{1000} & \frac{\theta_{mig}}{1000} \end{bmatrix}
+input = \begin{bmatrix} \frac{\psi_{app}}{\psi_{tot}} & \frac{n}{50} & r & \frac{s_{self}}{s_{loc}} & \frac{d}{\sqrt{8}} & \frac{\theta_{sui}}{1000} & \frac{\theta_{rep}}{1000} & \frac{\theta_{mig}}{1000} \end{bmatrix}
 \end{equation}
 
 Where $\psi_{app}$ is approved duplications to this agent and $\psi_{tot}$ is total duplication requests sent to this agent, both being zeroed after the agent's step. $n$ is the number of agents in the locality, $r$ is the duplication ratio as described before. $s_{self}$ is space left in the agent's memory and $s_{loc}$ is average space in locality excluding this agent. $d$ is the distance to the data’s data point. $\theta$ is how many iterations since the last action of a specific type. The three outputs correspond to Suicide, Replication and Migration. We therefore argmax the output and then check whether it is above a threshold to actually do that action, in our case the threshold is $>0.05$. The lime in Figure \ref{fig:Neural network} are LSTM nodes and damon are Dense nodes.
@@ -580,7 +580,7 @@ Where $\psi_{app}$ is approved duplications to this agent and $\psi_{tot}$ is to
 This network was picked due to its small size and relatively quick simulation speed and fitness improvement. Most likely a larger network would be better with more LSTM layers, however, training time would be significantly increased. Simulation speed is a concern as we are using a genetic algorithm which involves running multiple simulations. We are using a genetic algorithm because of two reasons. Firstly we don’t know the correct output at a specific time so a gradient descendant algorithm is not viable. Secondly doing a move can’t give us a definitive reward so reinforcement learning can’t be used. Therefore the only way to judge a network's performance is to run a simulation and do a fitness function over the entire run.
 
 \begin{equation}
-fitness =  \frac{\sum_{i=0}^{z}{\big(max( \overline{d_{i}}) - min( \overline{d_{i}})\big)^{2} - \frac{\big(  \overline{q}_{i} - \frac{N_{i}}{4} \big)^{2}}{100} } - \overline{ \varpi_{i} } - std(  \overline{\gamma_{i}} )}{z}
+fitness = \frac{\sum_{i=0}^{z}{\big(max( \overline{d_{i}}) - min( \overline{d_{i}})\big)^{2} - \frac{\big( \overline{q}_{i} - \frac{N_{i}}{4} \big)^{2}}{100} } - \overline{ \varpi_{i} } - std( \overline{\gamma_{i}} )}{z}
 \end{equation}
 
 Where $z$ is the number of iterations ran for. $\overline{d}$ is each agent’s average distance to their duplicated data’s data points. $\overline{q}$ is the average duplications over all data points, and $N$ is global current active agents. $\overline{ \varpi }$ is the mean instability over all data points. $\overline{\gamma}$ is the spread of agent's used memory space.
@@ -589,36 +589,11 @@ Square terms were used to emphasize a property that we wanted the algorithm to f
 
 The genetic algorithm is run for 287 iterations with a population size of 40 with a mating rate of 36, therefore 4 completely random agents are created per iteration. Mating selection is made by a probability distribution over the magnitudes of fitness min max normalized.
 
-
-
 %%%%%%%%%%%%%%%%%%%%%%
 
 %%%% Analysis %%%%
 \chapter{Analysis}
 \label{cha:Analysis}
-
-To understand and evaluate the proposed solutions we need to see how they react to different scenarios. 
-The scenarios are designed as to test functionality of the proposed solution. 
-These are:
-
-\begin{itemize}
-\itemsep-1em
-\item[$\bullet$] Semi-Static moving swarm with non-correlated failures, Figure \ref{fig:static_movement_non}
-\item[$\bullet$] Semi-Static moving swarm with a correlated failure, Figure \ref{fig:static_movement_con}
-\item[$\bullet$] Circular moving swarm with non-correlated failures, Figure \ref{fig:circle_movement_non}
-\item[$\bullet$] Circular moving swarm with a correlated failure, Figure \ref{fig:circle_movement_con}
-\item[$\bullet$] Changing of replication and suicide thresholds, Figure \ref{fig:Threshold_Changes}
-\end{itemize}
-
-Semi-static movement, as described in Algorithm \ref{Agent_Control_Loop2}, is used to test the ability of the solution on mostly stable networks, therefore allowing us to see the solutions inherent stability. 
-In the opposite case we have circular movement which adds physical instability. 
-This allows comparison of stability with internal and external factors.
-
-Correlated and non-correlated failures should be self explanatory as of the problem, defined in Section \ref{sec:Problem}. 
-Changing of replication and suicide threasholds allows insight into internal stability and behavourial control of the soloution.
-
-All tests will be of 5 simulations, for 10,000 iterations. 
-Data will also have a gaussian filter applied as to make the graphs readable, kernel of size 50. 
 
 \begin{figure}[htb]
 \label{fig:static_movement_non}
@@ -629,23 +604,46 @@ Data will also have a gaussian filter applied as to make the graphs readable, ke
 \end{center}
 \end{figure}
 
-"Duplicated Data”, is the amount of duplicates that are in the swarm of a specific data point, represented by the individual line. 
+The simulation is a 2D representation of a flat surface where agents can move freely around.
+Agents are randomly located on the surface within a square that is 75\% of the environment's area.
+Then the closest agent to each defined datapoint will learn its location, once learned these agents cannot lose this specific datapoint.
+Agents are homogenous, with a small connection radius around them.
+The world is height and width of 2 and an agents connection radius is 0.25.
+Agents are assumed to have perfect connections and each agent can simultaneously respond to incoming packets and send outbound packets.
+
+Agents can have two different types of data, one being private and other public.
+Private data is a record of a data point of which it has learnt directly.
+This data cannot be deleted and will be prioritised over public data.
+Public data is learnt from interactions with other agents and can be deleted.
+Both types of data can be passed on to other agents in the form of public data.
+
+A control loop runs for 10,000 iterations, where agents are threaded for a single step per iteration.
+All tests will be an average of 5 simulations.
+Data will also have a gaussian filter applied as to make the graphs readable, kernel of size 50.
+An example of the results can be seen in Figure \ref{fig:static_movement_non}, and all subsections will be explained below.
+
+"Duplicated Data”, is the amount of duplicates that are in the swarm of a specific data point, represented by the individual line.
 The green area is standard deviation around the mean of all data points.
 
 "Number of agents", as the name implies is the number of active agents over all five runs.
 The purple line is mean over all runs and the green area is the standard deviation from the mean.
 
-“Data Distance”, is the distance from a duplicate to its respective point. 
+“Data Distance”, is the distance from a duplicate to its respective point.
 The lines and green area are the same as before, and the yellow area is the range of results, e.g. Max and min.
 
 “Instability”, is how many agents changed from having a duplicate to not or vice versa, per data point.
 
 “Pub-Mem Spread”, is the amount of duplicates per agent.
 
-Lastly, there is duplication density spread per data point. 
-This allows the visualization of how density in duplication changes across the physical distance of the swarm. 
-Where the yellower colours signify more duplications to the number of agents than in a blue area. 
+Lastly, there is duplication density spread per data point.
+This allows the visualization of how density in duplication changes across the physical distance of the swarm.
+Where the yellower colours signify more duplications to the number of agents than in a blue area.
 The red dot signifies the data’s point of interest.
+
+We are ideally looking for a suitable amount of duplicated data with a close spread, no matter the starting location. 
+The distance of data points to desired locations to have the widest range possible. 
+Instability to be low in magnitude and not react heavily to certain changes in other factors and the spread of memory load to have the smallest range possible. 
+In the visualisation section we should see a wide spread with a highly dense epicenter.
 
 
 \section{Static Heursitic}
@@ -732,7 +730,7 @@ This can also explain the neatly spread out duplicate lines in static-movement c
 \section{Dynamic Heursitic with Migration}
 \label{sec:Simple4a}
 
-The new method proposed in Section \ref{sec:simple4} was created to promote positive load sharing between the agents. 
+The new method proposed in Section \ref{sec:Simple4} was created to promote positive load sharing between the agents. 
 Figures \ref{fig:static_movement_non3} and \ref{fig:static_movement_con3} both show this positive affect at the cost of instability. 
 This internal instability is created by the movement of migrating data points, so is to be expected. 
 We can also see that the method is trying to do the same in the circular movement swarms. 
@@ -745,7 +743,7 @@ This shows that the new method is more torrent to larger correlated failures tha
 This characteristic is more inline with the best conceivable solution to the problem defined in Section \ref{sec:Problem}. 
 However, the increase in instability is an unwelcome sight.
 
-Figure \ref{fig:circle_movement_con3} continues the uptrend mentioned in Section \ref{sec:simple3a}. 
+Figure \ref{fig:circle_movement_con3} continues the uptrend mentioned in Section \ref{sec:Simple3a}. 
 This shows that this behaviour is most likely not coincidental and is as mentioned previously.
 
 The changes made to convert the dynamic heuristic to using migrations were intended to be a mild improvement without any significant side effects. 
@@ -753,14 +751,7 @@ However, even though the behaviors are similar, the use cases for each differ dr
 This will be talked about in Section \ref{sec:conc}.
 
 \section{Neural Network Heuristic}
-\label{sec:simple5a}
-
-% <------------------------------------------------------------------------------------------------------------------------------------ Here
-// Needs to be re-written
-
-The results of the genetic algorithm described in Section \ref{sec:simple5} are disappointing. 
-Initially the fitness on average was increasing and from running two separate tests seemed to have an improvement in action based performance. 
-However, after a lot more generations it became apparent that the solution was not improving quickly/effectively. 
+\label{sec:Simple5a}
 
 \begin{figure}[htb]
 \label{fig:FitnessGA}
@@ -771,30 +762,34 @@ However, after a lot more generations it became apparent that the solution was n
 \end{center}
 \end{figure}
 
-Figure \ref{fig:FitnessGA} shows an improvement with a gradient of 0.03. 
-However, this is max fitness of said generation. 
-These results indicate that there is a problem with either the design of the solution or implementation of the genetic algorithm. 
-We therefore run a test as shown in Figure \ref{fig:Failed_GA} to find out some more information. 
-Due to time restraints on training and poor performance the genetic algorithm was not trained for different types of movements or failures.
+The results of the genetic algorithm described in Section \ref{sec:Simple5} are disappointing.
+Initially the fitness on average was increasing and from running two separate tests seemed to have an improvement in action based performance.
+However, after a lot more generations it became apparent that the solution was not improving effectively.
 
-We can see that the results are not promising, other than nearer the end from about the 8000 iterations mark, where our duplicated data fits quite well to the fitness values target of a quarter of the population. 
-Also the minimum to maximum data distances shows that our fitness function is working correctly.
+Figure \ref{fig:FitnessGA} shows an improvement with a gradient of 0.03.
+However, this is max fitness of said generation.
+These results indicate that there is a problem with either the design of the solution or implementation of the genetic algorithm.
+We therefore run a test as shown in Figure \ref{fig:Failed_GA} to find out some more information.
+Due to time restraints on training and poor performance the genetic algorithm was only trained for semi-static motion with non-correlated failures.
 
-A factor that could have led to the failure of the genetic algorithms learning is low population size, restricted by training time and hardware. 
-Another limitation could be the mating selection allowing for worse agents to reproduce. 
-A possibly better solution would have been to have a top number of agents be able to reproduce a certain number of times and have a larger mutated percentage of the population.
-Running along these lines, the mutated agents relied on tensor flows clone feature which assigns biases to zeros and uses “glorot\_uniform” for weights. 
-These values could have been too small in the weights and/or lose expressive power from not allowing biases. 
-I believe one of the biggest contributions to the slow learning rate to be that we have large variations in the simulation environment, meaning that an agent that was good last round might perform significantly worse in the next. 
-The author believed that this would have been averaged out due to if a model performs well averagely it would be tested on multiple different simulations. 
-However, it didn’t act as expected and made the genetic algorithm essentially a random search with slight improvement. 
-An improvement on this design would be to have ran the model for multiple simulations in order to get a good indication of average performance or too have trained on only certain simulations and then introduce random simulations in order for the agent to learn a partially overfitted strategy then unlearn slightly to fit other scenarios. 
+The results are not promising, other than nearer the end from about the 8000 iterations mark, where our duplicated data fits quite well to the target of a quarter of the population.
+
+A factor that could have led to the failure of the genetic algorithms learning is low population size, restricted by training time and hardware.
+Another limitation could be the mating selection allowing for worse agents to reproduce.
+A better solution would be to have a top number of agents be able to reproduce and have a slightly larger mutated percentage of the population.
+Running along these lines, the mutated agents relied on Tensor Flow's clone feature which assigns biases to zeros and uses “glorot\_uniform” for weights.
+These values could have been too small in the weights to get past the 0.05 threshold and we could’ve lost expressive power from not allowing biases.
+I believe one of the biggest contributions to the slow learning rate is large variations in the simulation environment, meaning that a model that was good last round might perform significantly worse in the next.
+The author believed that this would have been averaged out overtime due to better models performing better on average.
+However, it didn’t act as expected and made the genetic algorithm essentially a bad random search.
+An improvement on this design would be to have the model run for multiple simulations in order to get a good indication of average performance or to have trained on only certain simulations. Then introduce random simulations in order for the agent to learn a partially overfitted strategy then unlearn slightly to fit other scenarios.
 The first was not chosen because of computation time and second because of preliminary tests showing good results from the used design.
 
-The model in and of itself could have been flawed in that it was too non-descriptive of the environment and not pushed towards the behaviour we wanted. 
-The design was to allow for much larger breadths of behaviour and could have led to too much variation therefore making training take longer. 
-Changing of the design could be to reuse functions from previous sections, therefore making the genetic algorithm essentially become a slightly more expressive value optimiser. 
-Another interesting proposition is have the neural network produce the dynamic thresholds as to have correct hand crafted behavior but to allow for better edge case performance.
+The model in and of itself could have been flawed in that it could be too large in input size for the length of time allowed for training.
+To restrict the size of the input we could have reused functions from previous sections in order to nudge the neural network to learn faster, however, this would have lost us potential expressive power.
+Another interesting proposition is to have the neural network produce the dynamic thresholds.
+This would restrict the neural networks effectiveness, however, would ensure correct average behaviour and could possibly lead to possible gradient descendant learning using a mapping of the fitness function to a predicted value of where we want each threshold to be at certain times.
+
 
 
 %%%%%%%%%%%%%%
@@ -803,44 +798,14 @@ Another interesting proposition is have the neural network produce the dynamic t
 \chapter{Conclusion}
 \label{cha:conclusion}
 
-\section{Futher Improvements}
-\label{sec:further}
-
-There are a bunch of improvements that could be made in order to improve the performance of the suggested designs. 
-Either computationally or methodologically.
-Looking at methodology there are two design changes that could drastically improve characteristics of the algorithms. 
-One is to allow for message hopping between agents in order to increase symbolic locality size, this would in turn give agents wider knowledge of the global swarm, however, would increase computation time and power draw per agent. 
-The second is moving to a hybrid control which would allow for a more deterministic policy, however, gaining the downsides both of message hoping and problems described in Section \ref{swarm robotics}.
-
-Keeping with the same methodology we can reduce power consumption from messaging, however, could lead to erroneous results. 
-Rather than each agent asking a question and awaiting a response from the locality, therefore meaning that each agent has to respond to every agent in it’s locality. 
-Instead at the start of step per agent, they broadcast their relevant information. 
-Agent’s in the locality then update their internal tables of the agents in the locality, therefore computation time is decreased because we have less IO time. 
-Tables would need to release an agent's information if they haven’t broadcast in a while in order to detect that they are out of the locality. 
-This therefore leads to a problem of possible executing off old information either from the agent running slower or out of locality.
-
-With current proposed solutions we lack control for larger correlated failures. 
-The handcrafted heuristics only sum together certain values and do a comparison on the output value, rather than making different decisions based on the values of each characteristic like the neural network can. 
-This means that we get a linear behaviour, therefore not having cases that could help with increasing max distance of duplicate data. 
-The nonlinear nature of the neural network will improve the chances of being able to change heuristic behaviour when certain values cross certain thresholds. 
-This behaviour would be trivial to implement in a hybrid network, e.g. make sure at least two duplicates are as far away from their data point as possible. 
-We would also have a higher guarantee that the data wouldn’t be lost because of the global view of the hybrid approach.
-
-Currently the effective storage of the swarm is far less than the amount of memory the swarm has as a whole. 
-A priority system could be used in order to insure a larger practical collective memory size compared to the smaller size current proposed heuristics provide. 
-To make the priority system even more effective if an agent needs to lose data in order to learn a higher priority piece of data, said data could be migrated to other agents in its vicinity to make room for the higher priority data. 
-Running along the same line as a priority system, a scheduler would be an effective way to handle the scalability of storage size per agent.
-
-%---------------------------------------------------------------------HERE
-
 \section{Conclusion}
 \label{sec:conc}
 
-Handcrafted algorithms proposed in Sections \ref{sec:simple2, sec:simple3, sec:simple4} solve the problem proposed in Section \ref{sec:Problem}, with varying degrees of effectiveness and behaviour. 
+Handcrafted algorithms proposed in Sections \ref{sec:Simple2}, \ref{sec:Simple3}, \ref{sec:Simple4} solve the problem proposed in Section \ref{sec:Problem}, with varying degrees of effectiveness and behaviour. 
 When comparing them to a theoretical hybrid solution, we see obvious flaws, partially due to the nature of a fully homogeneous approach. 
 In a real world application these approaches would not be as viable as the alternative, unless under very specific circumstances. 
 These circumstances include, tight power consumption limits, large population swarms and high natural instability in connections. 
-The method proposed in Section \ref{sec:simple5} was a fail, for reasons described in Section \ref{sec:simple5a}.
+The method proposed in Section \ref{sec:Simple5} was a fail, for reasons described in Section \ref{sec:Simple5a}.
 
 The method proposed in Section \ref{sec:Simple2}, shows to be effective at combating the problem, however, it lacks multiple characteristics needed for real world applications. 
 We saw promising results with duplication spread in more volatile movement swarms with both correlated and non-correlated failures being handled appropriately. 
@@ -868,6 +833,34 @@ A future example of this kind of use is moonquake detection, agents close to the
 
 The project achieved two handcrafted solutions to the problem proposed, both with different use cases. 
 If improvements were made from the suggestions made in Section \ref{sec:further} then I believe that these solutions could be very successful both in adaptability and performance, even when compared to a theoretical hybrid approach.
+
+\section{Futher Improvements}
+\label{sec:further}
+
+There are a bunch of improvements that could be made in order to improve the performance of the suggested designs. 
+Either computationally or methodologically.
+Looking at methodology there are two design changes that could drastically improve characteristics of the algorithms. 
+One is to allow for message hopping between agents in order to increase symbolic locality size, this would in turn give agents wider knowledge of the global swarm, however, would increase computation time and power draw per agent. 
+The second is moving to a hybrid control which would allow for a more deterministic policy, however, gaining the downsides both of message hoping and problems described in Section \ref{sec:Robotics}.
+
+Keeping with the same methodology we can reduce power consumption from messaging, however, could lead to erroneous results. 
+Rather than each agent asking a question and awaiting a response from the locality, therefore meaning that each agent has to respond to every agent in it’s locality. 
+Instead at the start of step per agent, they broadcast their relevant information. 
+Agent’s in the locality then update their internal tables of the agents in the locality, therefore computation time is decreased because we have less IO time. 
+Tables would need to release an agent's information if they haven’t broadcast in a while in order to detect that they are out of the locality. 
+This therefore leads to a problem of possible executing off old information either from the agent running slower or out of locality.
+
+With current proposed solutions we lack control for larger correlated failures. 
+The handcrafted heuristics only sum together certain values and do a comparison on the output value, rather than making different decisions based on the values of each characteristic like the neural network can. 
+This means that we get a linear behaviour, therefore not having cases that could help with increasing max distance of duplicate data. 
+The nonlinear nature of the neural network will improve the chances of being able to change heuristic behaviour when certain values cross certain thresholds. 
+This behaviour would be trivial to implement in a hybrid network, e.g. make sure at least two duplicates are as far away from their data point as possible. 
+We would also have a higher guarantee that the data wouldn’t be lost because of the global view of the hybrid approach.
+
+Currently the effective storage of the swarm is far less than the amount of memory the swarm has as a whole. 
+A priority system could be used in order to insure a larger practical collective memory size compared to the smaller size current proposed heuristics provide. 
+To make the priority system even more effective if an agent needs to lose data in order to learn a higher priority piece of data, said data could be migrated to other agents in its vicinity to make room for the higher priority data. 
+Running along the same line as a priority system, a scheduler would be an effective way to handle the scalability of storage size per agent.
 
 
 %%%%%%%%%%%%%%%%%%%
@@ -1101,7 +1094,7 @@ If improvements were made from the suggestions made in Section \ref{sec:further}
 \begin{center}
 \centering
 \includegraphics[height=7cm]{"./Failed_GA.png"}
-\caption{Discouraging results from Neural Network Heuristic, semi\-staic movement and non\-correlated failures}
+\caption{Discouraging results from Neural Network Heuristic, semi\-static movement and non\-correlated failures}
 \end{center}
 \end{figure}
 
