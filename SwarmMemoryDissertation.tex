@@ -68,33 +68,33 @@ The field of swarms are riddled with ethical and moral issues. Specifically, swa
 \section{The Problem}
 \label{sec:Problem}
 
-The problem this report will try and solve is the creation of a directional memory storage policy for agents in a swarm, without complete duplication. 
+The problem this report tries to solve is the creation of a directional memory storage policy for agents in a swarm, without complete duplication.
 This can be split into two separate sub-problems.
-The first is the handling of data duplications throughout the swarm to control for the failure of agents, and provide a mechanism for recovery.
+The first is the handling of data duplications throughout the swarm to control for failure of agents, and provide a mechanism for recovery.
 
 \begin{figure}[htb]
 \label{fig:popdensity}
 \begin{center}
 \centering
 \includegraphics[width=\linewidth]{"./ExplanationImgs/Memory_Pop_Density.png"}
-\caption{Data duplication density based off distance to datas desired location}
+\caption{Data duplication density based on distance to a datas desired location}
 \end{center}
 \end{figure}
 
-The second is to apply the directionality characteristics to the above method.
-A visualization can be seen in Figure \ref{fig:popdensity}, where density of duplications decreases as distance from a desired location is increased. 
+The second is to apply directional characteristics to the above method.
+A visualization can be seen in Figure \ref{fig:popdensity}, where density of duplication decreases as distance from a desired location is increased.
 Each piece of data should have its own desired location.
 
-A real life example of where this type of problem arises, is in mine field operation \cite{Cognitive maps mine detection}.
+A real life example of this type of problem arises in mine field operation \cite{Cognitive maps mine detection}.
 Agents need to map out potential mines and record their location.
 Once an agent locates a mine it wants to spread the mine’s location.
-However, memory restrictions in agents can only permit the knowledge of a minimal amount of mines. 
-Therefore agents closer to the mine should be prioritized in knowing that mine’s location.
-Agents further away from the mine do not need to know about its location as they will need knowledge of other closer mines.
+However, memory restrictions in agents only permits the knowledge of a minimal amount of mines.
+Agents closer to the mine should be prioritized in knowing that mine’s location.
+Agents further away from the mine do not need to know about its location, because they will need knowledge of other closer mines.
 
-Complexity is increased when taking into account a practical implementation of this problem. 
+Complexity is increased taking into account a practical implementation of this problem.
 Firstly the policy has to withstand fluctuations of a swarm, which is a hard task in and of itself.
-But secondly handle correlated (Mine detonation) and non-correlated (Individual power loss) failures, with minimal loss of data.
+But secondly, handle correlated (Mine detonation) and non-correlated (Individual power loss) failures, with minimal loss of data.
 
 
 
@@ -103,20 +103,19 @@ But secondly handle correlated (Mine detonation) and non-correlated (Individual 
 \section{Introduction}
 \label{sec:Introduction}
 
-The objective of this report is to solve the problem defined in Section \ref{sec:Problem}, with an effective and reliable policy which can withstand the high locality and dynamic behaviour of a swarm. 
-Analyses will then be performed on generated policies as to gauge their real world capabilities and effectiveness.
+The objective of this report is to solve the problem defined in Section \ref{sec:Problem}, with an effective and reliable policy which can withstand high locality and dynamic behaviours of a swarm.
+Analysis will then be performed on generated policies as to gauge their real world capabilities and effectiveness.
 
 Two design styles will be undertaken, with an emphasis on the first.
-This design will be handcrafted and will give us an indication of how effective a policy of this type can be.
-The second will use a multi-agent interaction approach using a neural network. 
-This will then be compared against the handcrafted policy.
-Policies will be rated based on a few key characteristics, ability to handle both types of failures, over or under saturation of duplication and stability of the policy.
+This design will be handcrafted and will give an indication of how effective a policy of this type can be.
+The second will use a multi-agent interaction approach using a neural network, which will be compared against the handcrafted policy.
+Policies will be rated based on a few key characteristics; ability to handle both types of failures, over or under saturation of duplication and stability of the policy.
 
 To complete this objective, we will programmatically break down the problem described in Section \ref{sec:Problem} into solvable tasks.
-Therefore the report will be structured as follows, firstly we bring the reader up to date with relevant literature and explain key concepts that will be required for a complete understanding of how the proposed solutions have been derived.
-This will be undertaken in sections, Section \ref{sec:Cloud} of which goes into detail about current cloud based storage technologies and Section \ref{sec:Robotics} of which will delve into more of a background behind swarms, specifically relating to the problem and possible solutions.
-We’ll then go through the methodology of the proposed solutions’ designs, how it is supposed to act and react in different scenarios, and the reasons for why.
-This then leads to analysing how effective the proposed policies have kept to standards derived in the methodology section, and whether they effectively solve the problem defined in Section \ref{sec:Problem}.
+The report will be structured as follows, firstly bringing the reader up to date with relevant literature and explaining key concepts required for a complete understanding of how the proposed solutions have been derived.
+This will be undertaken in sections, Section \ref{sec:Cloud} of which goes into detail about current cloud based storage technologies and Section \ref{sec:Robotics} which delves into more of the background behind swarms, specifically relating to the problem and possible solutions.
+We’ll go through the methodology of the proposed solutions’ designs, how it is supposed to act and react in different scenarios, and the reasons for why.
+Leading to analysis of how effective the proposed policies have kept to standards derived in the methodology section, and whether they effectively solve the problem defined in Section \ref{sec:Problem}.
 
 
 \section{Background and Motivation}
@@ -128,39 +127,41 @@ The research of swarms within a technology setting can be broadly divided into t
 Swarm intelligence can be viewed as the research into highly distributed problem solving\cite{Cognitive maps mine detection, Swarm intellegiegence}.
 This is ever more becoming relevant as computer systems start to level out in sequential performance \cite{CPU speed} and parallelism is embraced, satisfying the demand of the age of big data \cite{Avalability storage}.
 
-Swarm mechanics heads more towards the robotics side and can be seen as the study of practical implementation of a swarm, whether that be movement or communication within the swarm.
-This is on the rise in industry, as society's pace increases and manual labor is automated out. Whether its drone delivery to inpatient customers or mapping areas in dangerous environments \cite{Swarm robotics reviewed}.
+Swarm mechanics leans towards the robotics side and can be seen as the study of practical implementation of a swarm, whether that be movement or communication.
+This is on the rise in industry, as society's pace increases and manual labor is automated. Whether its drone delivery to inpatient customers or mapping areas in dangerous environments \cite{Swarm robotics reviewed}.
 
-These areas often are highly integrated rather than disjoint from each other, and are rarely seen in their pure form.
+These areas often are highly integrated and are rarely seen in their pure form.
 An example of a pure form of swarm intelligence can be seen in \cite{Swarm intellegiegence} with network routing protocols.
 This project focuses predominantly on swarm intelligence to deal with a practical problem.
 
-Most research on memory within a swarm has gone down the route of optimization on distributed problem-solving algorithms, as compared to practical applications of storage of abstract ideas as a collective.
+Most research on memory within a swarm has followed the route of optimization on distributed problem-solving algorithms, compared to practical applications of storage of abstract ideas as a collective.
 As one of the key reasons for using a swarm is redundancy, which is often assumed and boasted about, rather than proven, specifically within the memory domain.
 
-This relative lack of research into collective memory, seems to the author to be a glaring hole in the foundations of a complex and interchangeable subject.
-The need for more research into collective memory can be seen in examples, like how invaluable it would be to mapping of dangerous areas \cite{Cognitive maps mine detection}.
-By being able to handle the loss of agents combined with the redundancy of sufficient memory policy, provides a much wider scope for swarms to be used.
+The relative lack of research into collective memory, appears to be a glaring hole in the foundations of a complex and interchangeable subject.
+The need for more research into collective memory can be seen in examples, such as how invaluable it would be in the mapping of dangerous areas \cite{Cognitive maps mine detection}.
+By being able to handle the loss of agents combined with the redundancy of sufficient memory policy, provides a much wider scope for swarm usage.
 
 An explanation for why swarm based memory management solutions are an under developed area of study is the existence of cloud-based storage research.
 The argument for these two subjects being partially-separated is the nature of a swarm's locality and ever-changing network style, compared to a typical server network.
 
 
-Most elements to cloud storage policies at a high level of abstraction could work effectively within a swarm based environment.
+Most elements of cloud storage policies at a high level of abstraction could work effectively within a swarm based environment.
 However as mentioned above, key adaptations would need to be created for an effective policy.
 A prime example is “SKUTE” from \cite{Distributed Storage}.
-“SKUTE” will be the main inspiration for this project's solution, too storage on an effectively a highly dynamic network.
+“SKUTE” will be the main inspiration for this project's solution, to storage within effectively a highly dynamic network.
 
-The main use cases nowadays for swarms are within surveillance \cite{UAV, HiveMind}, delivery or the military \cite{Swarm robotics reviewed}.
+Currently the main issues for swarms are within surveillance \cite{UAV, HiveMind}, delivery or the military \cite{Swarm robotics reviewed}.
 However, to see the full scope of what man-made swarms could do, we look to the future.
 Whether it be space exploration \cite{Space exploration}, nano-robots in medicine or in the parallel/distributed software domain \cite{blockchainandSwarm}.
 
 Swarm robotics is limited by the technology of its time.
 The use of research is limited and far between in our day and age.
-Research is conducted for the future when technology can support and utilize the fullest potential that swarms could offer.
+Research is conducted in mind for the future when technology can support and utilize the fullest potential swarms can offer.
 
 
 %%%%%%%%%%%%%%%%%%
+
+
 
 
 
