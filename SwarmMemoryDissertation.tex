@@ -379,8 +379,8 @@ With an extensive list of drawbacks to using a homogeneous control over a hybrid
 \section{Experiments}
 \label{sec:expriments}
 
-To understand and evaluate the proposed solutions we need to see how they react to different scenarios.
-The scenarios are designed as to test functionality of the proposed solution.
+To understand and evaluate the proposed solutions it’s necessary to see how they react to different scenarios.
+The scenarios are designed to test functionality of the proposed solution.
 These are:
 
 \begin{itemize}
@@ -392,53 +392,53 @@ These are:
 \item[$\bullet$] Changing of replication and suicide thresholds, Figure \ref{fig:Threshold_Changes}
 \end{itemize}
 
-Semi-static movement, as described in Algorithm \ref{Agent_Control_Loop2}, is used to test the ability of the solution on mostly stable networks, therefore allowing us to see the solutions inherent stability.
+Semi-static movement, as described in Algorithm \ref{Agent_Control_Loop2} is used to test the solution on mostly stable networks, allowing us to see the solution's inherent stability.
 In the opposite case we have circular movement which adds physical instability.
 This allows comparison of stability with internal and external factors.
-Correlated and non-correlated failures should be self explanatory as of the problem, defined in Section \ref{sec:Problem}.
+Correlated and non-correlated failures should be self explanatory, as being key to the problem defined in Section \ref{sec:Problem}.
 
 The proposed solutions will be simulated and critiqued based on five factors.
-Amount of duplications, this will allow us to see whether the policy over or under staurates duplications and how they are affected by loss of agents. 
-Distance from desired point, will show acceptable ranges for correlated failures therefore the larger the range the better.
-Instability, as most swarms will be battery powered we need to reduce the amount of communications between agents to have a practical solution.
-Storage load across the swarm, this will allow us to see how effective our policy is at distributing load over the agents so as to not oversaturate an agent causing possible exclusion of agents to the swarm.
+Number of duplications, this allows us to see whether the policy over or under saturates duplications and how they are affected by loss of agents.
+Distance from desired point, shows acceptable ranges for correlated failures, therefore, the larger the range the better it is.
+Instability, as most swarms will be battery powered, we need to reduce the amount of communications between agents, reduce communication power consumption, to have a practical solution.
+Storage load across the swarm, this allows us to see how effective our policy is at distributing load over the agents so as to not oversaturate an agent causing potential exclusion of agents.
 
 
 \section{Static Heursitic}
 \label{sec:Simple2}
 
-This solution takes heavy inspiration from \cite{Distributed Storage}. 
-We take the methodology of each agent controlling its own data and how it wants to distribute it, done through actions of Replication, Suicide and Nothing.
-Migration is not applied, therefore we can piggyback on natural movements of the swarm to get duplicates out further.
+This solution takes heavy inspiration from Paper \cite{Distributed Storage}.
+We utilize the methodology of each agent controlling its own data and distribution of data, through actions of Replication, Suicide and Nothing.
+Migration is not applied, so we piggyback on the natural movements of the swarm to extend duplications range.
 
-Thresholded heuristics decide whether to do either action, based off these factors:
+Thresholded heuristics decide whether to undertake either action, based on these factors:
 
 \begin{itemize}
 \itemsep-1em
-\item[$\bullet$] Ratio of agents in locality that have and do not have a duplicate
+\item[$\bullet$] Ratio of agents in locality that do and do not have duplicates
 \item[$\bullet$] Distance of the data’s point
-\item[$\bullet$] Agents in locality average spare memory
+\item[$\bullet$] Agents average spare memory in locality
 \end{itemize}
 
-These values once collected are then put through a weighted sum and compared against thresholds. 
+The values collected undergo a weighted sum and are compared against thresholds.
 A pseudo code version of this can be seen in Algorithm \ref{Agent_Control_Loop2}.
-Every step an agent will check whether it has learnt any new private data, if so then duplicate that data to all agents in the locality.
-If no duplications happen, because no suitable agents are in the locality, the data will have this action performed next iteration until it succeeds.
-This quick replication provides redundancy to non-correlated failures, as fast as possible. 
-Most of the time this action will be redundant, until the time that it isn’t.
+Every step an agent will check whether it has learnt any new private data, if so, then duplicate that data to all agents in the locality.
+If no duplications happen, it’s because no suitable agents are in the locality, the data will have this action performed on the next iteration until it succeeds.
+This quick replication provides redundancy to non-correlated failures, as fast as possible.
+Most of the time this action will be redundant, until exceptions happen, calling this into play.
 
-For each iteration we focus on one public data point in memory, this is a basic iteration through memory. 
-For a further improvement we could dynamically choose which data point to service, talked about more in Section \ref{sec:further}. 
-The current implementation doesn’t scale well for large amounts of data.
+For each iteration we focus on one public data point in memory, this is a basic iteration through memory.
+A further improvement could be dynamically choosing which data point to service, discussed further in Section \ref{sec:further}.
+The current implementation is unable to perform effectively for large data amounts e.g. scales badly.
 
 
-To gain information required an agent broadcasts a packet to agents in the locality. 
-They will then respond with relevant information, e.g. do they have a duplicate of the data point, amount of spare memory. 
-Once collated at the originating agent, it works out the specified values as shown in the code.
-There are improvements that can be made to the handling of broadcasting/replying and will be explained a bit more in the Section \ref{sec:further}.
+An agent broadcasts packets to agents in their locality to gain information required.
+Agents receiving packets respond with relevant information, e.g. do they have a duplicate of the data point, amount of spare memory, etc.
+Once collated by the originating agent, it works out the specified values, shown in equations below.
+There are improvements that can be made to the handling of broadcasting/replying and will be explained further in the Section \ref{sec:further}.
 
-After collating the values we scale them from 0 to 1, and rearrange for them to grow higher when we are more likely to want an action to be taken.
-For example a higher density of duplications leads the agent to be less likely to replicate $1-dupes\_ratio$.
+After collating the values we scale them from 0 to 1, and rearrange for them to increase in size when we are more likely to want an action to be taken.
+For example, a higher density of duplications leads an agent to be less likely to replicate $1-dupes\_ratio$.
 
 \begin{figure}[htb]
 \label{fig:changing}
@@ -449,26 +449,26 @@ For example a higher density of duplications leads the agent to be less likely t
 \end{center}
 \end{figure}
 
-Changes to weightings and thresholds applies significant behavioural changes to the swarm.
-The increase of replication threshold means that duplications will spread out less, avoid higher duplication density areas and not spread when agents are saturated in other data.
-The higher the suicide factor means there is less of a duplication density diffrence across the network.
+Changing weightings and thresholds applies significant behavioural changes within the policy.
+Increasing replication threshold means that duplications will spread out less distance, avoiding higher duplication density areas and reducing spread when agents are already saturated with data.
+The higher the suicide factor indicates there is less of a duplication density diffrence across the network.
 
-For an easier understanding of the heuristics behaviour when changing the threshold values we can look at Figure \ref{fig:changing}. 
-This shows how the heuristic with changing threshold values would influence the spread of duplicated data from a data point on a uniformly space swarm. 
-The smaller red dots represent agents that have a duplicate with data points of the large red circle. 
-Replication threshold increasing in magnitude can be seen by the changing in distance, e.g. blue circle. 
-And suicide threashold when increasing is the duplication density spread, e.g. from left to right, right being larger in magnitude.
+To enable easier understanding of the heuristics behaviour when changing threshold values we can refer to Figure \ref{fig:changing}.
+This demonstrates how the heuristic changes behaviour with varying threshold values, influencing the spread of duplicated data from a data point in a uniformly spaced swarm.
+The smaller red dots represent agents that have a duplicate with data points of the large red circle.
+Replication threshold increasing magnitude can be seen by the changing in distance, e.g. indicated by the blue circle.
+And suicide threashold when increasing changes the duplication density spread, e.g. from left to right, right being larger in magnitude.
 
 \begin{equation}
 \label{eq:static_vals2}
-\textbf{X}_{rep}  = \begin{bmatrix}1-r &  \frac{\sqrt{8}-d}{\sqrt{8}} & s \end{bmatrix}
-\textbf{X}_{sui}  =  \begin{bmatrix} r & \frac{d}{\sqrt{8}}\end{bmatrix} 
+\textbf{X}_{rep} = \begin{bmatrix}1-r & \frac{\sqrt{8}-d}{\sqrt{8}} & s \end{bmatrix}
+\textbf{X}_{sui} = \begin{bmatrix} r & \frac{d}{\sqrt{8}}\end{bmatrix}
 \end{equation}
 
 \begin{equation}
 \label{eq:static_vals1}
-\textbf{W}_{rep}  = \begin{bmatrix}0.45 & 0.45 & 0.1\end{bmatrix}
-\textbf{W}_{sui}  =  \begin{bmatrix}0.3 & 0.7 \end{bmatrix} 
+\textbf{W}_{rep} = \begin{bmatrix}0.45 & 0.45 & 0.1\end{bmatrix}
+\textbf{W}_{sui} = \begin{bmatrix}0.3 & 0.7 \end{bmatrix}
 \end{equation}
 
 We then workout $h_{rep}$ and $h_{sui}$ using multiplication as below:
@@ -478,16 +478,18 @@ We then workout $h_{rep}$ and $h_{sui}$ using multiplication as below:
 h = \textbf{W} \textbf{X} ^{T}
 \end{equation}
 
-Where r is duplication ratio, d is distance to the datas target point, s is average space in agents in the locality.
-The factors weights can be adjusted to fit different behaviour styles. 
-For example you could favour distance from data point over current duplication density. 
-Having the weighted sum lends the heuristic to be optimised with fitting techniques like genetic algorithms. 
+Where r is duplication ratio, d is distance to the datas target point, s is average spare storage in agents in the locality.
+The factors weights can be adjusted to fit different behaviour styles.
+For example you could favour distance from data point over current duplication density.
+Having the weighted sum lends the heuristic to be optimised with fitting techniques like genetic algorithms.
 This would be done for each individual application seeing as there is no dynamic nature to the heuristic.
-For tests we use values \ref{eq:static_vals1},  none of which have any significance and are purely from tinkering to get good performing results.
+For tests we use values \ref{eq:static_vals1}, none of which have any significance and are purely from tinkering to get good performing results.
 
 Originally “suicide data” in Line 16 of Algorithm \ref{Agent_Control_Loop2}, was done using Paxos \cite{Paxos}.
 This ensured that a data point could not go extinct from suicide, and could only from external factors like failures.
-However from preliminary testing this didn’t make much of a difference in our scenario, but should be added into any practical applications of this algorithm for more guaranteed redundancy.
+However from preliminary tests this didn’t make much of a difference in our scenario, but should be added into any practical applications of this algorithm for more guaranteed redundancy.
+
+%---------------------------------------------------------------------------------------------- HERE
 
 \section{Dynamic Heuristic}
 \label{sec:Simple3}
