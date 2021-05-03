@@ -421,7 +421,7 @@ Thresholded heuristics decide whether to undertake either action, based on these
 \end{itemize}
 
 The values collected undergo a weighted sum and are compared against thresholds.
-A pseudo code version of this can be seen in Algorithm \ref{Agent_Control_Loop2}.
+A pseudo code version of this can be seen in Algorithm \ref{Agent_Control_Loop2} inserted into Algorithm \ref{Agent_Control_Loop1}.
 Every step an agent will check whether it has learnt any new private data, if so, then duplicate that data to all agents in the locality.
 If no duplications happen, it’s because no suitable agents are in the locality, the data will have this action performed on the next iteration until it succeeds.
 This quick replication provides redundancy to non-correlated failures, as fast as possible.
@@ -481,35 +481,34 @@ h = \textbf{W} \textbf{X} ^{T}
 Where r is duplication ratio, d is distance to the datas target point, s is average spare storage in agents in the locality.
 The factors weights can be adjusted to fit different behaviour styles.
 For example you could favour distance from data point over current duplication density.
-Having the weighted sum lends the heuristic to be optimised with fitting techniques like genetic algorithms.
-This would be done for each individual application seeing as there is no dynamic nature to the heuristic.
-For tests we use values \ref{eq:static_vals1}, none of which have any significance and are purely from tinkering to get good performing results.
+Having the weighted sum enables the heuristic to be optimised by fitting techniques such as  genetic algorithms.
+This would have to be tailored to individual applications because of no dynamic nature to threshold setting.
+In tests we used values \ref{eq:static_vals1}, without any significance but purely from tinkering to get good results.
 
-Originally “suicide data” in Line 16 of Algorithm \ref{Agent_Control_Loop2}, was done using Paxos \cite{Paxos}.
-This ensured that a data point could not go extinct from suicide, and could only from external factors like failures.
-However from preliminary tests this didn’t make much of a difference in our scenario, but should be added into any practical applications of this algorithm for more guaranteed redundancy.
+Initially “suicide data” in Line 16 of Algorithm \ref{Agent_Control_Loop2}, was done using Paxos \cite{Paxos}.
+This ensured that a data point could not end up going extinct from suicide, and would only occur with external factors (Failures).
+However from preliminary tests this didn’t make a significant difference in our scenario, but should be added into any practical applications of this algorithm for greater guaranteed redundancy.
 
-%---------------------------------------------------------------------------------------------- HERE
 
 \section{Dynamic Heuristic}
 \label{sec:Simple3}
 
-To control instability of the static heuristic, as described in Section \ref{sec:Simple2a}, we need to enforce a behavior such that when instability increases, factors that contribute to instability are reduced. 
-To keep with an efficient style of homogeneous control, rather than polling agents in the locality for wider information therefore increasing network congestion, computation time and used memory. 
-We instead keep a local track of information on the agents to give a rough guess of local/global behaviour. 
+To control instability of the static heuristic, as described in Section \ref{sec:Simple2a}, we need to enforce a behaviour so when instability increases, factors contributing to instability are reduced.
+Rather than polling agents in the locality for wider stability information increasing network congestion, computation time and power consumption.
+We instead use locally tracked information within the agent in order to gain an understanding of local/global instability.
 
-Firstly, to control instability of the swarm, it wants to reduce the chance of suicides happening after one has been executed. 
-This in and of itself will not solve instability, however, slows its affects down. 
-The previous heuristic tries to seek a global optimum where it becomes static. 
-In an unstable state the optimum keeps changing at the fringe. 
-Therefore restricting our suicides leads to the possibility of replicating to a key agent outside the usual bubble which could lead to a static optimum. 
-However, this only solves instability at the fringe and not inside. 
-This is why we restrict the chances of replications based on local instability. 
-Local instability is tracked per agent with a variable that as a request comes in to duplicate data from another agent, a constant is added to the variable, every iteration we lose some of the variable's magnitude. 
-This gives the agent a partial picture as to how the locality is behaving. 
+Firstly, to control instability of the swarm, it wants to reduce the chance of suicides happening after one has occured for a period of time.
+This in and of itself will not solve instability, however, slows its affects down.
+The previous heuristic attempts to seek a global optimum where it becomes static.
+In an unstable state the optimum keeps changing at the fringe.
+Therefore restricting our suicides enables the possibility of replicating to a key agent outside the usual bubble which could lead to a static optimum.
+However, this only hopefully solves instability issues at the fringe and not inside the swarm.
+This is why we restrict the chances of replications based on local instability.
+Local instability is tracked per agent with a variable that as a request comes in to duplicate data from another agent, a constant is added to the variable, after every iteration we lose some of the variable's magnitude.
+This gives the agent a partial picture as to how the locality is behaving.
 The combination of both feedback mechanisms should decrease instability and smoothen the effects over time.
 
-To achieve these behaviours we modify the current heuristic as to use sigmoid functions based on the inputs described abstractly above, which are used to modulate the thresholds as to give them a dynamic coping mechanism with instability.
+To achieve these behaviours we modify the current heuristic using sigmoid functions, based on the inputs described abstractly above, which are used to modulate the thresholds to give them a dynamic coping mechanism for instability.
 
 For replication:
 \begin{equation}
@@ -536,40 +535,46 @@ For suicide:
 \textbf{X}_{sui} = \begin{bmatrix} r & \frac{d}{\sqrt{8}} & \lambda_{sui} \end{bmatrix}
 \end{equation}
 
-$\theta$ in Equation \ref{eq:1} is iterations since last suicide, once a suicide occurs on this agent $\theta=0$.
+$\theta$ in Equation \ref{eq:1} is iterations since last suicide, once a suicide occurs on the agent $\theta=0$.
 $\psi$ in Equation \ref{eq:2} is a value based on how many agents asked the current agent to store a bit of data, this naturally increases as instability is increased.
 $\psi$ is reduced every iteration until 0.
 
-Sigmoid functions were used because we can control when the heuristic should be unimpeded or impeded with a grey area in between so if a data needs to duplicate quickly it can still over power the block.
+Sigmoid functions were used because we can control when the heuristic should be unimpeded or impeded, with a grey area in between so if data needs to be duplicated quickly it can still override the blockade.
 $\alpha$ and $\beta$ can be changed on both heuristics to give different behaviours.
+A pseudo code example can be seen in Algorithm \ref{Agent_Control_Loop3}.
 
 
 \section{Dynamic Heuristic with Migration}
 \label{sec:Simple4}
 
-With the success of the dynamic heuristic in Section \ref{sec:Simple3}, another speculative issue needs to be addressed. 
-A possible issue mentioned previously is the inherent problems of connections through a swarm. 
-This is if an agent learns about a data point it might not be able to spread that information to the rest of the swarm, either because of a physical lack of agents, or that those agents' memories are full, therefore stopping the spread of the data point. 
-There are three possible solutions to the memory being full. 
-Agents repeat duplication requests if full, priorities are used for data duplication or we keep the swarm at a state where information is spread equally around the swarm.
+With the success of the dynamic heuristic in Section \ref{sec:Simple3}, another speculative issue needs to be addressed.
+A possible issue, mentioned previously, is the inherent problems of connections through a swarm.
+If an agent learns a new data point it may be unable to spread to the rest of the agents in the swarm, either because there is a physical lack of agents in the locality or those agents' memories are full.
+There are three possible solutions to the memory saturation.
+Agents repeat duplication requests if memory is full, priorities are used for data duplication or we keep the swarm at a state where information is spread equally around the swarm.
 
-The latter being the solution explored in this project. 
-This solution is inherently worse than the priority solution, because the swarm can become oversaturated with duplicates. 
-A combination of the two solutions would be optimal for cases of oversaturation, however, in our tests such situations will not occur. 
-Therefore the author focuses solely on the swarm distributing data points equally, as a proof of concept. 
+The latter being the solution explored in this project.
+This solution is inherently worse than the priority solution, because the swarm can become oversaturated with duplicates.
+A combination of the two solutions would be optimal, to reduce cases of oversaturation.
+The author focuses solely on the swarm distributing data points equally, as a proof of concept.
 The concept is the same as a migration from “SKUTE” \cite{Distributed Storage}.
 
-We inherently don’t want to limit the speed at which data can be migrated, for example an agent with ten data points meets an agent with none, we want them to both walk away with five. 
-This will inherently increase the instability of the swarm, therefore being a trade off.
+Inherently we don’t want to limit the speed at which data can be migrated, for example an agent with oversaturated memory meets an agent with no memory used, ideally both walk away with equal memory load.
+This will inherently increase the instability of the swarm, therefore, it’s a trade off.
 
-The migration heuristic is a \textbf{AND} of the heuristic described in Section \ref{sec:Simple2} and whether the proposed agent's available space is significantly lower than the originating agent’s. 
-A pseudo code example can be seen by replacing lines 11-12 of Algorithm \ref{Agent_Control_Loop2} with Algorithm \ref{Agent_Control_Loop3}.
+The migration heuristic is a \textbf{AND} of the heuristic described in Section \ref{sec:Simple2} and whether the proposed agent's available space is significantly lower than the originating agent’s.
+A pseudo code example can be seen in Algorithm \ref{Agent_Control_Loop4}.
 
 
 \section{Neural Network Heuristic}
 \label{sec:Simple5}
 
-Results from the handcrafted heuristics show them to be adequate for solving the problem defined, however, they are not close to a theoretically best solution. The problem we face with handcrafted designs is that they are not as expressive and can’t handle mainy different edge cases when compared to the highly expressive nature of a neural network. For example if we are far enough away from the datas desired location we don’t want them to ever suicde unless there is another duplication in the locality. Currently the handcrafted heuristic would have to add extra conditions to satisfy that behaviour, whereas the neural network automatically can produce that behaviour. It would also mean that poorly picked thresholds for different implementations would not be as big of an issue, as long as training is undertaken properly. The design is as follows; for each run of a simulation a single neural network model is used on all agents.
+Results from the handcrafted heuristics show them to be adequate for solving the problem defined, however, they are far from the theoretical best solution. 
+The problem faced with handcrafted designs is that they are not as expressive e.g. can’t inherently control for many edge cases or scenarios when compared to the highly expressive nature of a neural network. 
+For example if we are far enough away from the datas desired location we don’t agent to suicde data unless there is another duplication in the locality. 
+Currently the handcrafted heuristic would need extra conditions to satisfy that behaviour, whereas the neural network automatically can produce that behaviour, dependent on training. 
+It would also mean that poorly selected thresholds for different implementations would not be as problematic, as long as training is undertaken properly. 
+The design is as follows; for each run of a simulation a single neural network model is used on all agents.
 
 \begin{figure}[htb]
 \label{fig:Neural network}
@@ -584,19 +589,43 @@ Results from the handcrafted heuristics show them to be adequate for solving the
 input = \begin{bmatrix} \frac{\psi_{app}}{\psi_{tot}} & \frac{n}{50} & r & \frac{s_{self}}{s_{loc}} & \frac{d}{\sqrt{8}} & \frac{\theta_{sui}}{1000} & \frac{\theta_{rep}}{1000} & \frac{\theta_{mig}}{1000} \end{bmatrix}
 \end{equation}
 
-Where $\psi_{app}$ is approved duplications to this agent and $\psi_{tot}$ is total duplication requests sent to this agent, both being zeroed after the agent's step. $n$ is the number of agents in the locality, $r$ is the duplication ratio as described before. $s_{self}$ is space left in the agent's memory and $s_{loc}$ is average space in locality excluding this agent. $d$ is the distance to the data’s data point. $\theta$ is how many iterations since the last action of a specific type. The three outputs correspond to Suicide, Replication and Migration. We therefore argmax the output and then check whether it is above a threshold to actually do that action, in our case the threshold is $>0.05$. The lime in Figure \ref{fig:Neural network} are LSTM nodes and damon are Dense nodes.
+Where $\psi_{app}$ is approved duplications to the agent and $\psi_{tot}$ is total duplication requests sent to this agent, both being zeroed after the agent's step. 
+$n$ is the number of agents in the locality, $r$ is the duplication ratio as described before. 
+$s_{self}$ is space left in the agent's memory and $s_{loc}$ is average space in locality excluding this agent. 
+$d$ is the distance to the data’s data point. 
+$\theta$ is how many iterations since the last action of a specific type. 
+The three outputs correspond to Suicide, Replication and Migration. 
+We therefore argmax the output and then check whether it is above a threshold to trigger the action, in our case the threshold is $>0.05$. 
+The lime nodes in Figure \ref{fig:Neural network} are LSTM nodes and damon nodes are Dense nodes.
 
-This network was picked due to its small size and relatively quick simulation speed and fitness improvement. Most likely a larger network would be better with more LSTM layers, however, training time would be significantly increased. Simulation speed is a concern as we are using a genetic algorithm which involves running multiple simulations. We are using a genetic algorithm because of two reasons. Firstly we don’t know the correct output at a specific time so a gradient descendant algorithm is not viable. Secondly doing a move can’t give us a definitive reward so reinforcement learning can’t be used. Therefore the only way to judge a network's performance is to run a simulation and do a fitness function over the entire run.
+This network was selected because of its small size, relatively quick simulation speed and fitness improvement. 
+It’s likely a larger network would be better with more LSTM layers, however, training time would be significantly increased. 
+Simulation speed is a concern because of using a genetic algorithm which involves running multiple simulations. 
+We are using a genetic algorithm because of two reasons;
+Firstly, it’s impossible to know the correct output at a specific time, so a gradient descendant algorithm is not viable. 
+Secondly, the move is unable to give an effective reward so reinforcement learning is also not viable. 
+Therefore the only way to judge a network's performance is to run a simulation and compute a fitness function over the entire run.
 
 \begin{equation}
 fitness = \frac{\sum_{i=0}^{z}{\big(max( \overline{d_{i}}) - min( \overline{d_{i}})\big)^{2} - \frac{\big( \overline{q}_{i} - \frac{N_{i}}{4} \big)^{2}}{100} } - \overline{ \varpi_{i} } - std( \overline{\gamma_{i}} )}{z}
 \end{equation}
 
-Where $z$ is the number of iterations ran for. $\overline{d}$ is each agent’s average distance to their duplicated data’s data points. $\overline{q}$ is the average duplications over all data points, and $N$ is global current active agents. $\overline{ \varpi }$ is the mean instability over all data points. $\overline{\gamma}$ is the spread of agent's used memory space.
+Where $z$ is the number of iterations run. 
+$\overline{d}$ is each agent’s average distance to their duplicated data’s desired location.
+$\overline{q}$ is the average duplications over all data points, and $N$ is global current active agents. 
+$\overline{ \varpi }$ is the mean instability over all data points. 
+$\overline{\gamma}$ is the spread of agent's used memory space.
 
-Square terms were used to emphasize a property that we wanted the algorithm to focus on the most e.g. maximum spread of data and each data point to be duplicated in a fourth of the swarms population. The fitness function would have to be changed for different characteristics you would want for the swarm.
+Square terms were used to emphasize a property we wanted the algorithm to focus on e.g. maximum spread of data and each data point to be duplicated in a fourth of the swarms population. 
+The fitness function would need to be changed for different characteristics you desired for the swarm.
 
-The genetic algorithm is run for 287 iterations with a population size of 40 with a mating rate of 36, therefore 4 completely random agents are created per iteration. Mating selection is made by a probability distribution over the magnitudes of fitness min max normalized.
+The genetic algorithm is run for 287 iterations with a population size of 40 with a mating rate of 36, therefore 4 completely random agents are created per iteration. 
+Mating selection is made by a probability distribution over the magnitudes of fitness min max normalized.
+Mating occurs by picking two agents from the previous population and randomly selecting weights from both models.
+Parent selection is a probabilistic model based on fitness values, MinMax normalized then set so all normalised fitness values sum to one.
+This therefore means that agents with higher fitness are more likely to be picked.
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%
 
@@ -881,8 +910,8 @@ Running along the same line as a priority system, a scheduler would be an effect
 \chapter{Code apendix}
 
 \begin{algorithm}
-\caption{Static Heuristic Agent}
-\label{Agent_Control_Loop2}
+\caption{Main Control Loop}
+\label{Agent_Control_Loop1}
 \begin{algorithmic}[1]
 \Procedure{Step}{}
 \State \text{move()}
@@ -895,8 +924,8 @@ Running along the same line as a priority system, a scheduler would be an effect
 \State $d \gets \text{Euclidean distance to data current data point}$
 \State $r \gets \text{(local) Duplicates on agents / Number of agents}$
 \State $s \gets \text{(local) Average space available / Max public memory}$
-\State $X_{rep}, X_{sui} \gets $\text{Equation} \ref{eq:static_vals2}
-\State $W_{rep}, W_{sui} \gets $\text{Equation} \ref{eq:static_vals1}
+\State
+\State Replace with insert of choosen heuristic
 \State
 \If{ $h_{rep}$ (\text{Equation} \ref{eq:10}) $> \text{Threshold}_{rep}$}
 \State \text{Replicate current data point to locallity}
@@ -910,6 +939,15 @@ Running along the same line as a priority system, a scheduler would be an effect
 \State
 \State \Return True
 \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{Static Heuristic Agent - Insert}
+\label{Agent_Control_Loop2}
+\begin{algorithmic}[1]
+\State $X_{rep}, X_{sui} \gets $\text{Equation} \ref{eq:static_vals2}
+\State $W_{rep}, W_{sui} \gets $\text{Equation} \ref{eq:static_vals1}
 \end{algorithmic}
 \end{algorithm}
 
@@ -928,7 +966,7 @@ Running along the same line as a priority system, a scheduler would be an effect
 
 \begin{algorithm}
 \caption{Dynamic Heuristic Agent With Migration - Insert}
-\label{Agent_Control_Loop3}
+\label{Agent_Control_Loop4}
 \begin{algorithmic}[1]
 \State $\theta \gets \text{Iterations since last suicide}$
 \State $\psi \gets \text{Internal stability}$
